@@ -1,0 +1,22 @@
+{
+    "name": "sebardo/ecommerce",
+    "type": "library",
+    "description": "Ecommerce tools for sandbox",
+    "keywords": ["log","logging"],
+    "homepage": "https://github.com/sebardo/ecommerce",
+    "license": "GNU",
+    "authors": [
+        {
+            "name": "Dario Sebastian Sasturain",
+            "email": "sebastian.sasturain@gmail.com",
+            "homepage": "http://sasturain.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0"
+    },
+    "autoload": {
+        "psr-4": {"EcommerceBundle\\": "EcommerceBundle"}
+    }
+}
