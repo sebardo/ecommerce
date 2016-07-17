@@ -1,0 +1,162 @@
+<table class="cart-table" style="width: 100%">
+    <tr class="header">
+        <th class="remove"></th>
+        <th class="title">{{ "product.singular" | trans }}</th>
+        <th>{{ "checkout.units" | trans }}</th>
+        <th>{{ "checkout.rrp.unit" | trans }}</th>
+        <th>{{ "checkout.discount" | trans }}</th>
+        <th class="discount">{{ "checkout.rrp.dt.unit" | trans }}</th>
+        <th>{{ "checkout.rrp.total" | trans }}</th>
+    </tr>
+    {% set cart_total = 0 %}
+    {% set cart_total_no_vat = 0 %}
+    {% set amount_for_delivery_expenses = 0 %}
+    {% set freeTransport = 0 %}
+    {% for item in cart.items %}
+        {% set product = item.product %}
+        {% if not product.storePickup and product.isFreeTransport %}{% set freeTransport = product.isFreeTransport %}{% endif %}
+        <tr class="border-bottom">
+            <td class="remove">
+                <a href="{{ path('ecommerce_checkout_remove', { id: item.id }) }}" class="remove" title="{{ "cart.remove" | trans }}">
+                    <span class="glyphicon glyphicon-remove"></span>
+                </a>
+            </td>
+            <td class="title">
+                {% set path = '/bundles/front/images/actor-default_142.jpg' %}
+                {% if product.images|length > 0 %}
+                    {% set image = get_thumb_image(product.images.first.path, '142') %}
+                    {% if image != ''%} {% set path = '/uploads/images/product/'~product.id~'/thumbnail/'~image %} {% endif %}
+                {% endif %}
+                <img src="{{ path }}" />
+
+                <div class="product-name">
+                    <a href="{{ path('ecommerce_product_show', { id: product.id, slug: product.slug }) }}" title="{{ product.name }}">
+                        {{ product.name }}
+                    </a>
+                </div>
+                
+                {% set priceData = get_transport_data(cart.items)%}
+                <span>	
+                    {% set checked = '' %}
+                    {% if product.storePickup %}
+                        {% set checked = 'checked'%}
+                    {%endif %}
+                    {{ form_widget(form.items[loop.index0].storePickup.0, { attr: {'checked' : checked } } ) }} Recoger en tienda 
+                    
+                    <span {% if product.storePickup %}style="display: none"{% endif %}>	
+                        {% if priceData | length > 0 %}
+                        {{ form_widget(form.items[loop.index0].storePickup.1, { attr: {'actor': product.actor.id, 'weight': product.weight, 'source':  priceData[product.id].src, 'destiny':  priceData[product.id].dst, 'price': priceData[product.id].price, 'isFreeTransport': (product.isFreeTransport)?'1':'0' }   } ) }}
+                        {% else %}
+                            {{ form_widget(form.items[loop.index0].storePickup.1) }}
+                        {% endif %}
+                        Envio On-line
+                    </span>
+                    
+                    {{ form_row(form.items[loop.index0].shippingCost, { label: false , attr: {'class': 'shipping-cost'} }) }}
+               </span>
+               {% if not product.storePickup and product.isFreeTransport and product.category.name != 'montaje' %}
+                    <div><span class="glyphicon glyphicon glyphicon-ok"></span> Transporte Gratuito </div>
+                {% endif %}
+            </td>
+            <td class="quantity">
+                {{ form_row(form.items[loop.index0].quantity, { label: false, attr: {'data-price':  product.price} }) }}
+            </td>
+            <td class="price">
+                <span>{{ product.initPrice | price(true,true,false,2,",",".") }}</span>
+            </td>
+            <td class="discount">
+                {{ product.discount }} {% if product.discountType %}€{%else%}%{% endif %}
+            </td>
+            <td class="price2">
+                <span>{{ product.price | price(true,true,false,2,",",".") }}</span>
+            </td>
+            <td class="price3">
+                <strong>{{ (product.price(true) * item.quantity) | price(true,true,false,2,",",".") }}</strong>
+            </td>
+        </tr>
+
+        {% if item.product.discount %}
+            {% set cart_total = cart_total + (item.product.price * item.quantity) %}
+            {% set cart_total_no_vat =  cart_total_no_vat + (item.product.price * item.quantity) %}
+        {% else %}
+            {% set cart_total = cart_total + (product.price(true) * item.quantity) | price(true,true,false,2,",",".") %}
+            {% set cart_total_no_vat =  cart_total_no_vat + (item.product.price * item.quantity) %}
+        {% endif %}
+        
+
+        {% if item.product.isFreeTransport == false %}
+            {% if item.product.discount %}
+                {% set amount_for_delivery_expenses =  amount_for_delivery_expenses + (item.product.price * item.quantity) %}
+            {% else %}
+                {% set amount_for_delivery_expenses =  amount_for_delivery_expenses + (item.product.price(false,false) * item.quantity) %}
+            {% endif %}
+        {% endif %}
+        
+    {% endfor %}
+    
+   
+    <tr class="delivery-line">
+        <td></td>
+        <td class="title">
+            <span>{{ 'checkout.delivery.quantity' | trans }}</span>
+        </td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td class="price3">
+            <strong id="articulos"></strong>
+        </td>
+    </tr>
+   
+    <tr class="delivery-line">
+        <td></td>
+        <td class="title">
+            <span>{{ 'checkout.delivery.costs' | trans }}</span>
+        </td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td class="price3" >
+            {% set delivery_expenses = (amount_for_delivery_expenses * (core['company']['delivery_expenses_percentage'] / 100)) | price(false,false,false,2,'.',',') %}
+            <strong id="gastos_envio">{{ delivery_expenses | price(true,true) }}</strong>
+        </td>
+    </tr>
+    {% if freeTransport %}
+        <tr class="delivery-line">
+            <td></td>
+            <td>Transporte Gratuito </td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td style="text-align: center">- <strong id="free_transport">{{ delivery_expenses | price(true,true) }}</strong></td>
+        </tr>
+    {% endif %}
+    <tr>
+        <td colspan="4" class="coupon">
+        </td>
+        <td colspan="3" class="total">
+            <span>{{ "total" | trans }}: </span>
+            <strong id="total">
+                {% if 'by_percentage' == core['company']['delivery_expenses_type'] %}
+                    {{ (cart_total + delivery_expenses) | price(true, false) }}
+                {% else %}
+                    {{ cart_total_no_vat | price(true, true) }}
+                {% endif %}
+            </strong>
+            <em>{{ "vat.included" | trans }}</em>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="7">
+            <div class="cart-options">
+                {% set referer = get_referer(app.request)%}
+                {% if app.request.query.get('referer') != '' %}{% set referer = app.request.query.get('referer') %}{% endif %}
+                <a href="{{ referer }}" class="continue " title="{{ "checkout.add.more" | trans }}" ><i class="ion-reply"></i> {{ "checkout.add.more" | trans }}</a>
+                <button type="submit" class="btn btn-core btn-lg btn-flat orange pay" title="{{ "checkout.pay" | trans }}">{{ "checkout.pay" | trans }}</button>
+            </div>    
+        </td>
+    </tr>
+</table>

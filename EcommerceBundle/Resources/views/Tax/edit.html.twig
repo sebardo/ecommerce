@@ -1,0 +1,75 @@
+{% extends "AdminBundle:Base:layout.html.twig" %}
+{% form_theme edit_form 'AdminBundle:Form:fields.html.twig' %}
+
+{% block section %}features{% endblock %}
+
+{% block content %}
+    
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <h1>
+        {{ "edit.singular" | trans }} {{ entity.tax }}
+        <small></small>
+      </h1>
+      <ol class="breadcrumb">
+        <li><a href="{{ path('admin_default_index') }}"> <i class="ion-home"></i>  {{ "home" | trans }}</a></li>
+        <li><a href="{{ path('ecommerce_tax_index') }}">{{ "tax.plural" | trans }}</a></li>
+        <li><a href="{{ path('ecommerce_tax_show', { id: entity.id }) }}">{{ entity.tax }}</a></li>
+        <li><a href="{{ path('ecommerce_tax_edit', { id: entity.id }) }}">{{ "edit.singular" | trans }} </a></li>
+      </ol>
+    </section>
+      
+    <section class="content">
+      <div class="row">
+        <div class="col-xs-12">
+            <div class="box box-info">
+                <!-- form start -->
+                <form action="{{ path('ecommerce_tax_update', {'id': entity.id }) }}" method="post" {{ form_enctype(edit_form) }} class="form-horizontal form-row-seperated">
+                    <div class="box-body">
+                        {{ include('EcommerceBundle:Tax:_form.html.twig', { form: edit_form }) }}
+                        <input type="hidden" name="_method" value="PUT" />
+                    </div><!-- /.box-body -->
+                    <div class="box-footer">
+                        <div class="col-sm-2"></div>
+                        <div class="col-sm-10">
+                            <button type="submit" class="btn btn-primary btn-flat"><i class="ion-checkmark"></i> {{ "save" | trans }}</button>
+                            <a href="{{ path('ecommerce_tax_show', { id: entity.id }) }}" class="btn btn-default btn-flat">{{ "cancel.singular" | trans }}</a>
+                            <button type="submit" class="btn btn-danger btn-flat pull-right" id="delete-btn">{{ "delete" | trans }}</button>
+                        </div>
+                    </div>
+                </form>
+                <form id="delete-entity" action="{{ path('ecommerce_tax_delete', { id: entity.id }) }}" method="post">
+                    <input type="hidden" name="_method" value="DELETE" />
+                    {{ form_widget(delete_form) }}
+                </form>
+            </div>
+        </div>
+      </div>
+    </section>
+      
+      
+      
+        
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+
+    <script>
+        jQuery(document).ready(function() {
+            $('#delete-btn').on('click', function(e) {
+                e.preventDefault();
+
+                if (confirm('{{ "are.you.sure" | trans }}')) {
+                    $('#delete-entity').submit();
+                }
+            });
+
+            $('#ecommercebundle_featuretype_category').select2({
+                placeholder: "{{ "category.choose" | trans }}",
+                allowClear: true
+            });
+
+        });
+    </script>
+{% endblock %}

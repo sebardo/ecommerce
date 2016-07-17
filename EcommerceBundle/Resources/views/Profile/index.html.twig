@@ -1,0 +1,274 @@
+{% extends core['extended_layout'] ? core['extended_layout'] : 'CoreBundle:Base:base.layout.html.twig' %}
+
+{% block breadcrumb %}
+    <div class="col-md-12">
+        <ol class="breadcrumb">
+            <li><a href="#">Perfil</a></li>
+            <li class="active"><a href="#">Detalle</a></li>
+        </ol>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="row core-row profile user" >
+           
+                {% include 'EcommerceBundle:Profile/Block:_profile.header.html.twig' %}
+
+                {% include 'CoreBundle:Base:alert.messages.html.twig'%}
+                
+                <div class="col-md-3 col-sm-3 col-xs-12 paddingForFloat"> <!-- required for floating -->
+                    {{ include('EcommerceBundle:Profile/Block:_sidebar.html.twig') }}
+                </div>
+
+                <div class="col-md-9 col-sm-9 col-xs-12 borderMenuProfile">
+                    <!-- Tab panes -->
+                    <div class="tab-content col-xs-12">
+                        <div class="tab-pane {{ not app.request.get('billing') and
+                                not app.request.get('delivery') and
+                                not app.request.get('transactions') and 
+                                not app.request.get('adverts') ? 'active' }}" id="profile_tab">
+                            <div class="portlet box custom">
+                                <div class="portlet-body profile">
+                                    <div class="profile-content">
+                                        {% include "EcommerceBundle:Profile/Block:show_content.html.twig" with {user: app.user }%}
+                                    </div>
+                                    <div id="edit_content" class="edit_account">
+                                        {% include "EcommerceBundle:Profile/Block:edit_content.html.twig" %}
+                                    </div>
+                                    <div  id="pass_content"  class="edit_pass">
+                                        {% include 'EcommerceBundle:Profile/Block:pass_content.html.twig'%}
+                                   </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane {{ app.request.get('billing') ? 'active' }}" id="billing_tab">
+                            <div class="portlet box custom">
+                                <div class="portlet-body">
+                                     <div id="billing">
+                                        {% include 'CoreBundle:Base:alert.messages.html.twig'%}
+                                        <div class="container-table-billing">
+                                            <h3>{{ 'account.billing.info' | trans }}</h3>
+
+                                            <form class="form-horizontal delivery-form col-xs-12" method="post" action="{{ path('front_profile_editbilling') }}" {{ form_enctype(billingForm) }}>
+                                                <div class="row space-bottom">
+                                                    {{ include('EcommerceBundle:Profile:Delivery/_form.html.twig', { form: billingForm }) }}
+                                                </div>
+                                                
+                                                <div class="profile-buttons">
+                                                    <button type="submit" class="pull-right menuUserButton"> <i class="ion-checkmark"></i> {{ 'save' | trans }}</button> 
+                                                </div>
+
+                                            </form>
+                                        </div>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane {{ app.request.get('delivery') ? 'active' }}" id="delivery_tab">
+                            <div class="portlet box custom">
+                                <div class="portlet-body">
+                                    {% include 'CoreBundle:Base:alert.messages.html.twig'%}
+                                    <div class="delivery-content">
+                                        {% include 'EcommerceBundle:Profile/Delivery:show.html.twig'%}
+                                    </div>
+                                    <div class="delivery-new" style="display: none">
+                                        <h3>{{ 'account.address.add' | trans }}</h3>
+                                        <form class="form-horizontal delivery-form col-xs-12" method="post" action="{{ path('front_profile_newdelivery') }}?delivery=1" {{ form_enctype(formDelivery) }}>
+                                            <div class="row space-bottom">
+                                                {{ include('EcommerceBundle:Profile:Delivery/_form.html.twig', { form: formDelivery }) }}
+                                            </div>
+                                            <div class="profile-buttons">
+                                                <a href="javascript:void(0);"  class="delivery-back"><i class="ion-reply"></i> <span>{{ 'back' | trans }}</span></a>
+                                                <button class="pull-right menuUserButton" type="submit"> <i class="ion-checkmark"></i> {{ 'save' | trans }}</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <a id="new-delivery" href="javascript:void(0);" class="addNewDelivery" title="{{ 'account.address.add' | trans }}">
+                                        <i class="ion-plus"></i> {{ 'account.address.add' | trans }}
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane {{ app.request.get('transactions') ? 'active' }}" id="transactions_tab">
+                            <div class="portlet box custom">
+                                <div class="portlet-body">
+                                    <div class="container-table-transactions">
+                                        {% if transactions is empty %}
+                                            {{ 'transaction.none' | trans }}
+                                        {% else %}
+                                            {% include 'EcommerceBundle:Profile/Transaction:_content.html.twig'%}
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                                    
+                        <div class="tab-pane {{ app.request.get('adverts') ? 'active' }}" id="adverts_tab" style="padding-left: 0">
+                            <div class="portlet box custom">
+                                <div class="portlet-body">
+                                    <div class="container-table-adverts">
+                                        {% if adverts is empty %}
+                                            {{ 'advert.none' | trans }}
+                                        {% else %}
+                                            {% include 'EcommerceBundle:AdvertFront:_content.html.twig'%}
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>  
+                <!--END TABS-->
+
+        </div>
+    </div>
+
+{% endblock %}
+
+
+{% block stylesheets %}
+    {{ parent() }}
+    {% stylesheets
+            'bundles/front/css/vendor/bootstrap.vertical-tabs.css'
+            'bundles/admin/plugins/bootstrap-fileupload/bootstrap-fileupload.css'
+    %}
+        <link rel="stylesheet" href="{{ asset_url }}">
+    {% endstylesheets %}
+
+            
+{% endblock %}
+
+
+
+{% block javascripts %}
+        {{ parent() }}
+        {% set max_file_size = get_max_size_file() %}
+        <script> var maxFileSize = {{max_file_size}}</script>
+        {% javascripts 
+        'bundles/admin/plugins/ckeditor-4.5/ckeditor-custom.js'
+        'bundles/admin/plugins/ckeditor/adapters/jquery.js'
+        'bundles/admin/plugins/bootstrap-fileupload/bootstrap-fileupload.js'
+         %}
+        <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+    
+        <script type="text/javascript">
+            
+            $(document).ready(function (){
+                
+                 $('.advert-edit').click(function(e){
+                     e.preventDefault();
+                     var href = $(this).attr('href');
+                     
+                     $.ajax({
+                        method: "GET",
+                        url: href,
+                    }).done(function (results) {
+                        $('#advert-show').fadeOut('slow', function(){
+                            $('#advert-edit').html(results);
+                              
+                            $(function () {
+                                CKEDITOR.replace('bundle_ecommercebundle_advert_description', {
+                                    extraPlugins: 'uploadimage,image2',
+                                    height: 150,
+
+                                    // Upload images to a CKFinder connector (note that the response type is set to JSON).
+                                    uploadUrl: '{{ core.server_base_url}}/bundles/admin/plugins/ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Files&responseType=json',
+
+                                    // Configure your file manager integration. This example uses CKFinder 3 for PHP.
+                                    filebrowserBrowseUrl: '{{ core.server_base_url}}/bundles/admin/plugins/ckfinder/ckfinder.html',
+                                    filebrowserImageBrowseUrl: '{{ core.server_base_url}}/bundles/admin/plugins/ckfinder/ckfinder.html?type=Images',
+                                    filebrowserUploadUrl: '{{ core.server_base_url}}/bundles/admin/plugins/ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Files',
+                                    filebrowserImageUploadUrl: '{{ core.server_base_url}}/bundles/admin/plugins/ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Images',
+
+                                    // The following options are not necessary and are used here for presentation purposes only.
+                                    // They configure the Styles drop-down list and widgets to use classes.
+
+                                    stylesSet: [
+                                            { name: 'Narrow image', type: 'widget', widget: 'image', attributes: { 'class': 'image-narrow' } },
+                                            { name: 'Wide image', type: 'widget', widget: 'image', attributes: { 'class': 'image-wide' } }
+                                    ],
+
+                                    // Load the default contents.css file plus customizations for this sample.
+                                    //contentsCss: [ CKEDITOR.basePath + 'contents.css', 'assets/css/widgetstyles.css' ],
+
+                                    // Configure the Enhanced Image plugin to use classes instead of styles and to disable the
+                                    // resizer (because image size is controlled by widget styles or the image takes maximum
+                                    // 100% of the editor width).
+                                    image2_alignClasses: [ 'image-align-left', 'image-align-center', 'image-align-right' ],
+                                    image2_disableResizer: true
+                                });
+                                $.getScript('/bundles/admin/plugins/bootstrap-fileupload/bootstrap-fileupload.js', function( data, textStatus, jqxhr ) {
+                                    console.log( data ); // Data returned
+                                    console.log( textStatus ); // Success
+                                    console.log( jqxhr.status ); // 200
+                                    console.log( "Load was performed." );
+                                  });
+                                 
+                            });
+                        });
+                        
+                    });
+                     
+                 });
+                
+                $('#edit-profile').click(function(){
+                    $('.profile-content').fadeOut('slow', function(){
+                        $('#edit_content').fadeIn('slow');
+                    });
+                });
+                $('.profile-back').click(function(){
+                    $('#edit_content').fadeOut('slow', function(){
+                        $('.profile-content').fadeIn('slow');
+                    }); 
+                });
+                $("#change-password").click(function(){
+                    $('.account').fadeOut("slow", function() {
+                        $('.edit_pass').fadeIn("slow");
+                    });
+                });
+                $("#back_pass").click(function(){
+                    $('.edit_pass').fadeOut("slow", function() {
+                        $('.account').fadeIn("slow");
+                    });
+                });
+                
+                $('#new-delivery').click(function(){
+                    $('.delivery-content').fadeOut('slow', function(){
+                        $('.delivery-new').fadeIn('slow');
+                    });
+                    $(this).fadeOut('slow');
+                });
+                $('.delivery-back').click(function(){
+                    $('.delivery-new').fadeOut('slow', function(){
+                        $('.delivery-content').fadeIn('slow');
+                    }); 
+                    $('#new-delivery').fadeIn('slow');
+                });
+                
+                
+                //delivery edit address
+                $('.edit-address').click(function(){
+                    var id = $(this).attr('id');
+                    $('.address').fadeOut('slow', function(){
+                        $('#address-'+id).fadeIn('slow');
+                    });
+                    $('#new-delivery').fadeOut('slow');
+                });
+                $('.delivery-edit-back').click(function(){
+                    var id = $(this).attr('data');
+                    $('#address-'+id).fadeOut('slow', function(){
+                        $('.address').fadeIn('slow');
+                    }); 
+                    $('#new-delivery').fadeIn('slow');
+                });
+                
+            });
+        </script>
+
+{% endblock %}

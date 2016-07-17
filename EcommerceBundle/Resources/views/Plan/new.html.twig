@@ -1,0 +1,74 @@
+{% extends "AdminBundle:Base:layout.html.twig" %}
+{% form_theme form 'AdminBundle:Form:fields.html.twig' %}
+
+
+{% block section %}plans{% endblock %}
+
+{% block content %}
+    
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <h1>
+        {{ "new.plan" | trans }}
+        <small></small>
+      </h1>
+      <ol class="breadcrumb">
+        <li><a href="{{ path('admin_default_index') }}"> <i class="ion-home"></i>  {{ "home" | trans }}</a></li>
+        <li><a href="{{ path('ecommerce_plan_index') }}">{{ "plan.plural" | trans }}</a></li>
+      </ol>
+    </section>
+      
+      
+    <section class="content">
+      <div class="row">
+        <div class="col-xs-12">
+            <div class="box box-info">
+                <!-- form start -->
+                <form action="{{ path('ecommerce_plan_create') }}" method="post" {{ form_enctype(form) }} class="form-horizontal form-row-seperated">
+                    <div class="box-body">
+                        <div class="help alert alert-warning">
+                             <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                            Los planes de paypal se cobran al final del ciclo del servicio o sea que "no se paga por adelantado", por lo que si queremos cobrar una suma ni bien aceptado el plan debemos incluir un valor en Tarifa de inscripción. Ej:<br>
+                            <ul>
+                                <li>
+                                    <b>1€</b> cada <b>dia</b> durante <b>1 semana</b>, sin periodo de prueba (cobrando desde el momento de la inscripción)=> tarifa de incrp.(1), frecuencia(dias), intervalo de frec.(1), ciclos(7), precio(1) <b><i>(Aquí se cobrarán 7 ciclos/dias + la inscripción)</i></b>
+                                </li>
+                                <li>
+                                    <b>10€</b> cada <b>mes</b> durante <b>1 año </b>, con <b>2 meses</b> de periodo de prueba gratuito dentro del año.
+                                   <ul>
+                                        <li>tarifa de incrp.(0), frecuencia(mes), intervalo de frec.(1), ciclos(10), precio(10) </li>
+                                        <li>frec. período/prueba(mes), intervalo período/prueba(1), ciclos preíodo/prueba(2), pecio período/prueba(0)</li>
+                                   </ul>
+                                </li>
+                            <ul>
+                        </div>
+                        {{ include('EcommerceBundle:Plan:_form.html.twig', { form: form }) }}
+                    </div><!-- /.box-body -->
+                    <div class="box-footer">
+                        <div class="col-sm-2"></div>
+                        <div class="col-sm-10">
+                            <button type="submit" class="btn btn-primary btn-flat"><i class="ion-checkmark"></i> {{ "save" | trans }}</button>
+                            <a href="{{ path('ecommerce_plan_index') }}" class="btn btn-default btn-flat">{{ "cancel.singular" | trans }}</a>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </section>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+
+    <script>
+        jQuery(document).ready(function() {
+            
+             
+            $('.trial-container .iCheck-helper').click(function(){
+                 $('#trial').fadeToggle('slow');
+            });
+            
+        });
+    </script>
+{% endblock %}

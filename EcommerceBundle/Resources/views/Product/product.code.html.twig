@@ -1,0 +1,14 @@
+<page backcolor="#FEFEFE" >
+    <bookmark title="Lettre" level="0" ></bookmark>
+    <div style="width:595px; height: 542px; margin-left: 60px; padding-top: 400px; background:url({{core.server_base_url}}{{asset('/bundles/front/images/cupon_descuento.png')}}) no-repeat">
+        <div style="width: 350px; height:190px; padding-top: 50px; margin-left: 130px;">
+            <div style="font-size: 14px; color: #2b2f3b; text-align: center; padding: 1px;">{{code}}</div>
+            <div style="font-size: 14px; color: #404656; text-align: center; padding: 1px;">Lugar de recogida</div>
+            <div style="font-size: 14px; color: #404656; text-align: center; padding: 1px;">{{actor.name | upper}}</div>
+            <div style="font-size: 14px; color: #404656; text-align: center; padding: 1px;">{{actor.address | upper}}</div>
+            <div style="font-size: 14px; color: #404656; text-align: center; padding: 1px;">{% if actor.state.name is defined %}{{actor.state.name | upper}},{% endif %} ESPAÑA</div>
+            <div style="font-size: 14px; color: #404656; text-align: center; padding: 1px;">{{actor.postalCode}} </div>
+            <div style="font-size: 14px; color: #404656; text-align: center; padding: 1px;">Ver ubicación en <a href="http://maps.google.com?q={{ actor.latitude }},{{ actor.longitude }}" target="_blank">google maps</a></div>
+        </div>
+    </div>
+</page>

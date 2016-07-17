@@ -1,0 +1,202 @@
+{% extends core['extended_layout'] ? core['extended_layout'] : 'CoreBundle:Base:base.layout.html.twig' %}
+
+{% block breadcrumb %}
+    {% if not is_mobile() %}
+        <div class="col-md-12 col-xs-12">
+            <ol class="breadcrumb">
+                <li ><a href="/">Inicio</a></li>
+                <li class="active"><a href="{{path('ecommerce_checkout_summary')}}">Detalle y pago</a></li>
+            </ol>
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block  content %}
+    <div class="container">
+        <div class="row summary summary-mobile">
+  
+                    {% if is_mobile() and not is_tablet() %}
+                        <div class="col-xs-6"></div>
+                        <div class="col-xs-6 stepSummary">
+                            {% include 'EcommerceBundle:Checkout:steps.html.twig' with {'step': 'pay'}  %}
+                        </div>
+                        <div class="col-md-6 col-xs-12">
+                            <h1>Detalle y Pago</h1>
+                            <div>Mira los detalles y agrega un metodo de pago</div> 
+                        </div>
+                        
+                    {% else %}
+                        
+                        <div class="col-md-6">
+                            <h1 class="title">
+                                Detalle y Pago
+                            </h1>
+                            <div class="subtitle-section">Mira los detalles y agrega un metodo de pago</div>
+                        </div>
+                        <div class="col-md-6">
+                            {% include 'EcommerceBundle:Checkout:steps.html.twig' with {'step': 'pay'}  %}
+                        </div>
+                        <div style="clear: both"></div>
+                        
+                    {% endif %}
+                    
+                
+                {% block content_body %}
+                    <!--content-->
+                    <div class="col-md-1"></div>
+                    {% if is_tablet() %}
+                        <div class="col-md-12 container-content" id="summary" >
+                    {% else %}
+                        <div class="col-md-10 col-xs-12 container-content" id="summary" >
+                    {% endif %}
+                        
+                                           
+                        <h3>{{ "checkout.details" | trans }}</h3>
+                        <div class="container-table-summary">
+                            {% if is_tablet() %}
+                                {% include 'EcommerceBundle:Checkout:summary.table.html.twig' %}
+                            {% elseif is_mobile() %} 
+                                {% include 'EcommerceBundle:Checkout:summary.table.mobile.html.twig' %}
+                            {% else %}
+                                {% include 'EcommerceBundle:Checkout:summary.table.html.twig' %}
+                            {% endif %}
+
+                        </div>
+                        
+                  
+                        <div class="row">
+                            <div class="col-sm-6 col-xs-12 address">
+                                <div >
+                                    <h3>{{ "account.billing.info" | trans }}</h3>
+                                    <div class="col-sm-12">
+                                        <div class="col-sm-12">
+                                            <p>{{ include('EcommerceBundle:Checkout:addresses/_billing.html.twig') }}</p>
+                                            <p><a href="mailto:{{ app.user.email }}" title="{{ app.user.email }}">{{ app.user.email }}</a></p>
+                                            <a href="{{ path('ecommerce_checkout_deliveryinfo') }}" class="orange-btn" title="{{ "account.modify.info" | trans }}">{{ "account.modify.info" | trans }}</a>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-xs-12 address">
+                                <div >
+                                    <h3>{{ "account.delivery.info" | trans }}</h3>
+                                    <div class="col-sm-12">
+                                        <div class="col-sm-12">
+                                            <p>{{ include('EcommerceBundle:Checkout:addresses/_delivery.html.twig') }}</p>
+                                            <p>
+                                                <b>{{ "account.chosen.schedule" | trans }}</b>: {{ delivery.schedules[delivery.deliveryPreferredSchedule] | trans }}<br />
+                                                <b>{{ "account.phone.singular" | trans }}</b>: {{ delivery.deliveryPhone }}
+                                                {{ delivery.deliveryPhone2 is not null ? '- ' ~ delivery.deliveryPhone2 }}
+                                                {% if delivery.notes is not null %}
+                                                    <br /><br />
+                                                    <b>{{ "carrier.note" | trans }}</b>: {{ delivery.notes }}
+                                                {% endif %}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <br/>
+
+                            <div class="col-sm-12 col-xs-12 pay">
+                                <div >
+                                    <h3>{{ "checkout.payment.method" | trans }}</h3>
+                                    
+                                    <div class="col-sm-12 col-xs-12">
+                                        <div class="form-group ">
+                                            <div>
+                                                <div class="radio">
+                                                    <label>
+                                                        <input style="margin-top: 0px" type="radio" name="payment-method" class="radio" value="paypal_cc" data-label="{{ "checkout.credit.card.singular" | trans }}" checked="checked" /> Tarjeta de crédito<br/>
+                                                    </label>  
+                                                </div>
+                                                <div class="radio">
+                                                    <label>
+                                                        <input style="margin-top: 0px" type="radio" name="payment-method" class="radio" value="cc" data-label="{{ "checkout.credit.card.singular" | trans }}" /> Tarjeta de crédito (pasarela de pago "Banco X")
+                                                        <img style="height: 21px;" src="{{ asset('bundles/front/images/payment-options.png') }}" alt="{{ "checkout.payment.options" | trans }}" />
+                                                    </label>  
+                                                </div>
+                                                <div class="radio">
+                                                    <label>
+                                                        <input style="margin-top: 0px" type="radio" name="payment-method" class="radio" value="paypal" data-label="PayPal" /> PayPal
+                                                    </label>  
+                                                </div>
+                                                <div class="radio">
+                                                    <label>
+                                                        <input style="margin-top: 0px" type="radio" name="payment-method" class="radio" value="transfer" data-label="{{ "checkout.bank.transfer" | trans }}" /> Transferencia bancaria
+                                                    </label> 
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                                    
+                                    
+                            <div class="col-sm-12 col-xs-12 pay">
+                                <div >
+                                    <h3>{{ "checkout.payment.pay" | trans }}</h3>
+                                    <div class="col-sm-12 col-xs-12">
+                                        {{ include('EcommerceBundle:Checkout:payment/_paypal_credit_card_form.html.twig', { form: redsys_form }) }}
+                                        {{ include('EcommerceBundle:Checkout:payment/_redsys_form.html.twig', { form: redsys_form }) }}
+                                        {{ include('EcommerceBundle:Checkout:payment/_paypal_form.html.twig', { form: paypal_form }) }}
+                                        {{ include('EcommerceBundle:Checkout:payment/_transfer_form.html.twig', { form: transfer_form }) }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-1"></div>
+                    <!--content End-->
+                 {% endblock %}
+        
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block javascripts %}
+    {{ parent() }}
+
+    {#% javascripts
+        'bundles/core/plugins/select2/select2.min.js'
+        filter='?yui_js' %}
+        <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %#}
+
+    <script>
+        jQuery(document).ready(function() {
+            $('input[name="payment-method"]').on('change', function() {
+                if ('cc' == $(this).val()) {
+                    $('#payment-paypal').addClass('hidden');
+                    $('#payment-transfer').addClass('hidden');
+                    $('#payment-paypal-cc').addClass('hidden');
+                    $('#payment-cc').removeClass('hidden');
+                } else if ('paypal' == $(this).val()) {
+                    $('#payment-cc').addClass('hidden');
+                    $('#payment-transfer').addClass('hidden');
+                    $('#payment-paypal-cc').addClass('hidden');
+                    $('#payment-paypal').removeClass('hidden');
+                } else if ('transfer' == $(this).val()) {
+                    $('#payment-cc').addClass('hidden');
+                    $('#payment-paypal').addClass('hidden');
+                    $('#payment-paypal-cc').addClass('hidden');
+                    $('#payment-transfer').removeClass('hidden');
+                } else if ('paypal_cc' == $(this).val()) {
+                    $('#payment-cc').addClass('hidden');
+                    $('#payment-paypal').addClass('hidden');
+                    $('#payment-transfer').addClass('hidden');
+                    $('#payment-paypal-cc').removeClass('hidden');
+                }
+            });
+
+            
+
+           
+        });
+    </script>
+{% endblock %}

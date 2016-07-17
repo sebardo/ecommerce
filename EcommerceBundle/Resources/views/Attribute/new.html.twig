@@ -1,0 +1,64 @@
+{% extends "AdminBundle:Base:layout.html.twig" %}
+{% form_theme form 'AdminBundle:Form:fields.html.twig' %}
+
+{% block section %}attributes{% endblock %}
+
+{% block content %}
+    
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <h1>
+        {{ "new.attribute" | trans }}
+        <small></small>
+      </h1>
+      <ol class="breadcrumb">
+         <li><a href="{{ path('admin_default_index') }}"> <i class="ion-home"></i>  {{ "home" | trans }}</a></li>
+        <li><a href="javascript:">{{ "catalogue" | trans }}</a></li>
+        <li><a href="{{ path('ecommerce_attribute_index') }}">{{ "attribute.plural" | trans }}</a></li>
+        <li><a href="{{ path('ecommerce_attribute_new') }}">{{ "new.singular.2" | trans }}</a></li>
+      </ol>
+    </section>
+      
+    <section class="content">
+      <div class="row">
+        <div class="col-xs-12">
+            <div class="box box-info">
+                <!--<div class="box-header with-border">
+                  <h3 class="box-title">Información</h3>
+                </div>--><!-- /.box-header -->
+                <!-- BEGIN FORM-->
+                <form action="{{ path('ecommerce_attribute_create') }}" method="post" {{ form_enctype(form) }} class="form-horizontal form-row-seperated">
+                    <div class="box-body">
+                        {{ include('EcommerceBundle:Attribute:_form.html.twig', { form: form }) }}
+                    </div>
+                    <!-- END FORM-->
+                    <div class="box-footer">
+                        <div class="col-sm-2"></div>
+                        <div class="col-sm-10">
+                            <button type="submit" class="btn btn-primary btn-flat"><i class="ion-checkmark"></i> {{ "save" | trans }}</button>
+                            <a href="{{ path('ecommerce_attribute_index') }}" class="btn btn-default btn-flat">{{ "cancel.singular" | trans }}</a>
+                         </div>
+                    </div><!-- /.box-footer -->
+                </form>
+            </div>
+        </div>
+    </section>  
+    
+
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+
+    <!-- Page script -->
+    <script>
+
+        jQuery(document).ready(function() {
+            $('#ecommercebundle_attributetype_category').select2({
+                placeholder: "{{ "category.choose" | trans }}",
+                allowClear: true
+            });
+   
+        });
+    </script>
+{% endblock %}

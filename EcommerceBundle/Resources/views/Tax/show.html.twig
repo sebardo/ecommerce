@@ -1,0 +1,76 @@
+{% extends "AdminBundle:Base:layout.html.twig" %}
+
+{% block section %}taxes{% endblock %}
+
+{% block content %}
+    
+    
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <h1>
+        {{ "tax.singular" | trans }} #{{ entity.id }}
+        <small></small>
+      </h1>
+      <ol class="breadcrumb">
+        <li><a href="{{ path('admin_default_index') }}"> <i class="ion-home"></i>  {{ "home" | trans }}</a></li>
+        <li><a href="{{ path('ecommerce_tax_index') }}">{{ "tax.plural" | trans }}</a></li>
+      </ol>
+    </section>  
+      
+    <section class="content">
+      <div class="row">
+          <div class="col-md-12">
+              <div class="box">
+                  <div class="box-body show-tables">
+                       <table class="table">
+                            <tbody>
+                            <tr>
+                                <td>{{ "tax.singular" | trans }}</td>
+                                <td>{{ entity.id }}</td>
+                            </tr>
+                            <tr>
+                                <td>{{ "tax.vat" | trans }}</td>
+                                <td>{{ entity.tax }}</td>
+                            </tr>
+                            <tr>
+                                <td>{{ "tax.type" | trans }}</td>
+                                <td>{{ entity.type }}</td>
+                            </tr>
+
+                            </tbody>
+                        </table>
+                  </div>
+                  <div class="box-footer">
+                        <div class="col-sm-12"> 
+                            <a href="{{ path('ecommerce_tax_edit', { id: entity.id }) }}" class="btn btn-primary btn-flat"><i class="ion-compose"></i> {{ "edit.singular" | trans }}</a>
+                            <button type="submit" class="btn btn-danger btn-flat pull-right" id="delete-btn">{{ "delete" | trans }}</button>
+                            <form id="delete-entity" action="{{ path('ecommerce_tax_delete', { id: entity.id }) }}" method="post">
+                                <input type="hidden" name="_method" value="DELETE" />
+                                {{ form_widget(delete_form) }}
+                            </form>
+                        </div>
+                  </div><!-- /.box-footer -->
+              </div>
+          </div>
+      </div>
+    </section>
+ 
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+
+    <script>
+        jQuery(document).ready(function() {
+            $('#delete-btn').on('click', function(e) {
+                e.preventDefault();
+
+                if (confirm('{{ "are.you.sure" | trans }}')) {
+                    $('#delete-entity').submit();
+                }
+            });
+
+           
+        });
+    </script>
+{% endblock %}

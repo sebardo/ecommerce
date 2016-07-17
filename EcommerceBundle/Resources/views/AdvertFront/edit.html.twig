@@ -1,0 +1,18 @@
+
+{% form_theme form 'EcommerceBundle:AdvertFront:fields.html.twig' %}
+<form name="advert-form-front" action="{{ path('ecommerce_advertfront_update', { id: entity.id }) }}" method="post" {{ form_enctype(form) }} class="form-horizontal form-row-seperated">
+    <div class="box-body">
+        {{ include('EcommerceBundle:Advert:_form.html.twig', { form: form, edit_front: true }) }}
+    </div>    
+    <input type="hidden" name="_method" value="PUT" />
+
+    <div class="box-footer">
+        <div class="col-sm-2"></div>
+        <div class="col-sm-10">
+            <button  class="advert-buttons" type="submit"><i class="ion-checkmark"></i> {{ "save" | trans }}</button>
+            <a class="advert-buttons" href="{{ path('front_profile_index', { 'adverts': 1 }) }}"><i class="ion-trash-a"></i> {{ "cancel.singular" | trans }}</a>
+        </div>
+    </div>
+</form>
+        
+                

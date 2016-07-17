@@ -1,0 +1,48 @@
+<table class="table table-bordered table-hover">
+    <thead>
+        <tr>
+            <th>{{ "product.singular" | trans }}</th>
+            <td class="code">Codigos postales</td>
+            <td class="unit">Precio unitario</td>
+            <td class="day">Dias</td>
+            <td class="section">Secciones</td>
+            <th>{{ "total.singular" | trans }}</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in entity.items %}
+            <tr>
+                <td style="text-align: left"><a href="{{ path('ecommerce_advert_show', { id: item.advert.id }) }}">{{ item.advert.title }}</a></td>
+                <td>{{ item.quantity }}</td>
+                <td>{{ item.basePrice }}</td>
+                <td>{{ item.advert.days }}</td>
+                <td>{{ item.advert.located | length }}</td>
+                <td>{{ entity.items.first.totalPrice | price }}</td>
+            </tr>
+        {% endfor %}
+        <tr>
+            <td>{{ "total.sub" | trans }}</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td><b>{{ entity.items.first.totalPrice | price }}</b></td>
+        </tr>
+        <tr>
+           <td>{{ entity.vat }}% {{ "vat" | trans }}</td>
+           <td></td>
+           <td></td>
+           <td></td>
+            <td></td>
+           <td>{{ totals.vat | price }}</td>
+       </tr>
+        <tr>
+            <td>{{ "total.singular" | trans }}</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td><b>{{ entity.totalPrice | price }}</b></td>
+        </tr>
+    </tbody>
+</table>

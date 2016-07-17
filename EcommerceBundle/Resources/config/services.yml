@@ -1,0 +1,36 @@
+# import it in config.yml
+services:
+    ecommerce_extension:
+        class: EcommerceBundle\Twig\EcommerceExtension
+        arguments:
+            - { parameters: %core% }
+        calls:
+            - [setContainer, [@service_container] ]
+        tags:
+            - { name: twig.extension }
+            
+    checkout_manager:
+        class: EcommerceBundle\Service\CheckoutManager
+        arguments:
+            - { parameters: %core% }
+            - @session
+            - @doctrine.orm.entity_manager
+            - @cart_provider
+            - @security.context
+            - @router
+            - @kernel
+            - @core.mailer
+            - @phpexcel
+
+    cart_provider:
+        class: EcommerceBundle\Service\CartProvider
+        arguments:
+            - @cart_storage
+            - @doctrine.orm.entity_manager
+  
+    cart_storage:
+        class: EcommerceBundle\Service\CartStorage
+        arguments:
+            - @session
+ 
+     

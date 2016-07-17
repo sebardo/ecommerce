@@ -1,0 +1,86 @@
+<!-- Large modal
+<button type="button" id="terms " class="btn btn-primary" data-toggle="modal" data-target=".bs-example-modal-lg">Large modal</button>
+ -->
+<div class="modal fade bs-example-modal-lg advert-modal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+    <div class="modal-dialog modal-lg" style="margin: 80px auto;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h1 class="modal-title title" id="myModalLabel" >Identificación</h1>
+      </div>
+        <div class="modal-body"style="overflow: hidden">
+        <div class="">
+          <div class="{% if is_tablet() %}col-sm-5{% elseif is_mobile() %}col-sm-4{% else %}col-sm-4{%endif%}" style="text-align: center">
+            <div class="container-login">
+                <h2 style="font-size: 22px;">Ya estoy registrado</h2>
+                 
+                <div class="alert alert-danger error-login" style="display: none;padding: 15px 5px;">Su email o contraseña son incorrectos</div>
+                 
+                <form id="login-form" action="{{ path('login_check') }}" method="post">
+                    <div class="form-group">
+                        <div>
+                            <input class="form-control" type="text" placeholder="Ingresa tu email" name="_username" id="_username" value="" required="required">
+                        </div>
+                    </div>    
+                    <div class="form-group">
+                        <div>
+                             <input class="form-control"  placeholder="Ingresa tu contraseña" type="password" name="_password" id="_password" required="required">
+                        </div>
+                    </div>       
+                    <div>
+                        <button type="submit" class="btn purple-black pull-right">
+                            Ingresar <span  id="loading" class="ion ion-loop"></span>
+                        </button>
+                        <div style="display: inline-block">
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" class="minimal" value=""> No cerrar sesión 
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pass-forgot">
+                        <a class="forgot-passwd" href="{{ path('core_actor_recovery') }}" title="No recuerdo mi contraseña">No recuerdo mi contraseña</a>
+                    </div>
+                </form>
+            </div>
+          </div>
+
+          {% if is_mobile() and not is_tablet() %}
+            <div class="separador col-xs-12 grey margin-bottom-40px"></div> 
+            <div class="col-xs-12 soy-nuevo">
+                <p class="pnuevo">Si aún no eres usuario, <br>
+                    y prefieres darte de alta por email, <br>
+                    completa el formulario.</p>
+
+                <div class="half">
+                    {% if is_mobile() and not is_tablet() %}
+                        {% include 'FrontBundle:Registration:_form.brand.html.twig' with {'form': form_reg} %}
+                    {% else %}
+                        {% include 'FrontBundle:Registration:_form.brand.html.twig' with {'form': form_reg} %}
+                    {% endif %}
+                </div>
+            </div> 
+        {% else %}
+
+        <div class="col-sm-1"></div>            
+        <div class="{% if is_tablet() %}col-sm-7{% elseif is_mobile() %}col-sm-8{% else %}col-sm-8{%endif%} soy-nuevo ">
+            <h2 style="font-size: 22px;">Soy nuevo en el sitio <a style="float: right;color: #444" href="{{ path('front_home_packs')}}">Registro de Ópticas</a></h2>
+            <div class="half">
+                {% if is_mobile() and not is_tablet() %}
+                    {% include 'FrontBundle:Registration:_form.brand.html.twig' with {'form': form_reg} %}
+                {% else %}
+                    {% include 'FrontBundle:Registration:_form.brand.html.twig' with {'form': form_reg} %}
+                {% endif %}
+
+            </div>
+        </div>
+        {% endif %}    
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+ 

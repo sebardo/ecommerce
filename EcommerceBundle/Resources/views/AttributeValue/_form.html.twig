@@ -1,0 +1,12 @@
+{{ form_errors(form) }}
+
+{{ form_row(form.name, { label: 'name' }) }}
+
+{% if entity is defined and entity.image is not null %}
+    {{ form_row(form.image.file, { div_class: 'no-bottom', image: entity.image.path }) }}
+{% else %}
+    {{ form_row(form.image.file, { div_class: 'no-bottom' }) }}
+{% endif %}
+
+
+{{ form_rest(form) }}

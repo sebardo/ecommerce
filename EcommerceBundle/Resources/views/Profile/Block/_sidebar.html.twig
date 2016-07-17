@@ -1,0 +1,66 @@
+{% if is_tablet()%}
+     <!-- Nav tabs -->
+    <ul class="nav nav-tabs tabs-left">
+        <li class="{{ not app.request.get('billing') and
+            not app.request.get('delivery') and
+            not app.request.get('transactions') and
+            not app.request.get('adverts')  ? 'active'}}"><a href="#profile_tab" data-toggle="tab">{{ "account.user.profile" | trans }}</a></li>
+        <li class="{{ app.request.get('billing') ? 'active' }}"><a href="#billing_tab" data-toggle="tab">{{ "account.billing.info" | trans }}</a></li>
+        <li class="{{ app.request.get('delivery') ? 'active' }}"><a href="#delivery_tab" data-toggle="tab">{{ "account.delivery.info" | trans }}</a></li>
+        <li class="{{ app.request.get('transactions') ? 'active' }}"><a href="#transactions_tab" data-toggle="tab">{{ "transaction.plural" | trans }}</a></li>
+        <li class="{{ app.request.get('adverts') ? 'active' }}"><a href="#adverts_tab" data-toggle="tab">{{ "advert.plural" | trans }}</a></li>
+    </ul>
+{% elseif is_mobile() %}
+     
+    <!-- boton para desplegar el collapse en mobile -->
+    <button class="btn btn-info col-xs-12 btnFilters" type="button" data-toggle="collapse" data-target="#collapseProfileMobile" aria-expanded="false" aria-controls="collapseProfileMobile">
+        MENU DE USUARIO
+    </button>
+
+    <!--<div class="collapse" id="collapseProfileMobile">-->
+                
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs tabs-left collapse" id="collapseProfileMobile">
+        <li class="{{ not app.request.get('billing') and
+            not app.request.get('delivery') and
+            not app.request.get('transactions') and 
+            not app.request.get('adverts')  ? 'active'}}">
+            <button class="col-xs-12 buttonProfileTab" type="button" data-toggle="collapse" data-target="#collapseProfileMobile" aria-expanded="false" aria-controls="collapseProfileMobile">
+                <a href="#profile_tab" data-toggle="tab">{{ "account.user.profile" | trans }}</a>
+            </button>
+        </li>
+        <li class="{{ app.request.get('billing') ? 'active' }}">
+            <button class="col-xs-12 buttonProfileTab" type="button" data-toggle="collapse" data-target="#collapseProfileMobile" aria-expanded="false" aria-controls="collapseProfileMobile">
+                <a href="#billing_tab" data-toggle="tab">{{ "account.billing.info" | trans }}</a>
+            </button>
+        </li>    
+        <li class="{{ app.request.get('delivery') ? 'active' }}">
+            <button class="col-xs-12 buttonProfileTab" type="button" data-toggle="collapse" data-target="#collapseProfileMobile" aria-expanded="false" aria-controls="collapseProfileMobile">
+                <a href="#delivery_tab" data-toggle="tab">{{ "account.delivery.info" | trans }}</a>
+            </button>    
+        </li>
+        <li class="{{ app.request.get('transactions') ? 'active' }}">
+            <button class="col-xs-12 buttonProfileTab" type="button" data-toggle="collapse" data-target="#collapseProfileMobile" aria-expanded="false" aria-controls="collapseProfileMobile">
+                <a href="#transactions_tab" data-toggle="tab">{{ "transaction.plural" | trans }}</a>
+            </button>    
+        </li>
+        <li class="{{ app.request.get('adverts') ? 'active' }}">
+            <button class="col-xs-12 buttonProfileTab" type="button" data-toggle="collapse" data-target="#collapseProfileMobile" aria-expanded="false" aria-controls="collapseProfileMobile">
+                <a href="#adverts_tab" data-toggle="tab">{{ "advert.plural" | trans }}</a>
+            </button>    
+        </li>
+    </ul>
+    <!--</div>-->
+{% else %}
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs tabs-left">
+        <li class="{{ not app.request.get('billing') and
+            not app.request.get('delivery') and
+            not app.request.get('transactions') and
+            not app.request.get('adverts')  ? 'active'}}"><a href="#profile_tab" data-toggle="tab">{{ "account.user.profile" | trans }}</a></li>
+        <li class="{{ app.request.get('billing') ? 'active' }}"><a href="#billing_tab" data-toggle="tab">{{ "account.billing.info" | trans }}</a></li>
+        <li class="{{ app.request.get('delivery') ? 'active' }}"><a href="#delivery_tab" data-toggle="tab">{{ "account.delivery.info" | trans }}</a></li>
+        <li class="{{ app.request.get('transactions') ? 'active' }}"><a href="#transactions_tab" data-toggle="tab">{{ "transaction.plural" | trans }}</a></li>
+        <li class="{{ app.request.get('adverts') ? 'active' }}"><a href="#adverts_tab" data-toggle="tab">{{ "advert.plural" | trans }}</a></li>
+    </ul>
+{% endif %}

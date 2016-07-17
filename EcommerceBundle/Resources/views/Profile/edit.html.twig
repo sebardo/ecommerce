@@ -1,0 +1,107 @@
+{% extends core['extended_layout'] ? core['extended_layout'] : 'CoreBundle:Base:base.layout.html.twig' %}
+
+{% block content %}
+    <div class="container">
+        <div class="row core-row profile user" >
+           
+                
+                <div class="col-md-3 col-xs-12 profile-img ">
+                    <img src="{{ get_profile_image() }}">
+                    {% include 'FrontBundle:Profile:_profile.image.upload.html.twig' %}
+
+                </div>
+                <div class="col-md-9 col-xs-12">
+                    <h1 class="title">
+                        {{app.user.fullName}}
+                    </h1>
+                    <div class="subtitle-section">
+
+                       En feugiat consequat nisl in rhoncus. In faucibus lectus sit amet ligula venenatis fermentum. Aliquam libero dui, condimentum viverra nulla vitae, dignissim tempus ipsum. Aliquam lorem velit, cursus at ultrices in, volutpat ac tortor. Suspendisse potenti. Sed facilisis rhoncus mi, vel pulvinar nisl condimentum id. Praesent metus felis, sodales quis consequat interdum, maximus id felis. Morbi at libero ullamcorper, pulvinar turpis quis, ullamcorper nibh.
+                    </div> 
+                </div>
+                 
+                 <div style="clear: both"></div>
+                  
+                {% include 'CoreBundle:Base:alert.messages.html.twig'%}
+                
+               
+
+                <div class="col-xs-3" style="padding-right: 0px"> <!-- required for floating -->
+                    <!-- Nav tabs -->
+                    <ul class="nav nav-tabs tabs-left">
+                        {% set section = 'profile'%}
+                       <li {%if section == 'profile'%}class="active"{%endif%}><a href="#profile_tab" data-toggle="tab">{{ "account.user.profile" | trans }}</a></li>
+                        <li {%if section == 'billing'%}class="active"{%endif%}><a href="#billing_tab" data-toggle="tab">{{ "account.billing.info" | trans }}</a></li>
+                        <li {%if section == 'delivery'%}class="active"{%endif%}><a href="#invest_tab" data-toggle="tab">{{ "account.delivery.info" | trans }}</a></li>
+                        <li {%if section == 'transactions'%}class="active"{%endif%}><a href="#transactions_tab" data-toggle="tab">{{ "transaction.plural" | trans }}</a></li>
+
+                    </ul>
+                </div>
+                
+                
+                
+                <div class="col-xs-9" style="margin-top: 0px;border-top: 1px solid #01acc6;">
+                    <!-- Tab panes -->
+                    <div class="tab-content">
+                        <div class="tab-pane {%if section == 'profile'%}active{%endif%}" id="profile_tab">
+                            <div class="portlet box custom">
+                                <div class="portlet-body profile">
+                                    {% include "EcommerceBundle:Profile:edit_content.html.twig" %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane {%if section == 'billing'%}active{%endif%}" id="billing_tab">
+                            <div class="portlet box custom">
+                                <div class="portlet-body">
+                                     
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane {%if section == 'delivery'%}active{%endif%}" id="invest_tab">
+                            <div class="portlet box custom">
+                                <div class="portlet-body">
+                                     
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane {%if section == 'transactions'%}active{%endif%}" id="transactions_tab">
+                            <div class="portlet box custom">
+                                <div class="portlet-body">
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>  
+                <!--END TABS-->
+
+        </div>
+    </div>
+
+{% endblock %}
+
+
+{% block stylesheets %}
+    {{ parent() }}
+    {% stylesheets
+            'bundles/front/css/vendor/bootstrap.vertical-tabs.css'
+    %}
+        <link rel="stylesheet" href="{{ asset_url }}">
+    {% endstylesheets %}
+
+            
+{% endblock %}
+
+{% block javascripts %}
+        {{ parent() }}
+     
+        <script type="text/javascript">
+            $(document).ready(function (){
+                
+            });
+        </script>
+
+{% endblock %}

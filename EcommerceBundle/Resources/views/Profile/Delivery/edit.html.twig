@@ -1,0 +1,26 @@
+{% extends core['extended_layout'] ? core['extended_layout'] : 'CoreBundle:Base:base.layout.html.twig' %}
+
+{% block content %}
+    <div id="delivery">
+        <div class="col-md-12 container-content">
+            <div class="col-sm-3">
+                {{ include('EcommerceBundle:Profile/Block:_sidebar.html.twig', { section: 'delivery' }) }}
+            </div>
+
+            <div class="col-sm-9">
+                <div class="container-table-delivery">
+                    <h2>{{ 'account.address.edit' | trans }}</h2>
+                    <form method="post" action="{{ path('front_profile_editdelivery', { id: address.id }) }}" {{ form_enctype(form) }}>
+                    <div class="row space-bottom">
+                        {{ include('EcommerceBundle:Profile:Delivery/_form.html.twig', { form: form }) }}
+                    </div>
+
+                    <button class="btn "type="submit">{{ 'save' | trans }}</button>
+                </form>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+
+{% endblock %}

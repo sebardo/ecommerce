@@ -1,0 +1,11 @@
+{{ form_errors(form) }}
+
+{{ form_row(form.name, { label: 'name' }) }}
+{{ form_row(form.description, { label: 'description' }) }}
+{{ form_row(form.metaTitle, { label: 'meta.title'}) }}
+{{ form_row(form.metaDescription, { label: 'meta.description' }) }}
+{{ form_row(form.metaTags, { label: 'meta.tags' }) }}
+{{ form_row(form.parentCategory, { label: 'category.parent' }) }}
+{{ form_row(form.image.file, { div_class: 'no-bottom' }) }}
+
+{{ form_rest(form) }}

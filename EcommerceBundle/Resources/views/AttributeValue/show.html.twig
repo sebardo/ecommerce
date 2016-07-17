@@ -1,0 +1,80 @@
+{% extends "AdminBundle:Base:layout.html.twig" %}
+
+{% block section %}attributes{% endblock %}
+
+{% block content %}
+    
+    
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <h1>
+        {{ entity.name }}
+        <small></small>
+      </h1>
+      <ol class="breadcrumb">
+        <li><a href="{{ path('admin_default_index') }}"> <i class="ion-home"></i>  {{ "home" | trans }}</a></li>
+        <li><a href="javascript:">{{ "catalogue" | trans }}</a></li>
+       <li><a href="{{ path('ecommerce_attribute_index') }}">{{ "attribute.plural" | trans }}</a></li>
+        <li><a href="{{ path('ecommerce_attribute_show', { id: attribute.id }) }}">{{ attribute.name }}</a></li>
+        <li><a href="{{ path('ecommerce_attributevalue_index', { attributeId: attribute.id }) }}">{{ "value.plural" | trans }}</a></li>
+        <li><a href="{{ path('ecommerce_attributevalue_show', { attributeId: attribute.id, id: entity.id }) }}">{{ entity.name }}</a></li>
+      </ol>
+    </section>
+      
+    <section class="content">
+      <div class="row">
+          <div class="col-md-12">
+               <div class="box box-info">
+                   <div class="box-body show-tables">
+                        <table class="table">
+                            <tbody>
+                            <tr>
+                                <td>{{ "name" | trans }}</td>
+                                <td>{{ entity.name }}</td>
+                            </tr>
+                            <tr>
+                                <td>{{ "image.singular" | trans }}</td>
+                                <td>
+                                    {% if entity.image %}
+                                        <img width="200" src="{{ asset('uploads/images/' ~ entity.image) }}" alt="{{ entity.image }}" />
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="box-footer">
+                        <div class="col-sm-12">
+                            <a href="{{ path('ecommerce_attributevalue_edit', { attributeId: attribute.id, id: entity.id }) }}" class="btn btn-primary btn-flat"><i class="ion-compose"></i> {{ "edit.singular" | trans }}</a>
+                            <button type="submit" class="btn btn-danger btn-flat pull-right" id="delete-btn">{{ "delete" | trans }}</button>    
+                            <form id="delete-entity" action="{{ path('ecommerce_attributevalue_delete', { attributeId: attribute.id, id: entity.id }) }}" method="post">
+                                <input type="hidden" name="_method" value="DELETE" />
+                                {{ form_widget(delete_form) }}
+                            </form>
+                        </div>
+                    </div>
+                </div>
+          </div>
+      </div>
+    </section>
+              
+   
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+
+    <script>
+        jQuery(document).ready(function() {
+            $('#delete-btn').on('click', function(e) {
+                e.preventDefault();
+
+                if (confirm('{{ "are.you.sure" | trans }}')) {
+                    $('#delete-entity').submit();
+                }
+            });
+        });
+    </script>
+{% endblock %}

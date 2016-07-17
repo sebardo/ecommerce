@@ -1,0 +1,153 @@
+{% extends "AdminBundle:Base:layout.html.twig" %}
+
+{% block section %}plans{% endblock %}
+
+{% block content %}
+    
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <h1>
+        {{ "edit.singular" | trans }} {{ entity.name }}
+        <small></small>
+      </h1>
+      <ol class="breadcrumb">
+        <li><a href="{{ path('admin_default_index') }}"> <i class="ion-home"></i>  {{ "home" | trans }}</a></li>
+        <li><a href="{{ path('ecommerce_plan_index') }}">{{ "plan.plural" | trans }}</a></li>
+        <li><a href="{{ path('ecommerce_plan_show', { id: entity.id }) }}">{{ entity.name }}</a></li>
+      </ol>
+    </section>  
+      
+    <section class="content">
+      <div class="row">
+          <div class="col-md-12">
+               {% include 'CoreBundle:Base:alert.messages.html.twig' %}
+              <div class="box">
+                  <div class="box-body show-tables">
+                    <table class="table">
+                        <tbody>
+                            <tr>
+                                <td>Id</td>
+                                <td>{{ entity.id }} <a href="#" onclick="return false;"  id="plan-detail">Ver detalle</a>
+                                    <pre id="plan-detail-inner" style="display: none"></pre></td>
+                            </tr>
+                            <tr>
+                                <td>{{ 'plan.promotionUrl' | trans }}</td>
+                                <td><a href="{{ core.server_base_url}}/packs?promotionCode={{ entity.paypalId }}">{{ core.server_base_url}}/packs?promotionCode={{ entity.paypalId }}</a></td>
+                            </tr>
+                            <tr>
+                                <td>{{ 'name' | trans }}</td>
+                                <td>{{ entity.name }}</td>
+                            </tr>
+                            <tr>
+                                <td>{{ 'description' | trans }}</td>
+                                <td>{{ entity.description }}</td>
+                            </tr>
+                            
+                            <tr>
+                                <td>{{ 'plan.state' | trans }}</td>
+                                <td><span class="label {{(entity.state == 'ACTIVE') ? 'label-success' : 'label-default' }}">{{ entity.state | trans }}</span></td>
+                            </tr>
+                             <tr>
+                                <td>{{ 'plan.setupAmount' | trans }}</td>
+                                <td>{{ entity.setupAmount }}€</td>
+                            </tr>
+                            <tr>
+                                <td>{{ 'plan.type' | trans }}</td>
+                                <td>{{entity.amount}}€ cada {{entity.frequencyInterval}} {{entity.frequency | trans}} durante {{entity.cycles}} {{ entity.frequency | trans}}</td>
+                            </tr>
+                            <tr>
+                                <td>{{ 'plan.trial' | trans }}</td>
+                                <td>{% if entity.trialCycles > 0 %}{{entity.trialAmount}}€ cada {{entity.trialFrequencyInterval}} {{entity.trialFrequency | trans}} durante {{entity.trialCycles}} {{ entity.trialFrequency | trans}}{% else %}<span class="label label-danger">No</span>{% endif %}</td>
+                            </tr>
+                            
+                            <tr>
+                                <td>{{ "visible" | trans }}</td>
+                                <td>
+                                    {% if entity.visible %}
+                                        <span class="label label-success">{{ "yes" | trans }}</span>
+                                    {% else %}
+                                        <span class="label label-warning">{{ "no" | trans }}</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td>{{ "active" | trans }}</td>
+                                <td>
+                                    {% if entity.active %}
+                                        <span class="label label-success">{{ "yes" | trans }}</span>
+                                    {% else %}
+                                        <span class="label label-warning">{{ "no" | trans }}</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+                  <div class="box-footer">
+                        <div class="col-sm-12"> 
+                            {#<a href="{{ path('ecommerce_plan_edit', { id: entity.id }) }}" class="btn btn-primary btn-flat"><i class="ion-compose"></i> {{ "edit.singular" | trans }}</a>#}
+                            <button type="submit" class="btn btn-danger btn-flat pull-right" id="delete-btn">{{ "delete" | trans }}</button>
+                            <form id="delete-entity" action="{{ path('ecommerce_plan_delete', { id: entity.id }) }}" method="post">
+                                <input type="hidden" name="_method" value="DELETE" />
+                                {{ form_widget(delete_form) }}
+                            </form>
+                        </div>
+                  </div><!-- /.box-footer -->
+              </div>
+          </div>
+      </div>
+    </section>
+ 
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+
+    <script>
+        
+        function output(id, data) {
+            $('#'+id).html(data);
+        }
+
+        function syntaxHighlight(json) {
+            json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+                var cls = 'number';
+                if (/^"/.test(match)) {
+                    if (/:$/.test(match)) {
+                        cls = 'key';
+                    } else {
+                        cls = 'string';
+                    }
+                } else if (/true|false/.test(match)) {
+                    cls = 'boolean';
+                } else if (/null/.test(match)) {
+                    cls = 'null';
+                }
+                return '<span class="' + cls + '">' + match + '</span>';
+            });
+        }
+        
+         var plan = {{paypalPlan|json_encode|raw }};
+        var str = JSON.stringify(plan, undefined, 4);
+        output('plan-detail-inner', syntaxHighlight( str));
+        
+        jQuery(document).ready(function() {
+            $('#delete-btn').on('click', function(e) {
+                e.preventDefault();
+
+                if (confirm('{{ "are.you.sure" | trans }}')) {
+                    $('#delete-entity').submit();
+                }
+            });
+
+            $('#plan-detail').click(function(){
+                $('#plan-detail-inner').fadeToggle('slow');
+            });
+            
+           
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,16 @@
+{{ form_errors(form) }}
+
+{{ form_row(form.name, { label: 'name' }) }}
+{{ form_row(form.category, { label: 'category.singular' }) }}
+{{ form_row(form.order, { label: 'order.sort', class: 'm-wrap small' }) }}
+{{ form_widget(form.filtrable, { name: 'filtrable' }) }}
+{{ form_widget(form.rangeable, { name: 'numeric.type' }) }}
+
+{% if entity is defined and entity.image is not null %}
+    {{ form_row(form.image.file, { div_class: 'no-bottom', image: entity.image.path }) }}
+{% else %}
+    {{ form_row(form.image.file, { div_class: 'no-bottom' }) }}
+{% endif %}
+
+
+{{ form_rest(form) }}

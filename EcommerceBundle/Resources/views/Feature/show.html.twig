@@ -1,0 +1,156 @@
+{% extends "AdminBundle:Base:layout.html.twig" %}
+
+{% block section %}features{% endblock %}
+
+{% block content %}
+    
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <h1>
+        {{ entity.name }}
+        <small></small>
+      </h1>
+      <ol class="breadcrumb">
+        <li><a href="{{ path('admin_default_index') }}"> <i class="ion-home"></i>  {{ "home" | trans }}</a></li>
+        <li><a href="javascript:">{{ "catalogue" | trans }}</a></li>
+        <li><a href="{{ path('ecommerce_feature_index') }}">{{ "feature.plural" | trans }}</a></li>
+        <li><a href="{{ path('ecommerce_feature_show', { id: entity.id }) }}">{{ entity.name }}</a></li>
+      </ol>
+    </section>
+      
+      
+    <section class="content">
+      <div class="row">
+          <div class="col-md-12">         
+              
+              {% include 'CoreBundle:Base:alert.messages.html.twig' %}
+              
+            <!-- Custom Tabs -->
+            <div class="nav-tabs-custom">
+              <ul class="nav nav-tabs">
+                <li class="active"><a href="#info_tab" data-toggle="tab">{{ "information" | trans }}</a></li>
+                <li><a href="#values_tab" data-toggle="tab">{{ "value.plural" | trans }}</a></li>
+              </ul>
+              <div class="tab-content">
+                <div class="tab-pane active show-tables" id="info_tab">
+                    <table class="table">
+                        <tbody>
+                        <tr>
+                            <td>{{ "name" | trans }}</td>
+                            <td>{{ entity.name }}</td>
+                        </tr>
+                        <tr>
+                            <td>{{ "category.singular" | trans }}</td>
+                            <td><a href="{{ path('ecommerce_category_show', { id: entity.category.id }) }}">{{ entity.category.name }}</a></td>
+                        </tr>
+                        {#<tr>
+                            <td>{{ "order.sort" | trans }}</td>
+                            <td>{{ entity.order }}</td>
+                        </tr>
+                        <tr>
+                            <td>{{ "filtrable" | trans }}</td>
+                            <td>
+                                {% if entity.filtrable %}
+                                    <span class="label label-success">{{ "yes" | trans }}</span>
+                                {% else %}
+                                    <span class="label label-important">{{ "no" | trans }}</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>{{ "numeric.type" | trans }}</td>
+                            <td>
+                                {% if entity.rangeable %}
+                                    <span class="label label-success">{{ "yes" | trans }}</span>
+                                {% else %}
+                                    <span class="label label-important">{{ "no" | trans }}</span>
+                                {% endif %}
+                            </td>
+                        </tr>#}
+                        <tr>
+                            <td>{{ "image.singular" | trans }}</td>
+                            <td>
+                                {% if entity.image %}
+                                    <img width="200" src="{{ asset('uploads/images/' ~ entity.image) }}" alt="{{ entity.image }}" />
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>  
+                    <div class="box-footer">
+                        <div class="col-sm-12"> 
+                            <a href="{{ path('ecommerce_feature_edit', { id: entity.id }) }}" class="btn btn-primary btn-flat"><i class="ion-compose"></i> {{ "edit.singular" | trans }}</a>
+                            <button type="submit" class="btn btn-danger btn-flat pull-right" id="delete-btn">{{ "delete" | trans }}</button>
+                            <form id="delete-entity" action="{{ path('ecommerce_feature_delete', { id: entity.id }) }}" method="post">
+                                <input type="hidden" name="_method" value="DELETE" />
+                                {{ form_widget(delete_form) }}
+                            </form>
+                        </div>
+                    </div><!-- /.box-footer -->
+                </div><!-- /.tab-pane -->
+                <div class="tab-pane" id="values_tab">
+                    <div class="clearfix">
+                        <div class="btn-group">
+                            <a href="{{ path('ecommerce_featurevalue_new', { featureId: entity.id }) }}" class="btn btn-success btn-flat">
+                                {{ "add.new" | trans }} <i class="ion-plus"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <table class="table table-striped table-bordered table-hover" id="featurevalues-table">
+                        <thead>
+                        <tr>
+                            <th class="hidden-480">ID</th>
+                            <th class="hidden-480">{{ "name" | trans }}</th>
+                            <th style="width:70px;"></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+              </div><!-- /.tab-content -->
+            </div><!-- nav-tabs-custom -->
+         </div>
+      </div>
+    </section>    
+        
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+
+    <script>
+        var table_columns = [
+            { "mData": "id" },
+            {
+                "mData": function (source) {
+                    return '<a href="/admin/features/{{ entity.id }}/values/' + source.id + '">' + source.name + '</a>';
+                }
+            },
+            {
+                "mData": function(source) {
+                    return '<a href="/admin/features/{{ entity.id }}/values/' + source.id + '/edit" class="btn btn-xs btn-primary btn-flat"><i class="ion-compose"></i> {{ "edit.singular" | trans }}</a> ';
+                }
+            }
+        ];
+
+        jQuery(document).ready(function() {
+            $('#delete-btn').on('click', function(e) {
+                e.preventDefault();
+
+                if (confirm('{{ "are.you.sure" | trans }}')) {
+                    $('#delete-entity').submit();
+                }
+            });
+
+            TableManaged.init(
+                '#featurevalues-table',
+                '{{ url('ecommerce_featurevalue_listjson', { featureId: entity.id }) }}',
+                [2],
+                table_columns,
+                '{{ url('admin_default_getdatatablesi18n', { language: app.request.locale }) }}');
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,62 @@
+{% extends "AdminBundle:Base:layout.html.twig" %}
+{% form_theme form 'AdminBundle:Form:fields.html.twig' %}
+
+{% block section %}taxes{% endblock %}
+
+{% block content %}
+    
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <h1>
+        {{ "tax.plural" | trans }}
+        <small></small>
+      </h1>
+      <ol class="breadcrumb">
+        <li><a href="{{ path('admin_default_index') }}"> <i class="ion-home"></i>  {{ "home" | trans }}</a></li>
+        <li><a href="{{ path('ecommerce_tax_index') }}">{{ "tax.plural" | trans }}</a></li>
+      </ol>
+    </section>
+      
+      
+    <section class="content">
+      <div class="row">
+        <div class="col-xs-12">
+            <div class="box box-info">
+                <!-- form start -->
+                <form action="{{ path('ecommerce_tax_create') }}" method="post" {{ form_enctype(form) }} class="form-horizontal form-row-seperated">
+                    <div class="box-body">
+                        {{ include('EcommerceBundle:Tax:_form.html.twig', { form: form }) }}
+                    </div><!-- /.box-body -->
+                    <div class="box-footer">
+                        <div class="col-sm-2"></div>
+                        <div class="col-sm-10">
+                            <button type="submit" class="btn btn-primary btn-flat"><i class="ion-checkmark"></i> {{ "save" | trans }}</button>
+                            <a href="{{ path('ecommerce_tax_index') }}" class="btn btn-default btn-flat">{{ "cancel.singular" | trans }}</a>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </section>
+                       
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+
+    <script>
+        jQuery(document).ready(function() {
+            $('#ecommercebundle_categorytype_family').select2({
+                placeholder: "",
+                allowClear: true
+            });
+            $('#ecommercebundle_categorytype_parentCategory').select2({
+                placeholder: "",
+                allowClear: true
+            });
+
+            
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,130 @@
+{% extends core['extended_layout'] ? core['extended_layout'] : 'CoreBundle:Base:base.layout.html.twig' %}
+
+
+    {% block breadcrumb %}
+        {% if not is_mobile() %}
+        <div class="col-md-12 col-xs-12">
+            <ol class="breadcrumb">
+                <li ><a href="/">Inicio</a></li>
+                <li class="active"><a href="{{path('ecommerce_checkout_identification')}}">{{ "checkout.identification" | trans }}</a></li>
+            </ol>
+        </div>
+        {% endif %} 
+    {% endblock %}
+   
+
+{% block content %}
+<div class="login-container-content core-row login">
+    {% if is_mobile() and not is_tablet() %}
+        <div class="col-xs-12">
+        <div class="col-md-6">
+            {% include 'EcommerceBundle:Checkout:steps.html.twig' with {'step': 'identification'}  %}
+        </div>
+        <div class="col-md-6">
+            <h1 class="title">
+                {{ "checkout.identification" | trans }}
+            </h1>
+        </div>
+            
+    {% else %}
+        
+        <div class="col-md-6">
+            <h1 class="title">
+                {{ "checkout.identification" | trans }}
+            </h1>
+        </div>
+        <div class="col-md-6">
+            {% include 'EcommerceBundle:Checkout:steps.html.twig' with {'step': 'identification'}  %}
+        </div>
+        
+    {% endif %}
+    
+    <div style="clear: both"></div>
+    <div class="col-md-12" style="margin-top: 30px;margin-bottom: 30px;">
+        <div class="subtitle-section">
+            Si ya eres usuario, accede a tu cuenta. Si aún no eres usuario, por favor rellena el formulario o ingresa con alguna de tus redes sociales favoritas
+        </div>
+        
+    </div>                
+                                   
+    <div class="col-md-12 oauth-button-container">
+         {% block hwi_oauth_content %}
+
+             {% for owner in hwi_oauth_resource_owners() %}
+                 <div class="social-login-button col-md-4">
+                     <a class="btn btn-default oauth-button oauth-button-{{owner}} {{app.request.locale}}" href="{{ hwi_oauth_login_url(owner) }}" >
+                         <span class="ion-social-{{owner}}"></span>
+                         <span class="oauth-label">Ingresar con mi cuenta de {{ owner | trans({}, 'HWIOAuthBundle') |capitalize }}</span>
+                     </a>
+                 </div>
+             {% endfor %}
+         {% endblock hwi_oauth_content %}
+     </div>
+
+
+
+    {% if is_mobile() and not is_tablet() %}
+        <div class="login-mobile-title col-xs-12">
+            <span class="user-icon"></span>
+            <h1>Identificación</h1>
+        </div>
+    {% endif %}
+
+    <div class="col-md-12 col-xs-12 container-login-register">
+        <div class="row">
+            <div class="col-sm-4" style="text-align: center">
+                <div class="container-login col-xs-12">
+                    <h2>Ya estoy registrado</h2>
+                    {% if error is defined and error %}
+                        <div>{{ error.message }}</div>
+                    {% endif %}
+                    <form id="login-form" action="{{ path('login_check') }}" method="post">
+                        <div class="form-group">
+                            <div>
+                                <input class="form-control" type="text" placeholder="Ingresa tu email" name="_username" id="_username" value="" required="required">
+                            </div>
+                        </div>    
+                        <div class="form-group">
+                            <div>
+                                 <input class="form-control"  placeholder="Ingresa tu contraseña" type="password" name="_password" id="_password" required="required">
+                            </div>
+                        </div>       
+                        <div>
+                            <button type="submit" class="btn purple-black pull-right">
+                                Ingresar
+                            </button>
+                            <div style="display: inline-block">
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" class="minimal" value=""> No cerrar sesión 
+                                    </label>
+                                </div>
+                                <div style="clear: both">
+                                    <a class="forgot-passwd" href="/resetting/request" title="No recuerdo mi contraseña">No recuerdo mi contraseña</a>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="col-sm-1"></div>            
+            <div class="col-sm-8 col-xs-12 margin-top-50">
+                <h2>Soy nuevo en el sitio</h2>
+
+                <div class="half">
+                    {% if is_mobile() and not is_tablet() %}
+                        {% include 'FrontBundle:Registration:_form.html.twig' %}
+                    {% else %}
+                        {% include 'FrontBundle:Registration:_form.html.twig' %}
+                    {% endif %}
+                </div>
+            </div>    
+        </div>
+    </div>
+    {% if is_mobile() %}
+        </div>
+    {% endif %} 
+</div>
+  
+{% endblock %}   

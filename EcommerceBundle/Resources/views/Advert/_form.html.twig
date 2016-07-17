@@ -1,0 +1,195 @@
+{{ form_errors(form) }}
+
+    {{ form_row(form.actor, { label: 'user.singular'}) }}
+    
+    {% if form.geolocated is defined %}
+    <div class="form-group ">
+        <label class="col-sm-2 control-label required">{{ 'advert.geolocated' | trans }}</label>
+        <div class="col-sm-10">
+            <div id="bundle_ecommercebundle_advert_geolocated">
+                {{ form_widget(form.geolocated.1, { attr: {class: 'minimal'} }) }} <label class="required">Si</label><br/>
+                {{ form_widget(form.geolocated.0, { attr: {class: 'minimal'} }) }} <label class="required">No</label><br/>
+                {{ form_widget(form.geolocated.2, { attr: {class: 'minimal'} }) }} <label class="required">Ambos</label><br/>
+            </div>
+        </div>
+    </div>
+    {% endif %}            
+    
+    {% if form.located is defined %}
+    <div class="form-group ">
+        <label class="col-sm-2 control-label required">{{ 'located.plural' | trans }}</label>
+        <div class="col-sm-10 located">
+            {{ form_widget(form.located, { label: 'located.plural'}) }}   
+        </div>
+    </div>
+    {% endif %}    
+    
+    {% if form.codes is defined %}
+    <div class="form-group ">
+        <label class="col-sm-2 control-label required">{{ 'advert.postalcodes' | trans }}</label>
+        <div class="col-sm-10 codes">
+            {{ form_widget(form.codes) }}   
+        </div>
+    </div>
+    {% endif %} 
+     
+    {% if form.cityAutocomplete is defined %}
+    <div class="form-group ">
+        <label class="col-sm-2 control-label required">{{ 'advert.cities' | trans }}</label>
+        <div class="col-sm-10 cityAutocomplete">
+            {{ form_widget(form.cityAutocomplete) }}
+            {{ form_widget(form.cities) }}   
+        </div>
+    </div>
+    {% endif %}     
+
+
+{% if entity is defined and entity.image is not null %}
+    {% if edit_front is defined and edit_form%}{{ form_widget(form.image.file, { div_class: 'no-bottom', image: entity.image.path }) }}{% else %}{{ form_row(form.image.file, { div_class: 'no-bottom', image: entity.image.path }) }}{% endif %}
+{% else %}
+    {% if edit_front is defined and edit_form%}{{ form_widget(form.image.file, { div_class: 'no-bottom' }) }}{% else %}{{ form_row(form.image.file, { div_class: 'no-bottom' }) }}{% endif %}
+{% endif %}
+
+{{ form_row(form.title, { label: 'name' }) }}
+{{ form_row(form.description, { label: 'description' }) }}
+    
+{% if form.active is defined %}
+    {{ form_widget(form.active) }}
+{% endif %} 
+    
+{% if form.rangeDate is defined%}
+    {{ form_row(form.rangeDate, { label: 'advert.range.date' | trans  }) }}
+    {{ form_row(form.days) }}
+    
+    <hr>
+    <h3>{{ 'checkout.summary' | trans }}</h3>
+     
+        <table class="advert-table total" style="font-size: 22px;width: 100%;">
+
+            <tr class="header">
+                <td></td>
+                <td class="code">Codigos postales</td>
+                <td class="unit">Precio unitario</td>
+                <td class="day">Dias</td>
+                <td class="section">Secciones</td>
+                <td></td>
+            </tr>
+            
+            <tr class="subtotal">
+                <td>
+                    <span><strong>{{ "checkout.subtotal" | trans }}</strong>:</span> 
+                </td>
+                <td><span id="quantity">0</span></td>
+                <td>x {{core.advert_unit_price}} €</td>
+                <td>x <span id="days">0</span></td>
+                <td><span id="section-content">x <span id="sections-count">0</span></span> <span id="sections"></span></td>
+                <td class="price"><em id="subtotal">0</em><span>€</span></td>
+            </tr>
+
+            <tr class="discount">
+                <td>
+                    <span style="font-size: 20px">{{ "discount" | trans }}</span>
+                </td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td class="price">
+                    <em id="discount">0</em><span>€</span> 
+                </td>
+            </tr>
+            
+            <tr class="vat">
+                <td>
+                    <span style="font-size: 20px">{{ "vat" | trans }} (21%):</span>
+                </td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td class="price">
+                   <em id="vat">0</em><span>€</span> 
+                </td>
+            </tr>
+            
+            <tr class="total">
+                <td >
+                    <strong>{{ "total.to.pay" | trans }}:</strong>
+                </td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td class="price">
+                    <em id="total">0</em><span>€</span> 
+                </td>
+            </tr>
+        </table>
+        
+        
+        
+    <hr>
+    <h3>{{ 'checkout.payment' | trans }}<i style="font-size: 16px">(paypal sale)</i></h3>
+
+    <div class="col-xs-12 cc-container">
+            <div class="col-xs-3"></div>
+            <div class="col-xs-6 cc-content">
+
+                <div class="form-group">
+                  {{ form_label(form.creditCard.firstname, null, { label_attr: {class: 'col-sm-4 control-label'} }) }}
+                  <div class="col-sm-8">
+                      {{ form_widget(form.creditCard.firstname, { attr: {class: 'form-control'} }) }}
+                  </div>
+                </div>  
+
+                <div class="form-group">
+                  {{ form_label(form.creditCard.lastname, null, { label_attr: {class: 'col-sm-4 control-label'} }) }}
+                  <div class="col-sm-8">
+                      {{ form_widget(form.creditCard.lastname, { attr: {class: 'form-control'} }) }}
+                  </div>
+                </div>  
+
+                <div class="form-group">
+                  {{ form_label(form.creditCard.cardType, null, { label_attr: {class: 'col-sm-4 control-label'} }) }}
+                  <div class="col-sm-8">
+                      {{ form_widget(form.creditCard.cardType, { attr: {class: 'form-control'} }) }}
+                  </div>
+                </div>  
+
+                <div class="form-group">
+                  {{ form_label(form.creditCard.cardNo, null, { label_attr: {class: 'col-sm-4 control-label'} }) }}
+                  <div class="col-sm-8">
+                      {{ form_widget(form.creditCard.cardNo, { attr: {class: 'form-control'} }) }}
+                  </div>
+                </div>  
+
+                 <div class="form-group">
+                  {{ form_label(form.creditCard.expirationDate, null, { label_attr: {class: 'col-sm-4 control-label'} }) }}
+                  <div class="col-sm-8">
+                    {{ form_widget(form.creditCard.expirationDate.day, { attr:  {style: 'display:none'} } ) }}
+                    {{ form_widget(form.creditCard.expirationDate.month, { attr:  {class: 'form-control'} } ) }}
+                    {{ form_widget(form.creditCard.expirationDate.year, { attr:  {class: 'form-control'} } ) }}
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  {{ form_label(form.creditCard.CVV, null, { label_attr: {class: 'col-sm-4 control-label'} }) }}
+                  <div class="col-sm-8">
+                      {{ form_widget(form.creditCard.CVV, { attr: {class: 'form-control'} }) }}
+                  </div>
+                </div>  
+
+                <div class="form-group">
+                  <div class="col-sm-4 control-label"></div>
+                  <div class="col-sm-8">
+                      <img src="/bundles/front/images/pay.jpg">
+                  </div>
+                </div>  
+
+                {{ form_row(form.creditCard.ts) }}
+
+            </div>
+            <div class="col-xs-3"></div>
+    </div>
+{%endif %}          
+{{ form_rest(form) }}

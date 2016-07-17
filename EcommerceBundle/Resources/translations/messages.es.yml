@@ -1,0 +1,809 @@
+app:
+  title: Solución de Ecommerce
+home: Inicio
+visible: Visible
+pay.number: Pago Nº
+image:
+  singular: Imagen
+  plural: Imágenes
+  of.entity: Imagen de %entity%
+  manage: Gestionar imágenes
+  select: Selecciona una imagen
+  
+city:
+  singular: Ciudad
+  plural: Ciudades
+
+product:
+  singular: Producto
+  plural: Productos
+  created: Se ha creado el producto satisfactoriamente
+  edited: Se ha editado el producto satisfactoriamente
+  deleted: Se ha eliminado el producto satisfactoriamente
+  deleted.error: Este producto tiene compras asociadas, elimine primero sus transacciones para volver a intentarlo.
+  best.seller: Productos más vendidos
+  least.stock: Productos con poco stock
+  related: Productos relacionados
+  email:
+      subject: Bienvenido a %app_name%
+      welcome: ¡Bienvenido a %app_name%!
+      message: |
+            Hemos recibido su solicitud de alta de un nuevo producto, en las proximas 24hs. 
+            nuestro equipo la examinará y si es correcto la activará, te avisaremos cuando esto suceda.
+      thanks: ¡Gracias por confiar en %app_name%!
+      
+  
+masterfamily:
+  singular: Familia Maestra
+  plural: Familias Maestras
+  created: Se ha creado la familia maestra satisfactoriamente
+  edited: Se ha editado la familia maestra satisfactoriamente
+  deleted: Se ha eliminado la familia maestra satisfactoriamente
+  sort: Ordenar familias maestras
+  
+family:
+  singular: Familia
+  plural: Familias
+  created: Se ha creado la familia satisfactoriamente
+  edited: Se ha editado la familia satisfactoriamente
+  deleted: Se ha eliminado la familia satisfactoriamente
+  sort: Ordenar familias
+
+category:
+  singular: Categoría
+  singular*: Categoría*
+  plural: Categorías
+  choose: Elige una categoría
+  parent: Categoría padre
+  created: Se ha creado la categoría satisfactoriamente
+  edited: Se ha editado la categoría satisfactoriamente
+  deleted: Se ha eliminado la categoría satisfactoriamente
+  sort: Ordenar categorías  
+
+subcategory:
+  plural: Subcategorías
+  from_category: Subcategorías de %category%
+
+attribute:
+  plural: Funciones
+  created: Se ha creado la función satisfactoriamente
+  edited: Se ha editado la función satisfactoriamente
+  deleted: Se ha eliminado la función satisfactoriamente
+  sort: Ordenar funciones de %entity%
+
+feature:
+  plural: Características
+  created: Se ha creado la característica satisfactoriamente
+  edited: Se ha editado la característica satisfactoriamente
+  deleted: Se ha eliminado la característica satisfactoriamente
+  sort: Ordenar características de %entity%
+
+value:
+  plural: Valores
+  from_attribute: Valores de %attribute%
+  from_feature: Valores de %feature%
+  created: Se ha creado el valor satisfactoriamente
+  edited: Se ha editado el valor satisfactoriamente
+  deleted: Se ha eliminado el valor satisfactoriamente
+
+brand:
+  singular: Marca
+  singular*: Marca*
+  plural: Marcas
+  choose: Elige una marca
+  created: Se ha creado la marca satisfactoriamente
+  edited: Se ha editado la marca satisfactoriamente
+  deleted: Se ha eliminado la marca satisfactoriamente
+
+model:
+  singular: Modelo
+  plural: Modelos
+  choose: Elige un modelo
+  created: Se ha creado el modelo satisfactoriamente
+  edited: Se ha editado el modelo satisfactoriamente
+  deleted: Se ha eliminado el modelo satisfactoriamente
+  
+transaction:
+  singular: Transacción
+  plural: Transacciones
+  sort: Orden
+  latest: Últimas transacciones
+  authorize.payment: Autorizar pago
+  authorized.payment: El pago ha sido autorizado
+  tracking.code: Código de seguimiento
+  cupon.code: Código de cupón
+  sent: El pedido ha sido marcado como enviado y se ha enviado el código de seguimiento al cliente
+  observations: Observaciones
+  observations.message: Puedes dejarnos algun dato o comentario adicional.
+  payment.method: Forma de pago
+  payment.detail: Detalles del pago (response)
+  view: Ver transacciones
+  none: Aún no has realizado ningún transacción.
+  number: ID transacción
+  date: Fecha
+  amount: Importe
+  status: Estado
+  details: Ver detalles
+  success: Su transacción se ha procesado satisfactoriamente
+  cancel.title: Transaccion cancelada
+  cancel: Su transaccion ha sido cancelada.
+  
+delivery:
+  singular: Entrega
+  plural: Entregas
+      
+status:
+  singular: Estado
+  plural: Estados
+  unfinished: No finalizado
+  pending: Pendiente de validacion
+  pending.transfer: Pendiente de transferencia
+  pending.approval: Pendiente de aprobación
+  paid: Pagado
+  processed: Procesado
+  cancelled: Cancelado
+  sent: Enviado
+  completed: Completado
+  returned: Devuelto
+
+user:
+  singular: Usuario
+  plural: Usuarios
+  edited: Se ha editado el usuario satisfactoriamente
+  deleted: Se ha eliminado el usuario satisfactoriamente
+
+customer.care: Atención al cliente
+
+address:
+  singular: Dirección
+  plural: Direcciones
+
+page:
+  plural: Páginas
+  created: Se ha creado la página satisfactoriamente
+  edited: Se ha editado la página satisfactoriamente
+  deleted: Se ha eliminado la página satisfactoriamente
+
+
+delivery.expenses:
+  singular: Gastos de envío
+  percentage: Porcentaje
+  edited: Los gastos de envío han sido actualizados
+  type:
+    by.carrier: Por transportista
+    by.percentage: Por porcentaje
+
+carrier:
+  singular: Transportista
+  plural: Transportistas
+  created: Se ha creado el transportista satisfactoriamente
+  edited: Se ha editado el transportista satisfactoriamente
+  deleted: Se ha eliminado el transportista satisfactoriamente
+  transit.time: Tiempo en tránsito
+  choose: Elige un transporte
+  note: Observaciones a tener en cuenta por el transportista
+  tracking.email:
+    subject: Tu pedido en %app_name% ya está en marcha
+    greeting: Estimado cliente
+#    message: |
+#      Tu pedido nº %invoice_number% está en marcha. A continuación te indicamos el código de seguimiento para que puedas
+#      consultar en cualquier momento el estado del mismo.
+#    tracking.code: Código de seguimiento
+    message: |
+          Tu pedido nº %order_number% está en marcha. En breve lo recibiras en la dirección de entrega indicada.
+    carrier.web: Lo puedes consultar en la web de %carrier_name%.
+    code: Código de seguimiento
+    thanks: Gracias
+  attach.email:
+    subject: Transporte 
+    greeting: Servicio de transporte
+    message:  |
+          Se adjunta archivo xls con informacion para la regogida y entrega del pedido Nº:  %order_number% 
+    thanks: Gracias
+    
+cupon:
+  email:
+    subject: Cupon 
+    greeting: Estimado cliente
+    message: |
+          Se ha registrado de manera automática al acceder a una oferta, debido a que necesitamos identificarlo.
+          <br>Usuario/Email: %email%
+          <br>Contraseña: %password%
+          <br>Por favor valida tu correo electrónico mediante el siguiente enlace.
+    message.auth: |
+          Has adquirido un Cupón de "%product_name%", adjuntamos tu cupón para que puedas canjearlo en  %actor_name%
+          
+    thanks: Gracias  
+  actor:
+    subject: Cupon  
+    greeting: Estimada usuario %actor_name%
+    message: |
+          Se ha producido la impresión del cupón del producto %product_link% , para el usaurio: %email%.
+          <br>Es probable que en breve pasen a recoger el cupón, prepárate.
+    thanks: Gracias   
+  code.email:
+    subject: Cupon  
+    greeting: Estimada administrador
+    message: |
+          La usuario %actor_name% ha sido validado correctamente el código del cupon del  pedido Nº:  %order_number% 
+    code: Código del cupon
+    thanks: Gracias   
+  
+employee:
+  plural: Empleados
+
+profile:
+  plural: Perfiles
+  saved: El perfil se ha actualizado satisfactoriamente.
+
+cart:
+  singular: Carrito
+  plural: Carritos
+  add: Añadir al carrito
+  remove: Eliminar del carrito
+  items: '{0} No tienes productos en el carrito|Tienes %items% producto en el carrito|[2,Inf] Tienes %items% productos en el carrito'
+  items.mobile: '{0} No tienes productos|Tienes %items% producto|[2,Inf] Tienes %items% productos'
+  preview: Carrito (Vista previa)
+  add_short: +
+  
+tax:
+  singular: Impuesto
+  plural: Impuestos
+  vat: IVA
+  type: Tipo
+  
+email:
+  singular: Email
+  plural: Emails
+
+permission:
+  plural: Permisos
+
+meta:
+  title: Meta título
+  title*: Meta título*
+  description: Meta descripción
+  description*: Meta descripción*
+  tags: Meta etiquetas
+
+new:
+  singular: Nuevo
+  singular.2: Nueva
+  product: Nuevo producto
+  masterfamily: Nueva familia maestra
+  family: Nueva familia
+  category: Nueva categoría
+  subcategory: Nueva subcategoría
+  brand: Nueva marca
+  brand.model: Nuevo modelo
+  plan: Nuevo plan
+  contract: Nuevo contrato
+  carrier: Nuevo transportista
+  attribute: Nueva función
+  feature: Nueva característica
+  value:
+      attribute: Nuevo valor de %attribute%
+      feature: Nuevo valor de %feature%
+  slider: Nuevo slider
+  page: Nueva página
+add:
+  singular: Añadir
+  new: Añadir nuevo
+  new.2: Añadir nueva
+edit:
+  singular: Editar
+view:
+  details: Ver detalles
+  statistics: Ver estadísticas
+
+start:
+  singular: Empezar
+  upload: Empezar subida
+cancel:
+  singular: Cancelar
+  upload: Cancelar subida
+
+total:
+  singular: Total
+  sub: Subtotal
+  items: Total items
+
+type:
+  singular: Tipo
+  individual: Particular
+  business: Empresa
+
+login:
+  account: Entra en tu cuenta
+logout: Salir
+
+visits:
+  plural: Visitas
+  this.month: Visitas este mes
+incomes:
+  all: Ingresos acumulados
+  this.month: Ingresos mes actual
+
+subscribed:
+  newsletter: ¿Suscrito a la newsletter?
+
+not.read: No leído
+replied: Contestado
+
+search: Buscar
+dashboard: Panel
+catalogue: Catálogo
+users: Usuarios
+administration: Administración
+setup: Configuración
+analytics: Analíticas
+payment.methods: Métodos de pago
+name: Nombre
+name*: Nombre*
+reference: Referencia
+price: Precio
+stock: Stock
+active: ¿Activo?
+available: ¿Disponible?
+highlighted: ¿Destacado?
+freeTransport: Transp. Gratuito
+finalShot: Remate Final
+promotion.url: URL de promoción
+yes: Sí
+no: No
+information: Información
+save: Guardar
+delete: Eliminar
+are.you.sure: ¿Estás seguro?
+error: Error
+username: Nombre de usuario
+password: Contraseña
+description: Descripción
+description*: Descripción*
+excerpt: Extracto
+technical.details: Detalles técnicos
+weight: Peso
+ean13.jan: Ean13 o Jan
+upc: Upc
+change: Cambiar
+title: Título
+open.new.window: ¿Abierto en nueva ventana?
+caption: Leyenda
+surnames: Apellidos
+birthdate: Fecha de nacimiento
+number: Número
+date: Fecha
+city: Ciudad
+province: Provincia
+postal.code: Código postal
+country: País
+phone: Teléfono
+phone.second: Segundo teléfono
+chosen.schedule: Horario de entrega preferido
+contact.person: Persona de contacto
+items: Artículos
+body: Cuerpo
+from: de
+amount: Importe
+vat: IVA
+expenses: Gastos de envío
+subject: Asunto
+locked: ¿Bloqueado?
+expiration.date: Fecha de caducidad
+quantity: Cantidad
+returned: ¿Devuelto?
+discount: Descuento
+back: Volver
+sort.introduction: Arrastra los elementos para colocarlos en el orden que desees
+updating: Actualizando, un momento...
+filtrable: Filtrable
+numeric.type: Tipo numérico (rango)
+website: Sitio web
+borrar: Borrar
+credit_card: Tarjeta de crédito
+paypal: Paypal
+bank_transfer: Transferencia bancaria
+store_pickup: Recogida en tienda
+created: Fecha de creación
+finished: Fecha de fin
+DAY: día/as
+WEEK: semana/as
+MONTH: Mes/es
+YEAR: Año/s
+firstname: Nombre
+lastname: Apellido
+send.relaunching: Enviar comunicado de relanzamiento
+
+checkout:
+  preview: Vista previa
+  identification: Identificación
+  summary: Resumen y finalizar
+  units: Unidades
+  rrp.unit: Unidad
+  discount: Dto
+  rrp.dt.unit: Dto/Unidad
+  rrp.total: Total
+  subtotal: Subtotal
+  add: Añadir productos
+  add.more: Añadir más productos
+  pay: Pagar
+  payment: Pago
+  foreign.business.notice: Si eres una empresa de fuera de España y quieres una factura sin IVA, déjanos tus datos. Los confirmaremos y nos pondremos en contacto contigo.
+  foreign.business.form: Ver formulario
+  details: Detalles del pedido
+  delivery.costs: Gastos de envío
+  payment.method: Selecciona el método de pago
+  payment.options: Opciones de pago
+  payment.pay: Realizar pago
+  credit.card:
+    singular: Tarjeta de Crédito
+    name: Nombre del titular
+    number: Número de tarjeta
+    expiry.date: Fecha de caducidad
+    month: Mes
+    year: Año
+    security.code: CVC / CVV / CID
+  transfer: |
+    Por favor, haz tu transferencia a:
+    %bank_name%
+    %bank_account%
+  paypal:
+    no.success : No disponible
+  redsys: Pagar
+  amount: Importe
+  bank.transfer: Transferencia bancaria
+  bank.transfer.email:
+    subject: Pago validado en %app_name%
+    greeting: Estimado cliente
+    message: El pago de tu pedido número %order_number% se ha realizado correctamente.
+    thanks: Gracias.
+  successful.payment: El pago se ha efectuado correctamente.
+  date: Fecha
+  customer:
+    info: Datos del cliente
+    number: Nº Cliente
+  business:
+    info: Datos de la empresa
+  confirm: Confirmar
+  assembly.type:  Tipo de montaje
+    
+account:
+  signup:
+    1: Regístrate
+    2: Darme de alta
+    subtitle: Debes registrarte para poder proceder a la compra
+    accept.privacy.policy: Debes aceptar la política de privacidad para registrarte.
+  login: Entra
+  login.subtitle: Entra en tu cuenta
+  my: Mi cuenta
+  user: Usuario
+  email:
+    singular: Email
+    repeat: Repite el email
+  password:
+    singular: Contraseña
+    remember: No recuerdo mi contraseña
+    change: Cambiar contraseña
+    repeat: Repite la constraseña
+    current: Contraseña actual
+    new: Nueva contraseña
+    new.repeat: Repite la nueva contraseña
+    request:
+      title: Solicitar nueva contraseña
+      help: Introduce tu email y te enviaremos las instrucciones
+      button: Solicitar
+      invalid: %email% no existe en nuestra base de datos
+  keep.logged.in: No cerrar sesión
+  name: Nombre
+  name.business: Nombre / Razón social
+  surnames: Apellidos
+  full.name: Nombre completo
+  passport: NIF / NIE / Pasaporte
+  phone:
+    singular: Teléfono de contacto
+    second: Segundo teléfono
+  contact.person: Persona de contacto
+  address:
+    singular: Dirección
+    none: Aún no has añadido ninguna dirección
+    select: Selecciona una dirección
+    select.same: La dirección de envío es la misma que la de facturación
+    select.existing: Enviar a una de mis otras direcciones
+    select.new: Enviar a una nueva dirección
+    saved: La dirección se ha guardado satisfactoriamente
+    added: La dirección se ha añadido satisfactoriamente
+    deleted: La dirección se ha eliminado
+    assigned.for.billing: La dirección se ha establecido para facturación
+    for.billing: Dirección de facturación
+    add: Añadir nueva dirección
+    edit: Editar dirección
+    assign.for.billing: Establecer como dirección de facturación
+  postal.code: Código postal
+  province:
+    singular: Provincia
+    choose: Selecciona provincia
+  city: Población
+  country:
+    singular: País
+    choose: Selecciona país
+  billing.info: Datos para la facturación
+  delivery.info: Datos para el envío
+  choose.schedule: Elige un tramo horario
+  chosen.schedule: Horario de entrega preferido
+  already: Soy cliente
+  new: Soy nuevo cliente
+  registered.customers: Clientes registrados
+  user.zone: Zona de usuario
+  user.profile: Perfil de usuario
+  edit.profile: Editar perfil
+  type:
+    singular: Tipo
+    individual: Particular
+    business: Empresa
+  newsletter: Deseo recibir el newsletter con novedades y ofertas
+  privacy.policy: He leído y acepto la <a href='%path%'>política de privacidad</a>
+  enter: Entrar
+  modify.info: Modificar datos
+
+schedule:
+  empty: Sin seleccionar
+  anytime: Durante todo el dia
+  morning: Mañana
+  evening: Tarde
+
+newsletter:
+  sign.up: Alta newsletter
+  subscription.successful: El email ha sido suscrito satisfactoriamente
+  existing.user: El email introducido pertenece a un usuario registrado. Por favor, entra a tu cuenta y suscríbete a la newsletter desde tu perfil de usuario.
+  user:
+    add.subscription: Te has suscrito a la newsletter
+    remove.subscription: Has eliminado tu subscripción a la newsletter
+
+total: Total
+total.to.pay: TOTAL A PAGAR
+show: Mostrar
+technical.service: Servicio Técnico
+technical.service.text: Llámanos y te resolvemos cualquier problema
+
+share: Compartir
+badge: Emblema
+
+sort.by:
+  title: Ordenar por
+  newest: Más nuevo
+  oldest: Menos nuevo
+  price:
+    asc: Precio [ascendente]
+    desc: Precio [descendente]
+
+pager:
+  watching: Estás viendo 1 producto de %total%|Estás viendo %current% productos de %total%
+  by.page: por página
+  previous: Anterior
+  next: Siguiente
+  no.products: No hay productos en esta categoría
+
+back:
+  to.list: Volver al listado
+
+product:
+  singular: Producto
+  plural: Productos
+  also.interested: También te puede interesar...
+  attributes: Funciones
+  features: Características
+  unavailable: Producto no disponible
+  promotion: ¡Promoción!
+  finalShot: Remate Final
+  icons:
+    doubts.title: ¿DUDAS?
+    doubts.text: Contacte con nosotros para consultarnos cualquier cuestión.
+    installation.title: INSTALACIÓN
+    installation.text: Te instalamos tu producto.
+    sat.title: SERVICIO TÉCNICO
+    sat.text: Llamanos  al %phone% y te resolvemos cualquier problema.
+    installation.title: SERVICIO DE INSTALACIÓN
+    installation.text: Ofrecemos el servicio de instalación y retirada de nuestros productos.
+    delivery.title: GASTOS DE ENVÍO GRATIS
+    delivery.text: Este producto dispone de gastos de envío gratuitos.
+ 
+invoice:
+  singular: Factura
+  plural: Facturas
+  title: Factura nº %invoice_number%
+  number: Nª
+  reference: Ref
+  description: Descripción
+  notes: Observaciones
+  payment.type: Método de pago
+  payment.by:
+    credit.card: Pago mediante tarjeta de crédito
+    bank.transfer: Pago mediante transferencia bancaria
+    paypal: PayPal
+  download.pdf: descargar PDF
+  view: Ver factura
+  print: imprimir
+  email:
+    subject: Tu compra en %app_name%. Pedido nº %order_number%
+    congratulations: ¡Enhorabuena!
+    message: Tu compra se ha realizado correctamente. A continuación te mostramos los detalles de la misma.
+    view.invoice: Puedes ver los detalles de tu pedido aquí
+    transfer.data: |
+      Por favor, haz tu transferencia indicando el número de pedido %order_number% a:<br/>
+      Productos Eléctricos Internet, S.L.<br/>
+      %account_number%<br/>
+    contact.us: Si tienes alguna duda puedes contactar con nosotros en el apartado de "Contáctanos", en el pie de página de nuestra web.
+    thanks: ¡Gracias por confiar en %app_name%!
+    
+vat: IVA
+vat.included: IVA Inc.
+
+phone.abbr: Tel.
+fax.abbr: Fax.
+
+are.you.sure: ¿Estás seguro?
+more.info: Más información
+
+yes: Sí
+no: No
+
+installation:
+  title: Condiciones y Funcionamiento del método de instalación y retirada.
+
+
+
+recurring:
+  singular: Recurrente
+  plural: Recurrentes
+  payment:
+    singular: Pago recurrente
+    plural: Pagos recurrentes
+    
+contract:
+  id: ID Contrato
+  singular: Contrato
+  plural: Contratos
+  created: Se ha creado el contrato satisfactoriamente
+  created.approval: |
+  
+    Se ha creado el contrato satisfactoriamente, pero al ser pagado medienta en metodo de pago "paypal" necesitamos aprobación de la Óptica.
+    
+    Utilice la url de aprobacion para ser enviada a la Óptica
+  edited: Se ha editado el contrato satisfactoriamente
+  deleted: Se ha eliminado el contrato satisfactoriamente
+  url: Enlace de acuerdo asociado
+  duplicated: Contrato duplicado, seleccione otro beneficiario para el plan.
+  
+plan:
+  id: Paypal ID
+  singular: Plan
+  plural: Planes
+  new: Nuevo Plan
+  created: Se ha creado el plan satisfactoriamente
+  edited: Se ha editado el plan satisfactoriamente
+  deleted: Se ha eliminado el plan satisfactoriamente
+  type: Tipo de plan
+  trial: Período de prueba
+  state: Estado
+  setupAmount: Tarifa de incripción
+  amount: Precio
+  frequency: Frecuencia
+  frequencyInterval: Intervalo de frecuencia
+  cycles: Ciclos
+  trialAmount: Precio período de prueba
+  trialFrequency: Frecuencia período de prueba
+  trialFrequencyInterval: Intervalo de frecuencia período de prueba
+  trialCycles: Ciclos período de prueba
+  promotionUrl: Url promocional
+  notification:
+    email:
+      subject: Pedido nº %order_number%
+      hello: Hola Administrador
+      date: Fecha %date%
+      buyer: 'Email del comprador: %buyer_email%'
+      name: 'Plan adquirido: %plan_name%'
+      url: 'Detalles: %url%'
+  email:
+    subject: Tu plan en %app_name%. Pedido nº %order_number%
+    congratulations: ¡Enhorabuena!
+    message: 'Ya eres parte del selecto grupo que forma parte de %app_name%, con tu nueva adquisición del plan "%plan_name%" podrás vender de forma ilimitada en internet. '
+    name: "Plan adquirido : %plan_name%"
+    bank.account: |
+      Estimada usuario %actor_name%, nos hemos dado cuenta que no tenemos su numero de cuenta bancaria para poder realizarle el deposito de su venta. <br/>
+      Agradeceriamos ingrese al siguiente enlace que lo llevará a una pagina de <a href="%server_base_url%">%server_base_url%</a> en la cual debe rellenar su numero de cuenta.
+      <a href="%token_url%"><span style="font-size: 14px;font-weight: bold">Click aquí</span></a> (este enlace solo será valido las proximas 24hs.)
+    thanks: ¡Gracias por confiar en %app_name%!
+  
+agreement:
+  singular: Acuerdo
+  plural: Acuerdos
+  paypal.id: ID Paypal
+  status: Estado
+  outstandingAmount: Saldo pendiente	
+  cyclesRemaining: Ciclos pendientes
+  nextBillingDate: Próxima fecha de facturación  
+  lastPaymentDate: Fecha de Pago anterior	
+  lastPaymentAmount: Importe pagado anterior	
+  finalPaymentDate: Última Fecha de Pago	 
+  failedPaymentCount: Contador de pago fallido	
+  active: Activo
+  created: Creado
+  suspend:  Suspender
+  suspended:  Suspendido
+  suspend.message: El acuerdo ha sido suspendido satisfactoriamente.
+  reactive: Re-activar
+  reactive.message: El acuerdo ha sido re-activado satisfactoriamente.
+  cancel: Cancelar acuerdo
+  cancelled: Cancelado
+  cancelled.message: El acuerdo se ha cancelado satisfactoriamente.
+  expired: Vencido
+  setoutstanding.message: Se ha establecido la cantidad pendiente
+  billoutstanding.message: Se ha facturado la cantidad pendiente
+  
+ 
+listenerlog:
+  singular: Logeo de escucha
+  plural: Logeo de escuchas
+  deleted: Se ha eliminado el log satisfactoriamente.
+  type: Tipo
+  created: Fecha de creación
+  input: Post(json)
+  valid: Válido
+  invalid: Inválido
+  verified: Verificación
+  
+Cannot increase delinquent amount: No se puede aumentar la cantidad impagada
+Outstanding balance must be > 0: "El saldo pendiente debe ser > 0"
+Recurring payment scheduled within 24 hours, so we are not processing bill outstanding amount: El pago recurrente esta programado dentro de las 24 horas , por lo que no se puede facturar cantidades pendientes.
+
+all: Todo
+Paid: Pagado
+credit_card: Tarjeta de crédito
+
+advert:
+  singular: Publicidad
+  plural: Publicidades
+  title: Titulo
+  description: Descripción
+  from: Fecha de inicio
+  to: Fecha de fin
+  geolocated: Geolocalizado
+  postalcodes: Códigos postales
+  created: |
+    Se ha creado la publicidad satisfactoriamente. 
+    En las próximas 24 horas se analizará el contenido de la publicidad para evitar contenido ofensivo, e inmediatamente después le informaremos de su activación. En caso contrario nos comunicaremos con usted para que edite su publicidad para evitar contenidos inapropiados.
+  deleted: Se ha eliminado la publicidad satisfactoriamente
+  updated: Se ha editado la publicidad satisfactoriamente
+  edited: Se ha editado la publicidad satisfactoriamente
+  cancel: El pago ha sido rechazado por el proveedor. Por favor vuelva a intentarlo mas tarde.
+  range.date: Fecha rango
+  located: Ubicación
+  cities: Ciudades
+  pay.status: Estado del pago
+  active: Activo
+  notification:
+    email:
+      subject: Pedido nº %order_number%
+      hello: Hola Administrador
+      date: Fecha %date%
+      buyer: 'Email del comprador: %buyer_email%'
+      url: 'Detalles: %url%'
+  email:
+    subject: Tu publicidad en %app_name%.
+    congratulations: ¡Enhorabuena! <b>%user_name%</b>
+    message: En breve se procesaran los datos para evitar publicidades ofensivas y tu publicidad estará activada.
+    message.product: |
+      Publicidad adquirida: <b>%advert_name%</b> <br>
+    thanks: ¡Gracias por confiar en %app_name%!
+    
+located:
+  singular: Ubicación
+  plural: Ubicaciones
+  height: Altura
+  width: Ancho
+  created: Se ha creado la ubicación satisfactoriamente
+  deleted: Se ha eliminado la ubicación satisfactoriamente
+  updated: Se ha editado la ubicación satisfactoriamente
+  
+new.advert: Nueva publicidad  
+new.located: Nueva ubicación

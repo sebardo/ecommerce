@@ -1,0 +1,68 @@
+{{ form_errors(form) }}
+
+    {% if entity is defined and entity.image is not null %}
+        {{ form_widget(form.image.file, { div_class: 'no-bottom', image: entity.image.path }) }}
+    {% else %}
+        {{ form_widget(form.image.file, { div_class: 'no-bottom' }) }}
+    {% endif %}
+       
+    <div style="display: none">
+        {{ form_row(form.brand) }}    
+    </div>
+    
+    <div class="form-group" style="margin-top: -40px;">
+        <label class="col-sm-3"></label>
+        <label class="col-sm-2 control-label required" style="width: 105px;padding-right: 0;">{{ 'advert.geolocated' | trans }}</label>
+        <div class="col-sm-3" style="padding-top: 5px;">
+            <div id="bundle_ecommercebundle_advert_geolocated">
+                {{ form_widget(form.geolocated.1, { attr: {class: 'minimal'} }) }} <label class="required">Si</label>&nbsp;&nbsp;
+                {{ form_widget(form.geolocated.0, { attr: {class: 'minimal'} }) }} <label class="required">No</label>&nbsp;&nbsp;
+                {{ form_widget(form.geolocated.2, { attr: {class: 'minimal'} }) }} <label class="required">Ambos</label>
+            </div>
+        </div>
+        <label class="col-sm-2 control-label required" style="width: 80px;padding: 6px 0 0 0;">{{  'advert.range.date' | trans  }}</label>
+        <div class="col-sm-3 rangedate" style="width: 253px;">
+            {{ form_widget(form.rangeDate, {  attr: {class: 'form-control ', style: 'border-radius:0px'} }) }}
+            {{ form_widget(form.days) }}
+        </div>
+  
+        
+    </div>
+                
+    
+     <div class="form-group ">
+        <label class="col-sm-2 control-label required">{{ 'located.plural' | trans }}</label>
+        <div class="col-sm-10 located">
+            {{ form_widget(form.located, { label: 'located.plural'}) }}   
+        </div>
+    </div>
+        
+    
+    <div class="form-group ">
+        <label class="col-sm-2 control-label required">{{ 'advert.postalcodes' | trans }}</label>
+        <div class="col-sm-10 codes">
+            {{ form_widget(form.codes) }}   
+        </div>
+    </div>
+       
+    <div class="form-group ">
+        <label class="col-sm-2 control-label required">{{ 'advert.cities' | trans }}</label>
+        <div class="col-sm-10 cityAutocomplete">
+            {{ form_widget(form.cityAutocomplete) }}
+            {{ form_widget(form.cities) }}   
+        </div>
+    </div>
+      
+
+        
+    
+     <div class="form-group ">
+        <label class="col-sm-2 control-label required">{{ 'title' | trans  }}</label>
+        <div class="col-sm-10">
+            {{ form_widget(form.title, { attr: {class: 'form-control', style: 'border-radius:0px'} }) }}
+        </div>
+    </div>
+    
+    {{ form_row(form.description, { label: 'description' }) }}
+
+

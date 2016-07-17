@@ -1,0 +1,15 @@
+{% if big %}
+    <div id="big-share-buttons">
+        <div class="tweet-counter" onclick="window.open('{{tweetUrl}}', 'open_window', 'width=500,height=320'); return false;" id="shareTweet-{{id}}"><span id="tweet-counter-{{id}}" class="share-container-counter">0</span> <i class="big-share-twitter"></i> </div>
+        <div class="facebook-counter" onclick="window.open('{{faceUrl}}', 'open_window', 'width=500,height=320'); return false;" id="shareFace-{{id}}" ><span id="facebook-counter-{{id}}" class="share-container-counter">0</span> <i class="big-share-facebook"></i> </div>
+        <div class="google-counter" onclick="window.open('{{googleUrl}}', 'open_window', 'width=500,height=320'); return false;" id="shareGoolge-{{id}}" ><span id="google-counter-{{id}}" class="share-container-counter">0</span> <i class="big-share-google"></i> </div>
+        <div class="linked-counter" onclick="window.open('{{linkedUrl}}', 'open_window', 'width=500,height=320'); return false;" id="shareLinkedin-{{id}}"><span id="linkedin-counter-{{id}}" class="share-container-counter">0</span> <i class="big-share-linkedin"></i> </div>
+    </div>
+{% else %}
+    <div id="share-buttons">
+        <div class="tweet-counter" onclick="window.open('{{tweetUrl}}', 'open_window', 'width=500,height=320'); return false;" id="shareTweet-{{id}}"><i class="share-tweet"></i> <span id="tweet-counter-{{id}}" class="share-container-counter">0</span></div>
+        <div class="facebook-counter" onclick="window.open('{{faceUrl}}', 'open_window', 'width=500,height=320'); return false;" id="shareFace-{{id}}"><i class="share-facebook"></i> <span id="facebook-counter-{{id}}" class="share-container-counter">0</span></div>
+        <div class="google-counter" onclick="window.open('{{googleUrl}}', 'open_window', 'width=500,height=320'); return false;" id="shareGoolge-{{id}}"><i class="share-google"></i> <span id="google-counter-{{id}}" class="share-container-counter">0</span></div>
+        <div class="linked-counter" onclick="window.open('{{linkedUrl}}', 'open_window', 'width=500,height=320'); return false;" id="shareLinkedin-{{id}}"><i class="share-linkedin"></i> <span id="linkedin-counter-{{id}}" class="share-container-counter">0</span></div>
+    </div>
+{% endif %}

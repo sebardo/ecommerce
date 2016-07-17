@@ -1,0 +1,18 @@
+{{ form_errors(form) }}
+
+{{ form_row(form.name, { label: 'name*' }) }}
+{{ form_widget(form.available, { name: 'available' }) }}
+
+
+
+{% if entity is defined and entity.image is not null %}
+    {{ form_row(form.image.file, { div_class: 'no-bottom', image: entity.image.path }) }}
+{% else %}
+    {{ form_row(form.image.file, { div_class: 'no-bottom', image: null }) }}
+{% endif %}
+{{ form_row(form.url, { label: 'URL' }) }}
+
+{{ form_row(form.category, { label: 'category.singular' }) }}
+
+
+{{ form_rest(form) }}

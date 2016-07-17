@@ -1,0 +1,16 @@
+<form method="post" action="{{ path('ecommerce_checkout_summary') }}" id="payment-transfer"  class="hidden">
+    {{ form_rest(form) }}
+    <div class="col-sm-10 detail-transfer">
+        {{ 'checkout.transfer' | trans({'%bank_name%': core['company']['name'], '%bank_account%': core['company']['bank_account'] }) | nl2br }}
+        <br />
+    </div>
+    <div class="col-sm-12 priceAndCheck">
+        <div class="price">
+            <span>{{ "checkout.amount" | trans }}:</span>
+            <strong style="margin-right: 15px;">{{ totals.amount | price }}</strong>
+            <button >{{ "checkout.confirm" | trans }}</button>
+        </div>
+        <a href="{{ path('ecommerce_checkout_deliveryinfo') }}" class="{%if is_tablet()%}btn btn-primary{% elseif is_mobile() %}back{% else%}btn btn-primary{% endif %}" title="{{ "back" | trans }}">{{ "back" | trans }}</a>
+    </div>
+</form>
+                                        

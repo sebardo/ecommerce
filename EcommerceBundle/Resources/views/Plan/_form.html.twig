@@ -1,0 +1,99 @@
+{{ form_errors(form) }}
+
+
+{{ form_row(form.name) }}
+
+{{ form_row(form.description) }}
+
+<div class="form-group plan-prices">
+    
+    <label class="col-md-2 control-label ">
+        {{ 'plan.setupAmount' | trans }}
+    </label>
+    <div class="col-md-1">
+        {{ form_widget(form.setupAmount, { attr: { 'class': 'form-control'} } ) }}
+    </div>
+    
+    <label class="col-md-1 control-label ">
+        {{ 'plan.frequency' | trans }}
+    </label>
+    <div class="col-md-1">
+        {{ form_widget(form.frequency, { attr: { 'class': 'form-control'} } ) }}
+    </div>
+    
+    <label class="col-md-2 control-label ">
+        {{ 'plan.frequencyInterval' | trans }}
+    </label>
+    <div class="col-md-1 ">
+    {{ form_widget(form.frequencyInterval, { attr: { 'class': 'form-control'} } ) }}
+    </div>
+    
+    <label class="col-md-1 control-label ">
+        {{ 'plan.cycles' | trans }}
+    </label>
+    <div class="col-md-1">
+        {{ form_widget(form.cycles, { attr: { 'class': 'form-control'} } ) }}
+    </div>
+    
+    <label class="col-md-1 control-label ">
+        {{ 'plan.amount' | trans }}
+    </label>
+    <div class="col-md-1 ">
+        {{ form_widget(form.amount, { attr: { 'class': 'form-control'} } ) }}
+    </div>
+    
+
+</div>
+    
+    
+<div class="form-group ">
+    <label class="col-md-2 control-label ">
+    </label>
+    <div class="col-md-10 trial-container">
+        <input class="minimal" type="checkbox" id="btn-trial"> Período de prueba
+    </div>
+</div>  
+    
+
+<div style="display: none" class="form-group" id="trial">
+    
+     
+    <label class="col-md-2 control-label " style="padding-top: 0;line-height: 16px;">
+        {{ 'plan.trialFrequency' | trans }}
+    </label>
+    <div class="col-md-2">
+        {{ form_widget(form.trialFrequency, { attr: { 'class': 'form-control'} } ) }}
+    </div>
+    
+    <label class="col-md-2 control-label " style="padding-top: 0;line-height: 16px;">
+        {{ 'plan.trialFrequencyInterval' | trans }}
+    </label>
+    <div class="col-md-1 ">
+    {{ form_widget(form.trialFrequencyInterval, { attr: { 'class': 'form-control'} } ) }}
+    </div>
+    
+    <label class="col-md-1 control-label " style="padding: 0;line-height: 16px;">
+        {{ 'plan.trialCycles' | trans }}
+    </label>
+    <div class="col-md-1">
+        {{ form_widget(form.trialCycles, { attr: { 'class': 'form-control'} } ) }}
+    </div>
+    
+    <label class="col-md-1 control-label " style="padding: 0;line-height: 16px;">
+        {{ 'plan.trialAmount' | trans }}
+    </label>
+    <div class="col-md-2 ">
+        {{ form_widget(form.trialAmount, { attr: { 'class': 'form-control'} } ) }}
+    </div>
+    
+</div>
+      
+{{ form_row(form.pack) }}  
+{{ form_widget(form.visible, { label: 'visible' }) }}
+{{ form_widget(form.active, { label: 'active' }) }}
+
+
+{{ form_rest(form) }}
+
+
+ 

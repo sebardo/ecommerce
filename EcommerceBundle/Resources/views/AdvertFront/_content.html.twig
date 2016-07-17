@@ -1,0 +1,50 @@
+<h3>{{'advert.plural' | trans}}</h3>
+    
+
+<div  id="advert-show">
+    <table class="table">
+      <thead>
+        <tr>
+            <th>{{ 'advert.active' | trans }}</th>
+            <th>{{ 'advert.pay.status' | trans }}</th>
+            <th>{{ 'title' | trans }}</th>
+            <th>{{ 'advert.geolocated' | trans }}</th>
+            <th>{{ 'advert.postalcodes' | trans }}</th>
+            <th>{{ 'advert.located' | trans }}</th>
+            <th>&nbsp;</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for entity in adverts %}
+            <tr>
+               <td>
+                   {% if entity.active  %}
+                       <span class="label label-warning">{{ "yes" | trans }}</span>
+                   {% else %}
+                       <span class="label label-danger">{{ "no" | trans }}</span>
+                   {% endif %}
+               </td>
+               <td><span class="label label-success">{{ entity.transactions.first.status | trans  }}</span></td>
+               <td><a class="advert-edit" href="{{ path('ecommerce_advertfront_edit', { id: entity.id } )}}">{{ entity.title }}</a></td>
+               <td>
+                   {% if entity.geolocated == '1' %}
+                       <span class="label label-warning">{{ "yes" | trans }}</span>
+                   {% elseif entity.geolocated == '0' %}
+                       <span class="label label-danger">{{ "no" | trans }}</span>
+                   {% elseif entity.geolocated == 'all' %}
+                       <span class="label label-success">{{ "all" | trans }}</span>
+                   {% endif %}
+               </td>
+               <td>{% for code in entity.postalCodes %}{{ code.postalCode }}{% if not loop.last %},{% endif %} {% endfor %}</td>
+               <td>{% for locate in entity.located %}{{ locate.name }}{% if not loop.last %},{% endif %} {% endfor %}</td>
+           </tr>
+       {% endfor %}
+      </tbody>
+    </table>
+</div>
+<div  id="advert-edit">
+     
+</div>
+      
+
+

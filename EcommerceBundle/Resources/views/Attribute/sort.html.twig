@@ -1,0 +1,76 @@
+{% extends "AdminBundle::layout.html.twig" %}
+
+{% block section %}attributes{% endblock %}
+
+{% block content %}
+    <!-- BEGIN PAGE CONTAINER-->
+    <div class="container-fluid">
+        <!-- BEGIN PAGE HEADER-->
+        <div class="row-fluid">
+            <div class="span12">
+                <!-- BEGIN PAGE TITLE & BREADCRUMB-->
+                <h3 class="page-title">
+                    {{ "attribute.sort" | trans({ '%entity%': category.name }) }}
+                </h3>
+                <ul class="breadcrumb">
+                    <li><a href="{{ path('admin_default_index') }}"> <i class="ion-home"></i>  {{ "home" | trans }}</a></li>
+                    <li><a href="{{ path('ecommerce_category_show', { id: category.id }) }}">{{ category.name }}</a></li>
+                    <li><a href="{{ path('ecommerce_attribute_sort', { categoryId: category.id }) }}">{{ "attribute.sort" | trans({ '%entity%': category.name }) }}</a></li>
+                </ul>
+                <!-- END PAGE TITLE & BREADCRUMB-->
+            </div>
+        </div>
+        <!-- END PAGE HEADER-->
+
+        <!-- BEGIN PAGE CONTENT-->
+        <div class="row-fluid">
+            <div class="span12">
+                {{ include('AdminBundle:Default:_sort_loader.html.twig') }}
+
+                <!-- TABLE PORTLET-->
+                <div class="portlet-body nestable-list">
+                    <div class="dd" id="nestable-attributes">
+                        <ol class="dd-list">
+                            {% for attribute in attributes %}
+                                <li class="dd-item" data-id="{{ attribute.id }}">
+                                    <div class="dd-handle">{{ attribute.name }}</div>
+                                </li>
+                            {% endfor %}
+                        </ol>
+                    </div>
+                </div>
+
+                <a class="btn" href="{{ path('ecommerce_category_show', { id: category.id }) }}" title="{{ 'back' | trans }}">{{ 'back' | trans }}</a>
+                <!-- END TABLE PORTLET-->
+            </div>
+        </div>
+        <!-- END PAGE CONTENT-->
+    </div>
+    <!-- END PAGE CONTAINER-->
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+
+    <script>
+        function updateOutput(e) {
+            var list = e.length ? e : $(e.target)
+            var values = window.JSON.stringify(list.nestable('serialize'));
+
+            $('#sort-loader').addClass('loading');
+
+            $.post('/admin/attributes/category/{{ category.id }}/sort', { values: values })
+            .done(function() {
+                $('#sort-loader').removeClass('loading');
+            });
+        }
+
+        jQuery(document).ready(function() {
+            App.init();
+
+            $('#nestable-attributes').nestable({
+                group: 1
+            }).on('change', updateOutput);
+        });
+    </script>
+{% endblock %}

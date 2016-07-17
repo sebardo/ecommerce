@@ -1,0 +1,145 @@
+{% extends "AdminBundle:Base:layout.html.twig" %}
+{% form_theme form 'AdminBundle:Form:fields.plus.html.twig' %}
+
+{% form_theme planForm 'AdminBundle:Form:fields.html.twig' %}
+
+{% block section %}contracts{% endblock %}
+
+{% block content %}
+    
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <h1>
+        {{ "new.contract" | trans }}
+        <small></small>
+      </h1>
+      <ol class="breadcrumb">
+        <li><a href="{{ path('admin_default_index') }}"> <i class="ion-home"></i>  {{ "home" | trans }}</a></li>
+        <li><a href="{{ path('ecommerce_contract_index') }}">{{ "contract.plural" | trans }}</a></li>
+      </ol>
+    </section>
+      
+      
+    <section class="content">
+      <div class="row">
+        <div class="col-xs-12">
+               {% include 'CoreBundle:Base:alert.messages.html.twig' %}
+            <div class="box box-info">
+                <!-- form start -->
+                <form action="{{ path('ecommerce_contract_create') }}" method="post" {{ form_enctype(form) }} class="form-horizontal form-row-seperated">
+                    <div class="box-body">
+                        {{ include('EcommerceBundle:Contract:_form.html.twig', { form: form }) }}
+                    </div><!-- /.box-body -->
+                    <div class="box-footer">
+                        <div class="col-sm-2"></div>
+                        <div class="col-sm-10">
+                            <button type="submit" class="btn btn-primary btn-flat"><i class="ion-checkmark"></i> {{ "save" | trans }}</button>
+                            <a href="{{ path('ecommerce_contract_index') }}" class="btn btn-default btn-flat">{{ "cancel.singular" | trans }}</a>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+      </div>
+    </section>
+                
+                            
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">{{ "plan.new" | trans }}</h4>
+      </div>
+      {#################################################}
+      {##################PLAN FORM######################}
+      {#################################################}
+      <form id="create-plan" action="{{ path('ecommerce_plan_create') }}" method="post" {{ form_enctype(planForm) }} class="form-horizontal form-row-seperated">
+        <div class="modal-body">
+              <div class="box-body">
+                  {{ include('EcommerceBundle:Plan:_form.html.twig', { form: planForm }) }}
+              </div><!-- /.box-body -->
+        </div>
+        <div class="box-footer">
+            <div class="col-sm-12">
+                <button type="submit" class="btn btn-primary btn-flat"><i class="icon-ok"></i> {{ "save" | trans }} <span id="loading" style="display: none" class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span></button>
+                <button type="button" class="btn btn-default" id="close" data-dismiss="modal">{{ "cancel.singular" | trans }}</button>
+            </div>
+        </div>
+      </form>
+           
+      
+    </div>
+  </div>
+</div>
+
+                
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+
+    <script>
+        jQuery(document).ready(function() {
+            
+            $('.trial-container .iCheck-helper').click(function(){
+                 $('#trial').fadeToggle('slow');
+            });
+            
+            $('#ecommercebundle_contract_agreement_paymentMethod').change(function(){
+                if($(this).val() == 'credit_card'){
+                    $('.cc-container').fadeIn('slow');
+                }
+                if($(this).val() == 'paypal'){
+                    $('.cc-container').fadeOut('slow');
+                }
+                
+            });
+            $('#ecommercebundle_contract_actor').select2({
+                placeholder: "{{ "category.choose" | trans }}",
+                allowClear: true
+            });
+            
+            $('#ecommercebundle_contract_agreement').select2({
+                placeholder: "{{ "category.choose" | trans }}",
+                allowClear: true
+            });
+            
+            $('#ecommercebundle_contract_finished').datepicker(
+            {
+                multidate: false,
+                format: 'dd/mm/yyyy',
+                language: 'es',
+                weekStart: 1
+            });
+                    
+            $('#ecommercebundle_contract_created').datepicker(
+            {
+                multidate: false,
+                format: 'dd/mm/yyyy',
+                language: 'es',
+                weekStart: 1
+            });
+
+            $("#create-plan").submit(function(e){
+                $('#loading').fadeIn('slow');
+                e.preventDefault();
+                var loading = '<i class="fa fa-spin fa-refresh"></i>';
+                $(this).find('input[type="submit"]').append(loading);
+                var formSerialize = $(this).serialize();
+                $.post('{{ path('ecommerce_plan_create') }}', formSerialize, function(response){
+                    $('#ecommercebundle_contract_agreement_plan')
+                            .append('<option value="'+response.id+'">'+response.name+'</option>');
+                    // Select the Option.
+                    $("#ecommercebundle_contract_agreement_plan > [value=" + response.id + "]").attr("selected", "true");
+                    $('#close').click();
+                    $('#loading').fadeOut('slow');
+               },'JSON');
+               
+            });
+            
+        });
+    </script>
+{% endblock %}

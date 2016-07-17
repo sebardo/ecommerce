@@ -1,0 +1,317 @@
+{% extends "AdminBundle:Base:layout.html.twig" %}
+{% form_theme edit_form 'AdminBundle:Form:fields.html.twig' %}
+{% form_theme attributes_form 'AdminBundle:Form:fields.html.twig' %}
+{% form_theme features_form 'AdminBundle:Form:fields.html.twig' %}
+{% form_theme related_form 'AdminBundle:Form:fields.html.twig' %}
+
+{% block section %}products{% endblock %}
+
+{% block content %}
+    
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <h1>
+        {{ "edit.singular" | trans }} {{ entity.name }}
+        <small></small>
+      </h1>
+      <ol class="breadcrumb">
+        <li><a href="{{ path('admin_default_index') }}"> <i class="ion-home"></i>  {{ "home" | trans }}</a></li>
+        <li><a href="javascript:">{{ "catalogue" | trans }}</a></li>
+        <li><a href="{{ path('ecommerce_product_index') }}">{{ "product.plural" | trans }}</a></li>
+        <li><a href="{{ path('ecommerce_product_show', { id: entity.id }) }}">{{ entity.name }}</a></li>
+        <li><a href="{{ path('ecommerce_product_edit', { id: entity.id }) }}">{{ "edit.singular" | trans }} </a></li>
+      </ol>
+    </section>
+    
+      
+    <section class="content">
+      <div class="row">
+          <div class="col-md-12">
+              
+               {% include 'CoreBundle:Base:alert.messages.html.twig' %}
+            <!-- Custom Tabs -->
+            <div class="nav-tabs-custom">
+              <ul class="nav nav-tabs">
+                  <li class="{{ not app.request.get('attributes') and
+                                not app.request.get('features') and
+                                not app.request.get('images') and
+                                not app.request.get('related') ? 'active' }}">
+                      <a href="#info_tab" data-toggle="tab">{{ "information" | trans }}</a>
+                  </li>
+                  {#<li class="{{ app.request.get('attributes') ? 'active' }}"><a href="#attributes_tab" data-toggle="tab">{{ "attribute.plural" | trans }}</a></li>#}
+                  <li class="{{ app.request.get('images') ? 'active' }}"><a href="#images_tab" data-toggle="tab">{{ "image.plural" | trans }}</a></li>
+                  <li class="{{ app.request.get('features') ? 'active' }}"><a href="#features_tab" data-toggle="tab">{{ "feature.plural" | trans }}</a></li>
+                  {#<li class="{{ app.request.get('related') ? 'active' }}"><a href="#related_tab" data-toggle="tab">{{ "product.related" | trans }}</a></li>#}
+              </ul>
+              <div class="tab-content">
+                <div class="tab-pane {{ not app.request.get('attributes') and
+                                        not app.request.get('features') and
+                                        not app.request.get('images') and
+                                        not app.request.get('related') ? 'active' }}" id="info_tab">
+                  
+                    <!-- BEGIN FORM-->
+                    <form action="{{ path('ecommerce_product_update', { id: entity.id }) }}" method="post" {{ form_enctype(edit_form) }} class="form-horizontal form-row-seperated">
+                        <div class="box-body">
+                            {{ include('EcommerceBundle:Product:_form.html.twig', { form: edit_form }) }}
+                            <input type="hidden" name="_method" value="PUT" />
+                        </div>
+                        <div class="box-footer">
+                            <button type="submit" class="btn btn-primary btn-flat"><i class="ion-checkmark"></i> {{ "save" | trans }}</button>
+                            <a href="{{ path('ecommerce_product_show', { id: entity.id }) }}" class="btn btn-default btn-flat">{{ "cancel.singular" | trans }}</a>
+                            <button type="submit" class="btn btn-danger btn-flat pull-right" id="delete-btn">{{ "delete" | trans }}</button>
+                        </div>
+                    </form>
+                    <!-- END FORM-->
+                       
+                    <form id="delete-entity" action="{{ path('ecommerce_product_delete', { id: entity.id }) }}" method="post">
+                        <input type="hidden" name="_method" value="DELETE" />
+                        {{ form_widget(delete_form) }}
+                    </form>
+                </div>
+                <div class="tab-pane {{ app.request.get('attributes') ? 'active' }}" id="attributes_tab">
+                    
+                    <!-- BEGIN FORM-->
+                    <form action="{{ path('ecommerce_product_update', { id: entity.id }) }}" method="post" {{ form_enctype(attributes_form) }} class="form-horizontal form-row-seperated">
+                        <div class="box-body">
+                            {{ include('EcommerceBundle:Product:_attributes_form.html.twig', { form: attributes_form }) }}
+                            <input type="hidden" name="_method" value="PUT" />
+                        </div>
+                        <div class="box-footer">
+                            <button type="submit" class="btn btn-primary btn-flat"><i class="ion-checkmark"></i> {{ "save" | trans }}</button>
+                            <a href="{{ path('ecommerce_product_show', { id: entity.id, attributes: 1 }) }}" class="btn btn-default btn-flat">{{ "cancel.singular" | trans }}</a>
+                        </div>
+                    </form>
+                    <!-- END FORM-->
+                        
+                </div>
+                <div class="tab-pane {{ app.request.get('features') ? 'active' }}" id="features_tab">
+                    <!-- BEGIN FORM-->
+                    <form action="{{ path('ecommerce_product_update', { id: entity.id }) }}" method="post" {{ form_enctype(features_form) }} class="form-horizontal form-row-seperated">
+                        <div class="box-body">
+                            {{ include('EcommerceBundle:Product:_features_form.html.twig', { form: features_form }) }}
+                            <input type="hidden" name="_method" value="PUT" />
+                        </div>
+                        <div class="box-footer">
+                            <button type="submit" class="btn btn-primary btn-flat"><i class="ion-checkmark"></i> {{ "save" | trans }}</button>
+                            <a href="{{ path('ecommerce_product_show', { id: entity.id, features: 1 }) }}" class="btn btn-default btn-flat">{{ "cancel.singular" | trans }}</a>
+                        </div>
+                    </form>
+                    <!-- END FORM-->
+                </div>
+                <div class="tab-pane {{ app.request.get('images') ? 'active' }}" id="images_tab">
+                    <div class="box-body">
+                        {{ include('EcommerceBundle:Product:_jquery_file_upload.html.twig', { form: edit_form, entity: entity }) }}
+                    </div> 
+                    <div class="box-footer">
+                        <a href="{{ path('ecommerce_product_show', { id: entity.id, images: 1 }) }}" class="btn btn-default btn-flat">{{ "back" | trans }}</a>
+                    </div>   
+                </div>
+                <div class="tab-pane {{ app.request.get('related') ? 'active' }}" id="related_tab">
+                    
+                    <!-- BEGIN FORM-->
+                    <form action="{{ path('ecommerce_product_update', { id: entity.id }) }}" method="post" {{ form_enctype(related_form) }} class="form-horizontal form-row-seperated">
+                        <div class="box-body">
+                            {{ include('EcommerceBundle:Product:_related_form.html.twig', { form: related_form }) }}
+                            <input type="hidden" name="_method" value="PUT" />
+                        </div> 
+                        <div class="box-footer">
+                            <button type="submit" class="btn btn-primary btn-flat"><i class="ion-checkmark"></i> {{ "save" | trans }}</button>
+                            <a href="{{ path('ecommerce_product_show', { id: entity.id, related: 1 }) }}" class="btn btn-default btn-flat">{{ "cancel.singular" | trans }}</a>
+                        </div>
+                    </form>
+                    <!-- END FORM-->
+                        
+                </div>
+
+                <form id="delete-entity" action="{{ path('ecommerce_product_delete', { id: entity.id }) }}" method="post">
+                    <input type="hidden" name="_method" value="DELETE" />
+                    {{ form_widget(delete_form) }}
+                </form>
+              </div><!-- /.tab-content -->
+            </div><!-- nav-tabs-custom -->
+          </div>
+      </div>
+    </section>                            
+                                
+    
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+
+    
+    {% javascripts 
+        'http://blueimp.github.io/JavaScript-Templates/js/tmpl.min.js'
+        'http://blueimp.github.io/JavaScript-Load-Image/js/load-image.all.min.js'
+        'http://blueimp.github.io/JavaScript-Canvas-to-Blob/js/canvas-to-blob.min.js'
+        'http://netdna.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js'
+        'http://blueimp.github.io/Gallery/js/jquery.blueimp-gallery.min.js'
+        'bundles/admin/plugins/jquery-file-upload-9.8.0/js/jquery.iframe-transport.js'
+        'bundles/admin/plugins/jquery-file-upload-9.8.0/js/jquery.fileupload.js'
+        'bundles/admin/plugins/jquery-file-upload-9.8.0/js/jquery.fileupload-process.js'
+        'bundles/admin/plugins/jquery-file-upload-9.8.0/js/jquery.fileupload-image.js'
+        'bundles/admin/plugins/jquery-file-upload-9.8.0/js/jquery.fileupload-audio.js'
+        'bundles/admin/plugins/jquery-file-upload-9.8.0/js/jquery.fileupload-validate.js'
+        'bundles/admin/plugins/jquery-file-upload-9.8.0/js/jquery.fileupload-ui.js'
+        'bundles/admin/plugins/jquery-file-upload-9.8.0/js/main.js'
+         %}
+        <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+
+    <!-- The XDomainRequest Transport is included for cross-domain file deletion for IE 8 and IE 9 -->
+    <!--[if (gte IE 8)&(lt IE 10)]>
+    <script src="bundles/admin/plugins/jquery-file-upload-9.8.0/js/cors/jquery.xdr-transport.js"></script>
+    <![endif]-->
+
+     
+    <script>
+        function updateImage(type, id){
+            var input = $('#'+type+'-'+id);
+            var fileName = input.attr('data');
+            var value = input.val();
+            $.ajax({
+                method: "GET",
+                url: '{{path('ecommerce_product_updateimage' )}}?file='+fileName+'&value='+value+'&type='+type,
+            }).done(function (results) {
+                console.log(results);
+            });
+            
+        }
+        jQuery(document).ready(function() {
+            
+            $('.update-title').click(function(e) {
+                var parent = $(this).parent();
+                var input = parent.find('input');
+                alert(input.attr('data'));
+            });
+
+            $('#delete-btn').on('click', function(e) {
+                e.preventDefault();
+
+                if (confirm('{{ "are.you.sure" | trans }}')) {
+                    $('#delete-entity').submit();
+                }
+            });
+            
+            $('#ecommercebundle_producttype_publishDateRange').daterangepicker(
+                {
+                    separator: ' ',   
+                    format: 'DD/MM/YYYY',
+                    timePicker: true,
+                    startDate : moment().format('DD/MM/YYYY')
+                }
+            );
+    
+            $('#ecommercebundle_producttype_category').select2({
+                placeholder: "{{ "category.choose" | trans }}",
+                allowClear: true
+            });
+
+            $('#ecommercebundle_producttype_brand').select2({
+                placeholder: "{{ "brand.choose" | trans }}",
+                allowClear: true
+            });
+            
+            $('#ecommercebundle_producttype_brand').change(function(){
+                var id = $('#ecommercebundle_producttype_brand').val();
+                $.ajax({
+                    method: "GET",
+                    url: '{{path('ecommerce_brandmodel_modeljson' )}}/'+id,
+                }).done(function (results) {
+                    var options = '';
+                    $.each( results, function( key, value ) {
+                         console.log(value);
+                         options += "<option value="+ key + ">" + value + "</option>";
+                    });
+ 
+                    //console.log(options);
+                    
+                    $('#ecommercebundle_producttype_model').html(options);
+                    $('#ecommercebundle_producttype_model').select2({
+                        placeholder: "{{ "model.choose" | trans }}",
+                        allowClear: true
+                    });
+
+                });
+            });
+            
+            
+             
+            
+            var tipo_precio = jQuery('#ecommercebundle_producttype_priceType').val();
+            if(tipo_precio == '1'){
+                jQuery('.orifinal-price').hide();
+                jQuery('.discount').hide();
+                jQuery('.discountType').hide();
+                $('.end-price').text('Porcentaje a aplicar');
+            }
+                
+            jQuery('#ecommercebundle_producttype_priceType').change(function(){
+                var val= $(this).val();
+                console.log(val);
+                if(val == '1'){
+                    jQuery('.orifinal-price').hide();
+                    jQuery('.discount').hide();
+                    jQuery('.discountType').hide();
+                    $('.end-price').text('Porcentaje a aplicar');
+                    
+                }else{
+                    jQuery('.orifinal-price').show();
+                    jQuery('.discount').show();
+                    jQuery('.discountType').show();
+                    $('.end-price').text('Precio final');
+                }
+                
+            });
+            
+            jQuery('#ecommercebundle_producttype_discount').focusout(function(){
+                precioFinal();
+            });
+            
+            jQuery('#ecommercebundle_producttype_initPrice').focusout(function(){
+                precioFinal();
+            });
+            
+            jQuery('#ecommercebundle_producttype_discountType').focusout(function(){
+                precioFinal();
+            });
+            
+      
+            
+            $('#ecommercebundle_productattributestype_attributeValues').select2({
+                width: '700px'
+            });
+            $('#ecommercebundle_productfeaturestype_featureValues').select2({
+                width: '700px'
+            });
+            $('#ecommercebundle_productrelatedtype_relatedProducts').select2({
+                width: '700px'
+            });
+        
+        
+        });
+        
+        function precioFinal(){
+            var precioOri = $('#ecommercebundle_producttype_initPrice').val();
+            var tipoDescuento = $('#ecommercebundle_producttype_discountType').val();
+            var descuento = $('#ecommercebundle_producttype_discount').val();
+            if(precioOri > 0 ){
+                var precio_final = calculo(precioOri, tipoDescuento, descuento);
+                jQuery('#ecommercebundle_producttype_price').val(precio_final);
+                //console.log('tiene precio original hay que realizar calculo'+precio_final);
+            }
+        }
+        
+        function calculo(precioOri, tipoDescuento, descuento){
+            //veo el tipo 0=%, 1=€
+            if(tipoDescuento == '0'){
+                var res = (precioOri / 100) * descuento;
+                return precioOri - res;
+            }else if(tipoDescuento == '1'){
+                return precioOri - descuento;
+            }
+            
+        }
+        
+    </script>
+{% endblock %}

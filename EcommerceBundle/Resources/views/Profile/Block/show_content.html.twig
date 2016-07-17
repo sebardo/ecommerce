@@ -1,0 +1,21 @@
+<div id="content" class="account">
+        
+        {% include 'CoreBundle:Base:alert.messages.html.twig'%}
+
+        <h3>{{ 'account.user.profile' | trans }}</h3>
+
+        <div>
+            <p><b>{{ 'account.email.singular' | trans }}</b>: {{ user.email }}</p>
+            <p><b>{{ 'account.name' | trans }}</b>: {{ user.name }} {{ user.surnames }}</p>
+        </div>
+        
+        <div class="profile-buttons">
+            <a href="javascript:void(0);" id="edit-profile">
+                <span class="ion-edit"></span> {{ 'account.edit.profile' | trans }}
+            </a>
+            <a href="javascript:void(0);" id="change-password">
+                <span class="ion-locked"></span> {{ 'account.password.change' | trans }}
+            </a>
+        </div>    
+        
+</div>          

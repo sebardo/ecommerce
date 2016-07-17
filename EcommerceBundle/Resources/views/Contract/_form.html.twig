@@ -1,0 +1,89 @@
+{{ form_errors(form) }}
+
+{{ form_row(form.actor, { label: 'actor.singular' | trans  }) }}
+
+{{ form_row(form.url, { label: 'contract.url' | trans, label_attr: {'style': 'padding: 0; line-height:30px' } } ) }}
+
+{{ form_row(form.created) }}
+
+{{ form_row(form.finished) }}
+
+<hr>
+<h3>{{ 'agreement.singular' | trans }} <i style="font-size: 16px">(paypal agreement)</i></h3>
+
+{{ form_row(form.agreement.plan, {plus: true} ) }}
+
+{{ form_row(form.agreement.name, {label: 'name' | trans }) }}
+
+{{ form_row(form.agreement.description, {label: 'description' | trans } ) }}
+
+{{ form_row(form.agreement.paymentMethod, {label: 'payment.methods' | trans } ) }}
+
+<div class="col-xs-12 cc-container">
+        <div class="col-xs-3"></div>
+        <div class="col-xs-6 cc-content">
+            
+            <div class="form-group">
+              {{ form_label(form.agreement.creditCard.firstname, null, { label_attr: {class: 'col-sm-4 control-label'} }) }}
+              <div class="col-sm-8">
+                  {{ form_widget(form.agreement.creditCard.firstname, { attr: {class: 'form-control'} }) }}
+              </div>
+            </div>  
+              
+            <div class="form-group">
+              {{ form_label(form.agreement.creditCard.lastname, null, { label_attr: {class: 'col-sm-4 control-label'} }) }}
+              <div class="col-sm-8">
+                  {{ form_widget(form.agreement.creditCard.lastname, { attr: {class: 'form-control'} }) }}
+              </div>
+            </div>  
+             
+            <div class="form-group">
+              {{ form_label(form.agreement.creditCard.cardType, null, { label_attr: {class: 'col-sm-4 control-label'} }) }}
+              <div class="col-sm-8">
+                  {{ form_widget(form.agreement.creditCard.cardType, { attr: {class: 'form-control'} }) }}
+              </div>
+            </div>  
+             
+            <div class="form-group">
+              {{ form_label(form.agreement.creditCard.cardNo, null, { label_attr: {class: 'col-sm-4 control-label'} }) }}
+              <div class="col-sm-8">
+                  {{ form_widget(form.agreement.creditCard.cardNo, { attr: {class: 'form-control'} }) }}
+              </div>
+            </div>  
+         
+             <div class="form-group">
+              {{ form_label(form.agreement.creditCard.expirationDate, null, { label_attr: {class: 'col-sm-4 control-label'} }) }}
+              <div class="col-sm-8">
+                {{ form_widget(form.agreement.creditCard.expirationDate.day, { attr:  {style: 'display:none'} } ) }}
+                {{ form_widget(form.agreement.creditCard.expirationDate.month, { attr:  {class: 'form-control'} } ) }}
+                {{ form_widget(form.agreement.creditCard.expirationDate.year, { attr:  {class: 'form-control'} } ) }}
+              </div>
+            </div>
+
+            <div class="form-group">
+              {{ form_label(form.agreement.creditCard.CVV, null, { label_attr: {class: 'col-sm-4 control-label'} }) }}
+              <div class="col-sm-8">
+                  {{ form_widget(form.agreement.creditCard.CVV, { attr: {class: 'form-control'} }) }}<span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span>
+              </div>
+            </div>  
+              
+            <div class="form-group">
+              <div class="col-sm-4 control-label"></div>
+              <div class="col-sm-8">
+                  <img src="/bundles/front/images/pay.jpg">
+              </div>
+            </div>  
+            
+            {{ form_row(form.agreement.creditCard.ts) }}
+            
+        </div>
+        <div class="col-xs-3"></div>
+</div>
+
+
+
+
+{{ form_rest(form) }}
+
+
+ 

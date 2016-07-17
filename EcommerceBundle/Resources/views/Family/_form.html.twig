@@ -1,0 +1,17 @@
+{{ form_errors(form) }}
+
+{{ form_row(form.name, { label: 'name' }) }}
+{{ form_row(form.description, { label: 'description' }) }}
+{{ form_row(form.metaTitle, { label: 'meta.title'}) }}
+{{ form_row(form.metaDescription, { label: 'meta.description' }) }}
+{{ form_row(form.metaTags, { label: 'meta.tags', div_class: 'no-bottom' }) }}
+
+
+{% if entity is defined and entity.image is not null %}
+    {{ form_row(form.image.file, { div_class: 'no-bottom', image: entity.image.path }) }}
+{% else %}
+    {{ form_row(form.image.file, { div_class: 'no-bottom' }) }}
+{% endif %}
+
+
+{{ form_rest(form) }}

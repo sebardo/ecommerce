@@ -1,0 +1,11 @@
+<form method="post" action="{{ path('ecommerce_checkout_summary') }}" id="payment-paypal"  class="hidden">
+    {{ form_rest(form) }}
+    <div class="col-sm-12 priceAndCheck">
+        <div class="price">
+           <span>{{ "checkout.amount" | trans }}:</span>
+           <strong>{{ totals.amount | price }}</strong>
+           <button >{{ "checkout.pay" | trans }}</button>
+        </div>
+        <a href="{{ path('ecommerce_checkout_deliveryinfo') }}" class="{%if is_tablet()%}btn btn-primary{% elseif is_mobile() %}back{% else%}btn btn-primary{% endif %}" title="{{ "back" | trans }}">{{ "back" | trans }}</a>
+    </div>
+</form>

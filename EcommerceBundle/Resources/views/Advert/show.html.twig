@@ -1,0 +1,235 @@
+{% extends "AdminBundle:Base:layout.html.twig" %}
+
+{% block section %}adverts{% endblock %}
+
+{% block content %}
+    
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <h1>
+        {{ entity.title }}
+        <small></small>
+      </h1>
+      <ol class="breadcrumb">
+        <li><a href="{{ path('admin_default_index') }}"> <i class="ion-home"></i>  {{ "home" | trans }}</a></li>
+        <li><a href="javascript:">{{ "advert.plural" | trans }}</a></li>
+        <li><a href="{{ path('ecommerce_advert_index') }}">{{ "advert.plural" | trans }}</a></li>
+        <li><a href="{{ path('ecommerce_advert_show', { id: entity.id }) }}">{{ entity.title }}</a></li>
+      </ol>
+    </section>
+      
+      <section class="content">
+        <div class="row">
+          <div class="col-md-12">
+              
+            {% include 'CoreBundle:Base:alert.messages.html.twig' %}
+
+             <!-- Custom Tabs -->
+            <div class="nav-tabs-custom">
+                <ul class="nav nav-tabs">
+                  <li class="{{ not app.request.get('transaction')  ? 'active' }}">
+                      <a href="#info_tab" data-toggle="tab">{{ "information" | trans }}</a>
+                  </li>
+                  <li class="{{ app.request.get('transaction') ? 'active' }}"><a href="#transaction_tab" data-toggle="tab">{{ "transaction.plural" | trans }}</a></li>
+                    
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane {{ not app.request.get('transaction') ? 'active' }}" id="info_tab">
+                        <div class="box-body">
+                            <table class="table">
+                                <tbody>
+                                   <tr>
+                                       <td>Id</td>
+                                       <td>{{ entity.id }}</td>
+                                   </tr>
+                                   {% if entity.actor.id is defined %}
+                                        <tr>
+                                            <td>{{ 'user.singular' | trans  }}</td>
+                                            <td>{{ entity.actor.fullName }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>{{ 'brand.singular' | trans  }}</td>
+                                            <td>{{ entity.brand.name }}</td>
+                                        </tr>
+                                   {% endif %}
+                                   <tr>
+                                       <td>{{ 'title' | trans  }}</td>
+                                       <td>{{ entity.title }}</td>
+                                   </tr>
+                                   <tr>
+                                       <td>{{ 'description' | trans  }}</td>
+                                       <td>{{ entity.description | raw }}</td>
+                                   </tr>
+                                   <tr>
+                                       <td>{{ "image.singular" | trans }}</td>
+                                       <td>
+                                           {% if entity.image %}
+                                               <img width="200" src="{{ asset('uploads/images/' ~ entity.image) }}" alt="{{ entity.image }}" />
+                                           {% else %}
+                                               -
+                                           {% endif %}
+                                       </td>
+                                   </tr>
+                                   <tr>
+                                       <td>{{ 'advert.geolocated' | trans  }}</td>
+                                       <td>
+                                           {% if entity.geolocated == '1' %}
+                                               <span class="label label-warning">{{ "yes" | trans }}</span>
+                                           {% elseif entity.geolocated == '0' %}
+                                               <span class="label label-danger">{{ "no" | trans }}</span>
+                                           {% elseif entity.geolocated == 'all' %}
+                                               <span class="label label-success">{{ "all" | trans }}</span>
+                                           {% endif %}
+                                       </td>
+                                   </tr>
+                                   <tr>
+                                       <td>{{ 'advert.postalcodes' | trans  }}</td>
+                                       <td>{% for code in entity.postalCodes %}{{ code.postalCode }}{% if not loop.last %},{% endif %} {% endfor %}</td>
+                                   </tr>
+                                   <tr>
+                                       <td>{{ 'advert.located' | trans  }}</td>
+                                       <td>{% for locate in entity.located %}{{ locate.name }}{% if not loop.last %},{% endif %} {% endfor %}</td>
+                                   </tr>
+                                   <tr>
+                                       <td>{{ 'city.plural' | trans  }}</td>
+                                       <td>{{ entity.cities }}</td>
+                                   </tr>
+                                   <tr>
+                                       <td>{{ 'advert.range.date' | trans  }}</td>
+                                       <td>{{ entity.rangeDate }} ( {{  entity.days ~' days' | trans }})</td>
+                                   </tr>
+                                   <tr>
+                                       <td>{{ 'active' | trans  }}</td>
+                                       <td>
+                                           {% if entity.active %}
+                                               <span class="label label-success">{{ "yes" | trans }}</span>
+                                           {% else %}
+                                               <span class="label label-danger">{{ "no" | trans }}</span>
+                                           {% endif %}
+                                       </td>
+                                   </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div class="box-footer">
+                            <a href="{{ path('ecommerce_advert_edit', { id: entity.id }) }}" class="btn btn-primary btn-flat"><i class="ion-compose"></i> {{ "edit.singular" | trans }}</a>
+                            <button type="submit" class="btn btn-danger btn-flat pull-right" id="delete-btn">{{ "delete" | trans }}</button>    
+                            <form id="delete-entity" action="{{ path('ecommerce_advert_delete', { id: entity.id }) }}" method="post">
+                                <input type="hidden" name="_method" value="DELETE" />
+                                {{ form_widget(delete_form) }}
+                            </form> 
+                        </div>
+                    </div>    
+                     <div class="tab-pane {{ app.request.get('transaction') ? 'active' }}" id="transaction_tab">
+                        <div class="box-body">
+                            <div class="tab-pane {{ app.request.get('transaction') ? 'active' }}" id="transactions_tab">
+                                <div class="box-body show-tables">
+                                    <!--<div class="transaction-detail-container">
+                                        <span id="transaction-detail">Ver detalle</span> 
+                                        <pre id="transaction-detail-inner" style="display: none"></pre>
+                                    </div>-->
+                                    <table class="table table-striped table-bordered table-hover" id="transactions-table">
+                                        <thead>
+                                        <tr>
+                                            <th class="hidden-480">{{ "number" | trans }}</th>
+                                            <th class="hidden-480">{{ "date" | trans }}</th>
+                                            <th class="hidden-480">{{ "total" | trans }}</th>
+                                            <th class="hidden-480">{{ "status.singular" | trans }}</th>
+                                            <th class="hidden-480" style="width: 100px;">&nbsp;</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="box-footer">
+                            <div class="col-sm-12"> 
+                                <a href="{{ path('ecommerce_contract_edit', { id: entity.id }) }}" class="btn btn-primary btn-flat"><i class="ion-compose"></i> {{ "edit.singular" | trans }}</a>
+                                <button type="submit" class="btn btn-danger btn-flat pull-right" id="delete-btn">{{ "delete" | trans }}</button>
+                                <form id="delete-entity" action="{{ path('ecommerce_contract_delete', { id: entity.id }) }}" method="post">
+                                    <input type="hidden" name="_method" value="DELETE" />
+                                    {{ form_widget(delete_form) }}
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+
+    <script>
+        
+        var table_columns = [
+            {
+                "mData": function(source) {
+                    return '<a href="/admin/transaction/' + source.id + '">' + source.transactionKey + '</a>';
+                }
+            },
+            {
+                "mData": function (source) {
+                    return source.created.date;
+                }
+            },
+            {
+                "mData": function (source) {
+                     
+                        return source.totalPrice+' €' ;
+                     
+                }
+            },
+            {
+                "mData": "status",
+                "mRender": function(data) {
+                    var code = '';
+
+                    if ("{{ constant('EcommerceBundle\\Entity\\Transaction::STATUS_PENDING_TRANSFER') }}" == data) {
+                        code = '<span class="label label-default">{{ "status.pending.transfer" | trans }}</span>';
+                    } else if ("{{ constant('EcommerceBundle\\Entity\\Transaction::STATUS_PENDING') }}" == data) {
+                        code = '<span class="label label-warning">{{ "status.processed" | trans }}</span>';
+                    } else if ("{{ constant('EcommerceBundle\\Entity\\Transaction::STATUS_CANCELLED') }}" == data) {
+                        code = '<span class="label label-danger">{{ "status.cancelled" | trans }}</span>';
+                    } else if ("{{ constant('EcommerceBundle\\Entity\\Transaction::STATUS_DELIVERED') }}" == data) {
+                        code = '<span class="label label-success">{{ "status.sent" | trans }}</span>';
+                    } else if ("{{ constant('EcommerceBundle\\Entity\\Transaction::STATUS_PAID') }}" == data) {
+                        code = '<span class="label label-success">{{ "status.paid" | trans }}</span>';
+                    }
+
+                    return code;
+                }
+            },
+            {
+                "mData": function(source) {
+                    //return '<td><a class="delete" href="javascript:;">Delete</a></td>';
+                    return '<a href="javascript:deleteTransaction(' + source.id +');" class="btn btn-xs btn-danger btn-flat" ><i class="ion-trash-a"></i> {{ "delete" | trans }}</a> ';
+                }
+            }
+        ];
+        
+        jQuery(document).ready(function() {
+            $('#delete-btn').on('click', function(e) {
+                e.preventDefault();
+
+                if (confirm('{{ "are.you.sure" | trans }}')) {
+                    $('#delete-entity').submit();
+                }
+            });
+
+            TableManaged.init(
+                '#transactions-table',
+                '{{ url('ecommerce_transaction_advertlistjson', {id: entity.id }) }}',
+                [],
+                table_columns,
+                '{{ url('admin_default_getdatatablesi18n', { language: app.request.locale }) }}');
+        });
+    </script>
+{% endblock %}

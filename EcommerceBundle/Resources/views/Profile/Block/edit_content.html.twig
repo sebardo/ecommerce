@@ -1,0 +1,37 @@
+<div id="content" class="account">
+         
+    <h3>{{ 'account.edit.profile' | trans }}</h3>
+
+    {{ form_errors(form) }}
+    <form class="form-horizontal profile-edit-form" method="post" action="{{ path('front_profile_edit') }}" {{ form_enctype(form) }}>
+      
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="email">{{'account.name' | trans}}</label>
+            <div class="col-sm-10">
+              {{ form_widget(form.name, {attr: {'class': 'form-control'} }) }}
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="email">{{'account.surnames' | trans}}</label>
+            <div class="col-sm-10">
+              {{ form_widget(form.surnames, {attr: {'class': 'form-control'} }) }}
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="email">{{'account.email.singular' | trans}}</label>
+            <div class="col-sm-10">
+              {{ form_widget(form.email, {attr: {'class': 'form-control'} }) }}
+            </div>
+        </div>
+ 
+        {{ form_rest(form) }}
+
+        <div class="profile-buttons">
+            <a href="javascript:void(0);"  class="profile-back"><i class="ion-reply"></i> <span>{{ 'back' | trans }}</span></a>
+            <button type="submit" class="saveProfile pull-right"> <i class="ion-checkmark"></i> {{ 'save' | trans }}</button> 
+        </div>
+        
+    </form>
+</div>

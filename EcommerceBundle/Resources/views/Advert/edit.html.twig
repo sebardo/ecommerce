@@ -1,0 +1,118 @@
+{% extends "AdminBundle:Base:layout.html.twig" %}
+{% form_theme edit_form 'AdminBundle:Form:fields.html.twig' %}
+
+{% block section %}advertsadvert{% endblock %}
+
+{% block content %}
+    
+    
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <h1>
+        {{ "edit.singular" | trans }} {{ entity.title }}
+        <small></small>
+      </h1>
+      <ol class="breadcrumb">
+        <li><a href="{{ path('admin_default_index') }}"> <i class="ion-home"></i>  {{ "home" | trans }}</a></li>
+        <li><a href="javascript:">{{ "advert.plural" | trans }}</a></li>
+        <li><a href="{{ path('ecommerce_advert_index') }}">{{ "advert.plural" | trans }}</a></li>
+        <li><a href="{{ path('ecommerce_advert_edit', { id: entity.id }) }}">{{ "edit.singular" | trans }} </a></li>
+      </ol>
+    </section>
+      
+    <section class="content">
+      <div class="row">
+        <div class="col-xs-12">
+            
+            {% include 'CoreBundle:Base:alert.messages.html.twig' %}
+            
+          <div class="box box-info">            
+                <form action="{{ path('ecommerce_advert_update', { id: entity.id }) }}" method="post" {{ form_enctype(edit_form) }} class="form-horizontal form-row-seperated">
+                    <div class="box-body">
+                        {{ include('EcommerceBundle:Advert:_form.html.twig', { form: edit_form }) }}
+                    </div>    
+                    <input type="hidden" name="_method" value="PUT" />
+
+                    <div class="box-footer">
+                        <div class="col-sm-2"></div>
+                        <div class="col-sm-10">
+                            <button type="submit" class="btn btn-primary btn-flat"><i class="ion-checkmark"></i> {{ "save" | trans }}</button>
+                            <a href="{{ path('ecommerce_advert_show', { id: entity.id }) }}" class="btn btn-default btn-flat">{{ "cancel.singular" | trans }}</a>
+                            <button type="submit" class="btn btn-danger btn-flat pull-right" id="delete-btn">{{ "delete" | trans }}</button>
+                        </div>
+                    </div>
+                </form>
+      
+                <form id="delete-entity" action="{{ path('ecommerce_advert_delete', { id: entity.id }) }}" method="post">
+                    <input type="hidden" name="_method" value="DELETE" />
+                    {{ form_widget(delete_form) }}
+                </form>
+            </div>
+          </div>
+            
+        </div>       
+      </div>
+    </section>
+          
+          
+{% endblock %}
+
+
+
+{% block javascripts %}
+    {{ parent() }}
+
+    {% javascripts 
+        'bundles/admin/plugins/ckeditor-4.5/ckeditor-custom.js'
+        'bundles/admin/plugins/ckeditor/adapters/jquery.js'
+         %}
+        <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+
+    <script>
+    $(document).ready(function () {
+
+        $(function () {
+            CKEDITOR.replace('bundle_ecommercebundle_advert_description', {
+                extraPlugins: 'uploadimage,image2',
+                height: 150,
+
+                // Upload images to a CKFinder connector (note that the response type is set to JSON).
+                uploadUrl: '{{ core.server_base_url}}/bundles/admin/plugins/ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Files&responseType=json',
+
+                // Configure your file manager integration. This example uses CKFinder 3 for PHP.
+                filebrowserBrowseUrl: '{{ core.server_base_url}}/bundles/admin/plugins/ckfinder/ckfinder.html',
+                filebrowserImageBrowseUrl: '{{ core.server_base_url}}/bundles/admin/plugins/ckfinder/ckfinder.html?type=Images',
+                filebrowserUploadUrl: '{{ core.server_base_url}}/bundles/admin/plugins/ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Files',
+                filebrowserImageUploadUrl: '{{ core.server_base_url}}/bundles/admin/plugins/ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Images',
+
+                // The following options are not necessary and are used here for presentation purposes only.
+                // They configure the Styles drop-down list and widgets to use classes.
+
+                stylesSet: [
+                        { name: 'Narrow image', type: 'widget', widget: 'image', attributes: { 'class': 'image-narrow' } },
+                        { name: 'Wide image', type: 'widget', widget: 'image', attributes: { 'class': 'image-wide' } }
+                ],
+
+                // Load the default contents.css file plus customizations for this sample.
+                //contentsCss: [ CKEDITOR.basePath + 'contents.css', 'assets/css/widgetstyles.css' ],
+
+                // Configure the Enhanced Image plugin to use classes instead of styles and to disable the
+                // resizer (because image size is controlled by widget styles or the image takes maximum
+                // 100% of the editor width).
+                image2_alignClasses: [ 'image-align-left', 'image-align-center', 'image-align-right' ],
+                image2_disableResizer: true
+            });
+        });
+
+        $('#delete-btn').on('click', function(e) {
+            e.preventDefault();
+
+            if (confirm('{{ "are.you.sure" | trans }}')) {
+                $('#delete-entity').submit();
+            }
+        });
+
+    });
+    </script>
+{% endblock %}

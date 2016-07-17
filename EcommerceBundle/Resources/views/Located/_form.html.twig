@@ -1,0 +1,8 @@
+{{ form_errors(form) }}
+
+{{ form_row(form.name, { label: 'name' }) }}
+{{ form_row(form.height, { label: 'located.height' }) }}
+{{ form_row(form.width, { label: 'located.width'}) }}
+{{ form_widget(form.active, { label: 'active'}) }}
+
+{{ form_rest(form) }}

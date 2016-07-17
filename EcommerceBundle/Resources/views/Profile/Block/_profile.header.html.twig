@@ -1,0 +1,19 @@
+<div class="col-md-3 col-sm-3 col-xs-12 profile-img ">
+    <img src="{{ get_profile_image() }}">
+    {% include 'FrontBundle:Profile:_profile.image.upload.html.twig' %}
+</div>
+<div class="col-md-9 col-sm-9 col-xs-12 profile-desc">
+    <h1 class="title">
+        {{app.user.fullName}}
+    </h1>
+    <div class="subtitle-section">
+        {% include 'CoreBundle:Base:alert.messages.html.twig'%}	
+        {% if not app.user.isActive  %}
+            <div class="alert alert-warning" role="alert">
+                <i class="ion-alert-circled"></i> {{  'validate.message' | trans}}
+            </div>
+        {% endif  %}
+    </div> 
+</div>
+    
+<div style="clear: both"></div>

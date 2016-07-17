@@ -1,0 +1,71 @@
+{{ form_errors(form) }}
+
+{{ form_row(form.actor, { label: 'actor.singular' }) }}
+{{ form_row(form.category, { label: 'category.singular' }) }}
+{{ form_row(form.brand, { label: 'brand.singular' }) }}
+{{ form_row(form.model, { label: 'model.singular' }) }}
+{{ form_row(form.name, { label: 'name' }) }}
+{{ form_row(form.slug, { label: 'slug' }) }}
+{{ form_row(form.description, { label: 'description' }) }}
+
+
+<div class="form-group ">
+    <label class="col-md-2 control-label orifinal-price">
+        {{ 'initPrice' | trans }}
+    </label>
+    <div class="col-md-4 orifinal-price">
+        {{ form_widget(form.initPrice, { attr: { 'class': 'form-control'} } ) }}
+    </div>
+    <label class="col-md-2 control-label end-price">
+        {{ 'endPrice' | trans }}
+    </label>
+    <div class="col-md-4">
+        {{ form_widget(form.price, { attr: { 'class': 'form-control'} } ) }}
+    </div>
+</div>
+
+<div class="form-group">
+    
+    <label class="col-md-2 control-label ">
+        {{ 'priceType' | trans }}
+    </label>
+    <div class="col-md-2">
+        {{ form_widget(form.priceType, { attr: { 'class': 'form-control'} } ) }}
+    </div>
+    
+        <label class="col-md-2 control-label discount">
+            {{ 'discount' | trans }}
+        </label>
+        <div class="col-md-2 discount">
+        {{ form_widget(form.discount, { attr: { 'class': 'form-control'} } ) }}
+        </div>
+        <label class="col-md-2 control-label discountType">
+            {{ 'discountType' | trans }}
+        </label>
+        <div class="col-md-2 discountType">
+            {{ form_widget(form.discountType, { attr: { 'class': 'form-control'} } ) }}
+        </div>
+    
+</div>
+
+
+{{ form_row(form.stock, { label: 'stock', div_class: 'no-bottom', class: 'form-control' }) }}
+{{ form_row(form.weight, { label: 'weight', class: 'form-control' }) }}
+{{ form_widget(form.outlet, { label: 'outlet', class: 'form-control' }) }}
+{{ form_widget(form.public, { label: 'public', class: 'form-control' }) }}
+{{ form_widget(form.storePickup, { label: 'storePickup', class: 'form-control' }) }}
+{{ form_row(form.publishDateRange, { label: 'publishDateUntil', class: 'form-control' }) }}
+
+
+{{ form_row(form.metaTitle, { label: 'meta.title' }) }}
+{{ form_row(form.metaDescription, { label: 'meta.description' }) }}
+{{ form_row(form.metaTags, { label: 'meta.tags' }) }}
+{% if app.user.isGranted('ROLE_ADMIN')%}
+{{ form_widget(form.active, { name: 'active' }) }}
+{% endif %}
+{{ form_widget(form.available, { name: 'available' }) }}
+{{ form_widget(form.highlighted, { name: 'highlighted' }) }}
+{% if app.user.isGranted('ROLE_ADMIN')%}
+{{ form_widget(form.freeTransport, { name: 'freeTransport' }) }}
+{% endif %}
+{{ form_rest(form) }}

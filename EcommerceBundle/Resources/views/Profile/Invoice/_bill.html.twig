@@ -1,0 +1,97 @@
+<div class="bill">
+    <div class="col-md-1"></div>
+    {% if is_tablet() %}
+        <div class="col-md-12">
+    {% else %}
+        <div class="col-md-10">
+    {% endif %}    
+        <div >
+            <div class="col-md-4 col-sm-5 col-xs-12">
+                <div class="container-logo-invoice">
+                    <img src="{{core.server_base_url}}{{ asset('bundles/front/images/logo.png') }}" width="250px" alt="logo" />
+                </div>
+            </div>
+            <div class="col-md-8 col-sm-7">
+                <div id="bill-info">
+                    <span>{{ "transaction.number" | trans }}: <strong>{{ invoice.transaction.transactionKey }}</strong></span><br>
+                    <span>{{ "checkout.date" | trans }}: {{ invoice.created | date("d/m/Y") }}</span>
+                </div>
+            </div>
+            <div class="space" style="clear: both"></div>
+            <div class="col-md-6 address">
+                <h3>{{ "checkout.customer.info" | trans }}</h3>
+                <p>{{ include('EcommerceBundle:Checkout:addresses/_billing.html.twig') }}</p>
+            </div>
+
+            <div class="col-md-6 address">
+                <h3>{{ "checkout.business.info" | trans }}</h3>
+                <p>
+                    {{ core['company']['name'] }}<br />
+                    {{ core['company']['id'] }}<br />
+                    {{ core['company']['address'] }}<br />
+                    {{ core['company']['postal_code'] }} {{ core['company']['city'] }}<br />
+                    {{ 'phone.abbr' | trans }} {{ core['company']['sales_phone'] }} | {{ 'fax.abbr' | trans }} {{ core['company']['sales_fax'] }}<br />
+                    {{ core['company']['website_url'] }}
+                </p>
+            </div>
+        </div>
+        <div style="clear: both"></div>
+        <div class="container-table-invoice">
+            {% if is_tablet() %}
+                 {% include 'EcommerceBundle:Profile/Invoice:bill.table.html.twig'%}
+            {% elseif is_mobile() %}
+                {% include 'EcommerceBundle:Profile/Invoice:bill.table.mobile.html.twig'%}
+            {% else %}
+                {% include 'EcommerceBundle:Profile/Invoice:bill.table.html.twig'%}
+            {% endif %}
+            <div class="total">
+                <span>{{ "total" | trans }}</span>
+                <strong>{{ totals.amount | price }}</strong>
+            </div>
+        </div>
+        
+                        
+
+        
+
+        <div class="obs">
+            <span>{{ "invoice.notes" | trans }}</span>
+            <p>
+                {% if 'credit_card' == invoice.transaction.paymentMethod %}
+                    {{ "invoice.payment.by.credit.card" | trans }}
+                {% elseif 'bank_transfer' == invoice.transaction.paymentMethod %}
+                    {{ "invoice.payment.by.bank.transfer" | trans }}
+                {% endif %}
+            </p>
+        </div>
+
+        <p class="bil-footer">
+            {% if is_tablet() %}
+                 {{ core['company']['sales_email'] }}
+                <span>|</span>
+                {{ 'phone.abbr' | trans }} {{ core['company']['sales_phone'] }}
+                <span>|</span>
+                {{ 'fax.abbr' | trans }} {{ core['company']['sales_fax'] }}
+                <span>|</span>{{ core['company']['website_url'] }}
+            {% elseif is_mobile() %}
+                {{ core['company']['sales_email'] }}
+                <br>
+                {{ 'phone.abbr' | trans }} {{ core['company']['sales_phone'] }}
+                <br>
+                {{ 'fax.abbr' | trans }} {{ core['company']['sales_fax'] }}
+                <br>
+                {{ core['company']['website_url'] }}
+            {% else %}
+                {{ core['company']['sales_email'] }}
+                <span>|</span>
+                {{ 'phone.abbr' | trans }} {{ core['company']['sales_phone'] }}
+                <span>|</span>
+                {{ 'fax.abbr' | trans }} {{ core['company']['sales_fax'] }}
+                <span>|</span>{{ core['company']['website_url'] }}
+            {% endif %}
+            
+            
+        </p>
+    </div>
+    <div class="col-md-1"></div>
+</div>
