@@ -1,3 +1,6 @@
+ecommerce: Carrito de compras
+customer.care: Atención al cliente
+sales: Ventas
 app:
   title: Solución de Ecommerce
 home: Inicio
@@ -14,6 +17,7 @@ city:
   singular: Ciudad
   plural: Ciudades
 
+products: Productos
 product:
   singular: Producto
   plural: Productos
@@ -49,6 +53,7 @@ family:
   deleted: Se ha eliminado la familia satisfactoriamente
   sort: Ordenar familias
 
+categories: Categorías
 category:
   singular: Categoría
   singular*: Categoría*
@@ -71,6 +76,7 @@ attribute:
   deleted: Se ha eliminado la función satisfactoriamente
   sort: Ordenar funciones de %entity%
 
+features: Características
 feature:
   plural: Características
   created: Se ha creado la característica satisfactoriamente
@@ -86,6 +92,7 @@ value:
   edited: Se ha editado el valor satisfactoriamente
   deleted: Se ha eliminado el valor satisfactoriamente
 
+brands: Marcas
 brand:
   singular: Marca
   singular*: Marca*
@@ -95,6 +102,7 @@ brand:
   edited: Se ha editado la marca satisfactoriamente
   deleted: Se ha eliminado la marca satisfactoriamente
 
+models: Modelos
 model:
   singular: Modelo
   plural: Modelos
@@ -103,6 +111,7 @@ model:
   edited: Se ha editado el modelo satisfactoriamente
   deleted: Se ha eliminado el modelo satisfactoriamente
   
+transactions: Transacciones
 transaction:
   singular: Transacción
   plural: Transacciones
@@ -145,14 +154,6 @@ status:
   sent: Enviado
   completed: Completado
   returned: Devuelto
-
-user:
-  singular: Usuario
-  plural: Usuarios
-  edited: Se ha editado el usuario satisfactoriamente
-  deleted: Se ha eliminado el usuario satisfactoriamente
-
-customer.care: Atención al cliente
 
 address:
   singular: Dirección
@@ -246,6 +247,7 @@ cart:
   preview: Carrito (Vista previa)
   add_short: +
   
+taxes: Impuestos
 tax:
   singular: Impuesto
   plural: Impuestos
@@ -607,6 +609,7 @@ product:
     delivery.title: GASTOS DE ENVÍO GRATIS
     delivery.text: Este producto dispone de gastos de envío gratuitos.
  
+invoices: Facturas
 invoice:
   singular: Factura
   plural: Facturas
@@ -651,14 +654,15 @@ installation:
   title: Condiciones y Funcionamiento del método de instalación y retirada.
 
 
-
+recurrings: Recurrentes
 recurring:
   singular: Recurrente
   plural: Recurrentes
   payment:
     singular: Pago recurrente
     plural: Pagos recurrentes
-    
+   
+contracts: Contratos
 contract:
   id: ID Contrato
   singular: Contrato
@@ -674,6 +678,7 @@ contract:
   url: Enlace de acuerdo asociado
   duplicated: Contrato duplicado, seleccione otro beneficiario para el plan.
   
+plans: Planes
 plan:
   id: Paypal ID
   singular: Plan

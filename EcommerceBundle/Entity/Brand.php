@@ -59,6 +59,8 @@ class Brand extends Timestampable
      * @ORM\JoinColumn(onDelete="set null")
      */
     private $image;
+    
+    public $removeImage;
 
     /**
      * @var ArrayCollection
@@ -188,6 +190,18 @@ class Brand extends Timestampable
     public function getImage()
     {
         return $this->image;
+    }
+    
+    public function setRemoveImage($removeImage)
+    {
+        $this->removeImage = $removeImage;
+
+        return $this->removeImage;
+    }
+
+    public function getRemoveImage()
+    {
+        return $this->removeImage;
     }
 
     /**

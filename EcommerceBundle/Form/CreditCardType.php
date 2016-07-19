@@ -6,7 +6,10 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use EcommerceBundle\Entity\Plan;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 
 class CreditCardType extends AbstractType
 {
@@ -42,12 +45,12 @@ class CreditCardType extends AbstractType
                             ;
                 };
             }
-            $builder->add('plan', 'entity', $planConfig);
+            $builder->add('plan', EntityType::class, $planConfig);
         }
-        $builder->add('firstname', 'text', array('label' => 'Nombre'));
-        $builder->add('lastname', 'text', array('label' => 'Apellidos'));
+        $builder->add('firstname', TextType::class, array('label' => 'Nombre'));
+        $builder->add('lastname', TextType::class, array('label' => 'Apellidos'));
         $builder->add('cardType',
-                      'choice',
+                      ChoiceType::class,
                       array('label' => 'Tipo',
                             'choices' => array(
                                 'visa' => 'visa', 
@@ -56,9 +59,9 @@ class CreditCardType extends AbstractType
                                 'amex' => 'amex'),
                            )
                      );
-        $builder->add('cardNo', 'text', array('label' => 'Número', 'max_length' => 16, 'data' => '4548812049400004'));
+        $builder->add('cardNo', TextType::class, array('label' => 'Número', 'max_length' => 16, 'data' => '4548812049400004'));
         $builder->add('expirationDate',
-                       'date',
+                       DateType::class,
                        array(
                             'label' => 'Fecha de vencimiento',
                             'empty_value' => array('year' => 'Año',
@@ -69,8 +72,8 @@ class CreditCardType extends AbstractType
                             'format' => 'dd MM yyyy')
                       );
 
-        $builder->add('CVV', 'text', array('max_length' => 4, 'label' => 'CVV'));
-        $builder->add('ts', 'hidden');
+        $builder->add('CVV', TextType::class, array('max_length' => 4, 'label' => 'CVV'));
+        $builder->add('ts', HiddenType::class);
 
     }
 

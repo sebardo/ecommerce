@@ -51,9 +51,7 @@ class CheckoutManager
     public  $token;
     
     public $mailer;
-    
-    public $phpexcel;
-    
+        
     /**
      * @param array $parameters
      */
@@ -65,8 +63,7 @@ class CheckoutManager
             $securityContext,
             $router,
             $kernel,
-            $mailer,
-            $phpexcel
+            $mailer
             )
     {
         if(isset($parameters['parameters'])) $this->parameters = $parameters['parameters'];
@@ -78,7 +75,6 @@ class CheckoutManager
         $this->kernel = $kernel;
         $this->environment = $kernel->getEnvironment();
         $this->mailer = $mailer;     
-        $this->phpexcel = $phpexcel;     
     }
     
      /**
@@ -2185,133 +2181,12 @@ class CheckoutManager
         return $item;
     }
     
-    
-    /**
-     * @param RegistredUser      $user
-     * @param Request       $request
-     *
-     * @throws ItemResolvingException
-     * @return CartItemInterface|void
-     */
-    public function sendToTransport(Transaction $transaction)
+    public function getProductStats(Product $product, $start, $end) 
     {
-        $delivery = $transaction->getDelivery();
-        $actor = $transaction->getActor();
-
-        $query = $this->manager->getRepository('EcommerceBundle:ProductPurchase')->createQueryBuilder('a')
-                ->where('a.transaction = :transaction')
-                ->setParameter(':transaction', $transaction)
-                ->getQuery();
-        $productPurchases = $query->getResult();
-
-        $phpExcelObject = $this->saveDevlieryDataToExcel($actor, $delivery, $productPurchases);
-
-        $writer = $this->phpexcel->createWriter($phpExcelObject, 'Excel5');
-        $today = new DateTime();
-        $filename = 'pedido-'.$transaction->getId().'_'.$today->format('Ymd').'.xls';
-        $baseDir = $this->kernel->getRootDir().'/../web/uploads/documents';
-        $transportDir = $baseDir.'/transport';
-        @mkdir($baseDir);
-        @mkdir($transportDir);
-        $fileDir = $transportDir.DIRECTORY_SEPARATOR.$filename;
-        $writer->save($fileDir);
-
-        //envio el email con la clave
-        $this->mailer->sendTransport($fileDir, $transaction);
+        $stats = $this->manager->getRepository('EcommerceBundle:Product')
+                ->getProductStats($product, $start, $end);
         
+        return $stats;
     }
     
-    public function saveDevlieryDataToExcel(Actor $actor, Delivery $delivery, $productPurchases)
-    {
-
-        $phpExcelObject =  $this->phpexcel->createPHPExcelObject();
-
-        $phpExcelObject->getProperties()->setCreator("Transportes")
-            ->setTitle("Listado de pedidos")
-            ->setSubject("Listado de pedidos")
-            ->setDescription("Listado de pedidos"); 
-
-            $phpExcelObject->getActiveSheet()->setTitle('Listado de pedidos');
-//            $phpExcelObject->getActiveSheet()->setCellValue("E3", 'Pedidos');
-//            $phpExcelObject->getActiveSheet()->getStyle("E3")->getFont()->setBold(true);
-            $row = 1;
-            $phpExcelObject->getActiveSheet()->setCellValue("A$row", 'ID');
-            $phpExcelObject->getActiveSheet()->setCellValue("B$row", 'COD_CLIENTE');
-            $phpExcelObject->getActiveSheet()->setCellValue("C$row", 'TIPO_PRODUCTO');
-            $phpExcelObject->getActiveSheet()->setCellValue("D$row", 'FECHA_RECOGIDA');
-            $phpExcelObject->getActiveSheet()->setCellValue("E$row", 'HORA_MIN');
-            $phpExcelObject->getActiveSheet()->setCellValue("F$row", 'HORA_MAX');
-            $phpExcelObject->getActiveSheet()->setCellValue("G$row", 'REFERENCIA');
-            $phpExcelObject->getActiveSheet()->setCellValue("H$row", 'NOMBRE_REMITENTE');
-            $phpExcelObject->getActiveSheet()->setCellValue("I$row", 'DIRECCION_ORIGEN');
-            $phpExcelObject->getActiveSheet()->setCellValue("J$row", 'POBLACION_ORIGEN');
-            $phpExcelObject->getActiveSheet()->setCellValue("K$row", 'CP_ORIGEN');
-            $phpExcelObject->getActiveSheet()->setCellValue("L$row", 'TFNO_REMITENTE');
-            $phpExcelObject->getActiveSheet()->setCellValue("M$row", 'DESTINATARIO');
-            $phpExcelObject->getActiveSheet()->setCellValue("N$row", 'DIRECCION_DESTINO');
-            $phpExcelObject->getActiveSheet()->setCellValue("O$row", 'POBLACION_DESTINO');
-            $phpExcelObject->getActiveSheet()->setCellValue("P$row", 'CP_DESTINO');
-            $phpExcelObject->getActiveSheet()->setCellValue("Q$row", 'TFNO_DESTINO');
-            $phpExcelObject->getActiveSheet()->setCellValue("R$row", 'OBSERVACIONES');
-            $phpExcelObject->getActiveSheet()->setCellValue("S$row", 'BULTOS');
-            $phpExcelObject->getActiveSheet()->setCellValue("T$row", 'KILOS');
-            $phpExcelObject->getActiveSheet()->setCellValue("U$row", 'SERVICIO');
-            
-            
-            for ($col = 'A'; $col !== 'V'; $col++) {
-                $phpExcelObject->getActiveSheet()->getStyle("$col$row")->getFont()->setBold(true);
-            }
-
-            $row++;
-            foreach ($productPurchases as $productPurchase)
-            {
-                if($productPurchase instanceof ProductPurchase && $productPurchase->getProduct()->getStorePickup() == false ){
-                    $actor = $productPurchase->getProduct()->getActor();
-                    if($actor instanceof Actor){
-                        $today = new DateTime();
-                        $today->modify('+1 day');
-                        $tomorrow = $today->format('d/m/Y');
-                        $hour_min = '10:00';
-                        $hour_max = '13:00';
-                        $phpExcelObject->getActiveSheet()->setCellValue("A$row", $productPurchase->getTransaction()->getId());
-                        $phpExcelObject->getActiveSheet()->setCellValue("B$row", '61131');
-                        $phpExcelObject->getActiveSheet()->setCellValue("C$row", $productPurchase->getProduct()->getName());
-                        $phpExcelObject->getActiveSheet()->setCellValue("D$row", $tomorrow);
-                        $phpExcelObject->getActiveSheet()->setCellValue("E$row", $hour_min);
-                        $phpExcelObject->getActiveSheet()->setCellValue("F$row", $hour_max);
-                        $phpExcelObject->getActiveSheet()->setCellValue("G$row", $productPurchase->getTransaction()->getId().'-'.$productPurchase->getProduct()->getId());
-                        //origen
-                        $phpExcelObject->getActiveSheet()->setCellValue("H$row", $actor->getName());
-                        $phpExcelObject->getActiveSheet()->setCellValue("I$row", $actor->getAddress());
-                        
-                        //state hack
-                        if($actor->getState() instanceof State){
-                            $state = $actor->getState()->getName();
-                        }else{
-                           $state = $actor->getCity();
-                        }
-                        $phpExcelObject->getActiveSheet()->setCellValue("J$row", $state);
-                        $phpExcelObject->getActiveSheet()->setCellValue("K$row", $actor->getPostalCode());
-                        //todo no hay telefono para el usuario pongo el email
-                        $phpExcelObject->getActiveSheet()->setCellValue("L$row", $actor->getEmail());
-                        
-                        $phpExcelObject->getActiveSheet()->setCellValue("M$row", $actor->getFullName());
-                        $phpExcelObject->getActiveSheet()->setCellValue("N$row", $delivery->getDeliveryAddress());
-                        $phpExcelObject->getActiveSheet()->setCellValue("O$row", $delivery->getDeliveryState()->getName());
-                        $phpExcelObject->getActiveSheet()->setCellValue("P$row", $delivery->getDeliveryPostalCode());
-                        $phpExcelObject->getActiveSheet()->setCellValue("Q$row", $delivery->getDeliveryPhone());
-                        $phpExcelObject->getActiveSheet()->setCellValue("R$row", $delivery->getNotes());
-                        $phpExcelObject->getActiveSheet()->setCellValue("S$row", '1');
-                        $phpExcelObject->getActiveSheet()->setCellValue("T$row", $productPurchase->getProduct()->getWeight());
-                        $phpExcelObject->getActiveSheet()->setCellValue("u$row", '19H');
-                        $row++;
-                    }
-                    
-                }
-                
-                
-            }
-
-        return $phpExcelObject;
-    }
 }

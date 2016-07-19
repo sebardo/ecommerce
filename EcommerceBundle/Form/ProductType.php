@@ -6,18 +6,17 @@ use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
 /**
  * Class ProductType
  */
 class ProductType extends AbstractType
 {
-    public $formConfig;
-    
-    public function __construct($formConfig) {
-        $this->formConfig = $formConfig;
-    }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -26,7 +25,7 @@ class ProductType extends AbstractType
         
         $actorArray = array (
                     'class' => 'CoreBundle:Actor',
-                    'property' => 'name',
+                    'choice_label' => 'name',
                     'query_builder' => function(EntityRepository $er) {
                         return $er->createQueryBuilder('o')
                             ->orderBy('o.name', 'ASC');
@@ -44,8 +43,8 @@ class ProductType extends AbstractType
                     'required' => false
                 );
                     
-        if(isset($this->formConfig['actor'])){
-            $actor = $this->formConfig['actor'];
+        if(isset($options['actor'])){
+            $actor = $options['actor'];
             $actorArray = array_merge($actorArray, array (
                     'query_builder' => function(EntityRepository $er)use($actor) {
                         return $er->createQueryBuilder('o')
@@ -74,26 +73,25 @@ class ProductType extends AbstractType
         }
         $builder
             ->add('name')
-            ->add('description', 'textarea')
-            ->add('slug', 'text', array('required' => false))
-            ->add('initPrice', 'text', array('required' => false))
-            ->add('price', 'text')    
-            ->add('priceType', 'choice', array(
-                'choices'  => array('0' => 'Euro "€"', '1' => 'Porcentaje "%"'),
-                'required' => true
+            ->add('description', TextareaType::class)
+            ->add('slug', TextType::class, array('required' => false))
+            ->add('initPrice', TextType::class, array('required' => false))
+            ->add('price', TextType::class)    
+            ->add('priceType', ChoiceType::class, array(
+                'choices'  => array('Euro "€"'=> '0', 'Porcentaje "%"' => '1'),
+                'required' => true,
+                'choices_as_values' => true,
             ))
-            ->add('discount', 'text', array('required' => false))    
-            ->add('discountType', 'choice', array(
-                'choices'  => array('0' => 'Porcentaje "%"', '1' => 'Fijo "€"'),
-                'required' => false
+            ->add('discount', TextType::class, array('required' => false))    
+            ->add('discountType', ChoiceType::class, array(
+                'choices'  => array('Fijo "€"'=> '0', 'Porcentaje "%"' => '1'),
+                'required' => false,
+                'choices_as_values' => true,
             ))
             ->add('stock', null, array(
                 'required' => true
             ))
             ->add('weight', null, array(
-                'required' => false
-            ))
-            ->add('outlet', null, array(
                 'required' => false
             ))
             ->add('public', null, array(
@@ -102,7 +100,7 @@ class ProductType extends AbstractType
             ->add('storePickup', null, array(
                 'required' => false
             ))
-            ->add('publishDateRange', 'text')
+            ->add('publishDateRange', TextType::class)
             ->add('metaTitle', null, array(
                 'required' => false
             ))
@@ -111,9 +109,9 @@ class ProductType extends AbstractType
             ))
             ->add('metaTags')
             
-            ->add('actor', 'entity', $actorArray)
-            ->add('category', 'entity', $categoryArray)
-            ->add('brand', 'entity', array(
+            ->add('actor', EntityType::class, $actorArray)
+            ->add('category', EntityType::class, $categoryArray)
+            ->add('brand', EntityType::class, array(
                 'class' => 'EcommerceBundle:Brand',
                 'query_builder' => function(EntityRepository $er) {
                     return $er->createQueryBuilder('b')
@@ -121,7 +119,7 @@ class ProductType extends AbstractType
                 },
                 'required' => false
             ))
-            ->add('model', 'entity', array(
+            ->add('model', EntityType::class, array(
                 'class' => 'EcommerceBundle:BrandModel',
                 'required' => false
             ))

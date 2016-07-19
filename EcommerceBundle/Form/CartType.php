@@ -6,6 +6,7 @@ namespace EcommerceBundle\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 
 
 class CartType extends AbstractType
@@ -17,7 +18,7 @@ class CartType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('items', 'collection', array(
+            ->add('items', CollectionType::class, array(
                 'type' => new CartItemType(),
             ))
         ;

@@ -179,14 +179,13 @@ class ProductRepository extends EntityRepository
         // select
         $qb = $this->getQueryBuilder(false)
             ->select('p.id, p.name, c.id categoryId, c.name categoryName, b.id brandId, b.name brandName, 
-                      p.price, p.stock, p.active, p.available, p.highlighted, p.freeTransport, actor.id actorId, actor.name actorName, pack.name packName');
+                      p.price, p.stock, p.active, p.available, p.highlighted, p.freeTransport, actor.id actorId, actor.name actorName');
 
         // join
         $qb->leftJoin('p.category', 'c')
 //            ->join('c.parentCategory', 'pc')
             ->leftJoin('p.brand', 'b')
             ->leftJoin('p.actor', 'actor')
-            ->leftJoin('actor.pack', 'pack')
             ;
 
         // search
@@ -194,8 +193,7 @@ class ProductRepository extends EntityRepository
             $qb->andWhere('p.name LIKE :search OR
                         c.name LIKE :search OR
                         b.name LIKE :search OR 
-                        actor.name LIKE :search OR 
-                        pack.name LIKE :search' )
+                        actor.name LIKE :search' )
                 ->setParameter('search', '%'.$search.'%');
         }
 
@@ -251,14 +249,13 @@ class ProductRepository extends EntityRepository
         // select
         $qb = $this->getQueryBuilder(false)
             ->select('p.id, p.name, c.id categoryId, c.name categoryName, b.id brandId, b.name brandName, 
-                      p.price, p.stock, p.active, p.available, p.highlighted, p.freeTransport, actor.id actorId, actor.name actorName, pack.name packName');
+                      p.price, p.stock, p.active, p.available, p.highlighted, p.freeTransport, actor.id actorId, actor.name actorName');
 
         // join
         $qb->join('p.category', 'c')
 //            ->join('c.parentCategory', 'pc')
             ->join('p.brand', 'b')
             ->join('p.actor', 'actor')
-            ->join('actor.pack', 'pack')
             ;
 
          $qb->where('actor.id = :actor')
@@ -268,8 +265,7 @@ class ProductRepository extends EntityRepository
             $qb->andWhere('p.name LIKE :search OR
                         c.name LIKE :search OR
                         b.name LIKE :search OR 
-                        actor.name LIKE :search OR 
-                        pack.name LIKE :search' )
+                        actor.name LIKE :search' )
                 ->setParameter('search', '%'.$search.'%');
         }
 

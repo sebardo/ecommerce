@@ -64,7 +64,11 @@
                                 </tr>
                                 <tr>
                                     <td>{{ "actor.singular" | trans }}</td>
-                                    <td><a href="{{ path('core_actor_show', {id: entity.actor.id}) }}">{{ entity.actor.name }}</a></td>
+                                    <td>
+                                        {% if entity.actor.id is defined %}
+                                        <a href="{{ path('core_actor_show', {id: entity.actor.id}) }}">{{ entity.actor.name }}</a>
+                                        {% endif %}
+                                    </td>
                                 </tr>
                                 <tr>
                                     <td>{{ "category.singular" | trans }}</td>
@@ -111,16 +115,6 @@
                                 <tr>
                                     <td>{{ "weight" | trans }}</td>
                                     <td>{{ entity.weight }}</td>
-                                </tr>
-                                <tr>
-                                    <td>{{ "outlet" | trans }}</td>
-                                    <td>
-                                        {% if entity.outlet %}
-                                            <span class="label label-success">{{ "yes" | trans }}</span>
-                                        {% else %}
-                                            <span class="label label-danger">{{ "no" | trans }}</span>
-                                        {% endif %}
-                                    </td>
                                 </tr>
                                 <tr>
                                     <td>{{ "public" | trans }}</td>

@@ -5,6 +5,7 @@ namespace EcommerceBundle\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 
 /**
  * Class ProductPurchaseType
@@ -17,7 +18,7 @@ class ProductPurchaseType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('assembly', 'checkbox', array('required' => false));
+            ->add('assembly', CheckboxType::class, array('required' => false));
     }
 
     /**

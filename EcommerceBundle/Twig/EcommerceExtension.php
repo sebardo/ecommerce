@@ -2,9 +2,9 @@
 
 namespace EcommerceBundle\Twig;
 
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Twig_SimpleFunction;
 use EcommerceBundle\Entity\CartItem;
-use EcommerceBundle\Form\CartItemType;
+use EcommerceBundle\Entity\Product;
 use EcommerceBundle\Form\CartItemSimpleType;
 use EcommerceBundle\Entity\Transaction;
 use DateTime;
@@ -37,15 +37,14 @@ class EcommerceExtension extends \Twig_Extension
     public function getFunctions()
     {
         return array(
-            'cart_exists'  => new \Twig_Function_Method($this, 'hasCart'),
-            'cart_get'     => new \Twig_Function_Method($this, 'getCurrentCart'),
-            'cart_form'    => new \Twig_Function_Method($this, 'getItemFormView'),
-            'shareUrl' => new \Twig_Function_Method($this, 'shareUrl', array(
-                            'is_safe' => array('html')
-                        )),
-            'get_approval_link'  => new \Twig_Function_Method($this, 'getApprovalLink'),
-            'get_adverts'  => new \Twig_Function_Method($this, 'getAdverts'),
-            'get_advert'  => new \Twig_Function_Method($this, 'getAdvert'),
+            new Twig_SimpleFunction('cart_exists', array($this, 'hasCart')),
+            new Twig_SimpleFunction('cart_get', array($this, 'getCurrentCart')),
+            new Twig_SimpleFunction('cart_form', array($this, 'getItemFormView')),
+            new Twig_SimpleFunction('shareUrl', array($this, 'shareUrl')),
+            new Twig_SimpleFunction('get_approval_link', array($this, 'getApprovalLink')),
+            new Twig_SimpleFunction('get_adverts', array($this, 'getAdverts')),
+            new Twig_SimpleFunction('get_advert', array($this, 'getAdvert')),
+            new Twig_SimpleFunction('get_product_stats', array($this, 'getProductStats')),
         );
     }
     
@@ -168,7 +167,7 @@ class EcommerceExtension extends \Twig_Extension
         if($type){
             $price = $price.' %';
         }else{
-            $price = $price.' '.$this->parameters['company']['currency_symbol'];
+            $price = $price.' '.$this->parameters['ecommerce']['currency_symbol'];
         }
         
         
@@ -229,7 +228,7 @@ class EcommerceExtension extends \Twig_Extension
             $price = substr($price, 0, -3);
         }
 
-        $price = $price.' '.$this->parameters['company']['currency_symbol'];
+        $price = $price.' '.$this->parameters['ecommerce']['currency_symbol'];
 
         return $price;
     }
@@ -262,6 +261,20 @@ class EcommerceExtension extends \Twig_Extension
         ));
 
         return $content;
+    }
+    
+    /**
+    * Returns statistics from product
+    *
+    */
+    public function getProductStats(Product $product, $start, $end)
+    {
+         /** @var CheckoutManager $checkoutManager */
+        $adminManager =  $this->container->get('checkout_manager');
+        $stats = $adminManager->getProductStats($product, $start, $end);
+
+        
+        return  $stats;
     }
     
     /**

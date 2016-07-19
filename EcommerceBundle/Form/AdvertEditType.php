@@ -6,7 +6,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use EcommerceBundle\Form\AdvertImageType;
-use EcommerceBundle\Form\CreditCardType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 
 class AdvertEditType extends AbstractType
 {
@@ -24,10 +24,13 @@ class AdvertEditType extends AbstractType
         $builder
             ->add('title')
             ->add('description')
-            ->add('image', new AdvertImageType(), array(
-                'error_bubbling' => false,
+            ->add('image', AdvertImageType::class, array(
                 'required' => false
-            ));
+            ))
+            ->add('removeImage', HiddenType::class, array( 'attr' => array(
+                'class' => 'remove-image'
+                )))
+            ;
         if(isset($this->formConfig['admin'])){
             $builder->add('active');
         }

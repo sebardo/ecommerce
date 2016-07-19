@@ -7,6 +7,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use CoreBundle\Form\ImageType;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
 /**
  * Class FeatureType
@@ -20,7 +21,7 @@ class FeatureType extends AbstractType
     {
         $builder
             ->add('name')
-            ->add('category', 'entity', array(
+            ->add('category', EntityType::class, array(
                 'class' => 'EcommerceBundle:Category',
                 'query_builder' => function(EntityRepository $er) {
                     return $er->createQueryBuilder('c');

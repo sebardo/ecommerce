@@ -55,7 +55,7 @@ class ProductController extends Controller
         /** @var \AdminBundle\Services\DataTables\JsonList $jsonList */
         $jsonList = $this->get('json_list');
         $jsonList->setRepository($em->getRepository('EcommerceBundle:Product'));
-        $user = $this->container->get('security.context')->getToken()->getUser();
+        $user = $this->container->get('security.token_storage')->getToken()->getUser();
         if ($user->isGranted('ROLE_USER')) {
             $jsonList->setActor($user);
         }
@@ -100,85 +100,143 @@ class ProductController extends Controller
     }
     
     /**
-     * Creates a new Product entity.
-     *
-     * @param Request $request The request
-     *
-     * @return array|RedirectResponse
-     *
-     * @Route("/")
-     * @Method("POST")
-     * @Template("EcommerceBundle:Product:new.html.twig")
-     */
-    public function createAction(Request $request)
-    {
-        $formConfig = array();
-        $user = $this->container->get('security.context')->getToken()->getUser();  
-        if ($user->isGranted('ROLE_USER')) {
-            $formConfig['actor'] = $user;
-        }
-        $entity  = new Product();
-        $form = $this->createForm(new ProductType($formConfig), $entity);
-        $form->bind($request);
-
-        if ($form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($entity);
-            $em->flush(); 
-
-            //send emails to admin and actor
-            $this->get('core.mailer')->sendActorNewProduct($entity);
-            
-            $this->get('session')->getFlashBag()->add('success', 'product.created');
-
-            return $this->redirect($this->generateUrl('ecommerce_product_edit', array('id' => $entity->getId(), 'images' => 1)));
-        }
-        
-
-        return array(
-            'entity' => $entity,
-            'form'   => $form->createView(),
-        );
-    }
-
-    /**
-     * Displays a form to create a new Product entity.
-     *
-     * @return array
+     * Creates a new Category entity.
      *
      * @Route("/new")
-     * @Method("GET")
+     * @Method({"GET", "POST"})
      * @Template()
      */
-    public function newAction()
+    public function newAction(Request $request)
     {
-        $em = $this->getDoctrine()->getManager();
         $formConfig = array();
-        
-        $user = $this->container->get('security.context')->getToken()->getUser();  
-        if ($user->isGranted('ROLE_USER')) {
-            $formConfig['actor'] = $user;
+        $user = $this->container->get('security.token_storage')->getToken()->getUser();  
+        if ($user->isGranted('ROLE_USER')) { 
+            $formConfig['actor'] = $user; 
             //disable notification
             $admin = $em->getRepository('CoreBundle:Actor')->find(1);//admin
             $notificationManager = $this->container->get('notification_manager');
             $notificationManager->disableNotificationByDetail(
-                    $admin, //current user
-                    $user,//admin
+                    $admin, //admin
+                    $user,//current user
                     'add_product', 
                     '"actor":'.$user->getId().'}'
                 );
         }
-        $entity  = new Product();
-        $form = $this->createForm(new ProductType($formConfig), $entity);
+        $entity = new Product();
+        $form = $this->createForm('EcommerceBundle\Form\ProductType', $entity, $formConfig);
+        $form->handleRequest($request);
 
-        
-         
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($entity);
+            $em->flush();
+            
+            if($entity->getActor() instanceof Actor){
+                //send emails to admin and actor
+                $this->get('core.mailer')->sendActorNewProduct($entity);
+            }
+            $this->get('session')->getFlashBag()->add('success', 'product.created');
+
+            return $this->redirectToRoute('ecommerce_product_show', array('id' => $entity->getId()));
+        }
+
         return array(
             'entity' => $entity,
-            'form'   => $form->createView(),
+            'form' => $form->createView(),
         );
     }
+    
+     /**
+     * Finds and displays a Category entity.
+     *
+     * @Route("/{id}")
+     * @Method("GET")
+     * @Template()
+     */
+    public function showAction(Product $product)
+    {
+        $deleteForm = $this->createDeleteForm($product);
 
+        //disable notification
+        $em = $this->getDoctrine()->getManager();
+        $admin = $em->getRepository('CoreBundle:Actor')->find(1);//admin
+        $notificationManager = $this->container->get('notification_manager');
+        $notificationManager->disableNotificationByDetail(
+                $admin, //current user
+                $admin,//admin
+                'new_product', 
+                '"product":'.$product->getId().'}'
+                );
+        
+        return array(
+            'entity' => $product,
+            'delete_form' => $deleteForm->createView(),
+        );
+    }
+    
+     /**
+     * Displays a form to edit an existing Product entity.
+     *
+     * @Route("/{id}/edit")
+     * @Method({"GET", "POST"})
+     * @Template()
+     */
+    public function editAction(Request $request, Product $product)
+    {
+        //access control
+        $user = $this->container->get('security.token_storage')->getToken()->getUser();  
+        if ($user->isGranted('ROLE_USER') && $product->getActor()->getId() != $user->getId()) {
+            return $this->redirect($this->generateUrl('ecommerce_product_index'));
+        }
+       
+        $formConfig = array();
+        if ($user->isGranted('ROLE_USER')) { $formConfig['actor'] = $user; }
+        $deleteForm = $this->createDeleteForm($product);
+
+        $editForm = $this->createForm('EcommerceBundle\Form\ProductType', $product, $formConfig);
+        $attributesForm = $this->createForm('EcommerceBundle\Form\ProductAttributesType', $product, array('category' => $product->getCategory()->getId()));
+        $featuresForm = $this->createForm('EcommerceBundle\Form\ProductFeaturesType', $product, array('category' => $product->getCategory()->getId()));
+        $relatedProductsForm = $this->createForm('EcommerceBundle\Form\ProductRelatedType', $product);
+
+        if($request->getMethod('POST')){
+            $redirectParams = array('id' => $product->getId());
+
+            if ($request->request->has('product_attributes')) {
+                // attributes were submitted
+                $editForm = $attributesForm;
+                $redirectParams = array_merge($redirectParams, array('attributes' => 1));
+            } else if ($request->request->has('product_features')) {
+                // features were submitted
+                $editForm = $featuresForm;
+                $redirectParams = array_merge($redirectParams, array('features' => 1));
+            } else if ($request->request->has('product_related')) {
+                // related products were submitted
+                $editForm = $relatedProductsForm;
+                $redirectParams = array_merge($redirectParams, array('related' => 1));
+            }
+            $editForm->handleRequest($request);
+
+            if ($editForm->isSubmitted() && $editForm->isValid()) {
+                $em = $this->getDoctrine()->getManager();
+                $em->persist($product);
+                $em->flush();
+
+                $this->get('session')->getFlashBag()->add('success', 'product.edited');
+                
+                return $this->redirectToRoute('ecommerce_product_show', $redirectParams);
+            }
+        }
+        
+        return array(
+            'entity'          => $product,
+            'edit_form'       => $editForm->createView(),
+            'attributes_form' => $attributesForm->createView(),
+            'features_form'   => $featuresForm->createView(),
+            'related_form'    => $relatedProductsForm->createView(),
+            'delete_form'     => $deleteForm->createView(),
+        );
+    }
+    
     /**
      * @Route("/dashboard-product")
      * @Template()
@@ -211,222 +269,47 @@ class ProductController extends Controller
             'totalTransactions' => $totalTransactions
         );
    }
-   
-    /**
-     * Finds and displays a Product entity.
-     *
-     * @param int $id The entity id
-     *
-     * @throws NotFoundHttpException
-     * @return array
-     *
-     * @Route("/{id}")
-     * @Method("GET")
-     * @Template()
-     */
-    public function showAction($id)
-    {
-        $em = $this->getDoctrine()->getManager();
-
-        /** @var Product $entity */
-        $entity = $em->getRepository('EcommerceBundle:Product')->find($id);
-
-        if (!$entity) {
-            throw $this->createNotFoundException('Unable to find Product entity.');
-        }
-
-        $deleteForm = $this->createDeleteForm($id);
-
-        //disable notification
-        $admin = $em->getRepository('CoreBundle:Actor')->find(1);//admin
-        $notificationManager = $this->container->get('notification_manager');
-        $notificationManager->disableNotificationByDetail(
-                $admin, //current user
-                $admin,//admin
-                'new_product', 
-                '"product":'.$entity->getId().'}'
-                );
-        
-        return array(
-            'entity'      => $entity,
-            'delete_form' => $deleteForm->createView(),
-        );
-    }
-
-    /**
-     * Displays a form to edit an existing Product entity.
-     *
-     * @param int $id The entity id
-     *
-     * @throws NotFoundHttpException
-     * @return array
-     *
-     * @Route("/{id}/edit")
-     * @Method("GET")
-     * @Template()
-     */
-    public function editAction($id)
-    {
-        $em = $this->getDoctrine()->getManager();
-
-        /** @var Product $entity */
-        $entity = $em->getRepository('EcommerceBundle:Product')->find($id);
-
-        if (!$entity) {
-            throw $this->createNotFoundException('Unable to find Product entity.');
-        }
-        
-        //access control
-        $user = $this->container->get('security.context')->getToken()->getUser();  
-        if ($user->isGranted('ROLE_USER') && $entity->getActor()->getId() != $user->getId()) {
-            return $this->redirect($this->generateUrl('ecommerce_product_index'));
-        }
-        
-
-        $formConfig = array();
-        $user = $this->container->get('security.context')->getToken()->getUser();  
-        if ($user->isGranted('ROLE_USER')) {
-            $formConfig['actor'] = $user;
-        }
-        $editForm = $this->createForm(new ProductType($formConfig), $entity);
-        $attributesForm = $this->createForm(new ProductAttributesType($entity->getCategory()), $entity);
-        $featuresForm = $this->createForm(new ProductFeaturesType($entity->getCategory()), $entity);
-        $relatedProductsForm = $this->createForm(new ProductRelatedType(), $entity);
-        $deleteForm = $this->createDeleteForm($id);
-
-        return array(
-            'entity'          => $entity,
-            'edit_form'       => $editForm->createView(),
-            'attributes_form' => $attributesForm->createView(),
-            'features_form'   => $featuresForm->createView(),
-            'related_form'    => $relatedProductsForm->createView(),
-            'delete_form'     => $deleteForm->createView(),
-        );
-    }
-
-    /**
-     * Edits an existing Product entity.
-     *
-     * @param Request $request The request
-     * @param int     $id      The entity id
-     *
-     * @throws NotFoundHttpException
-     * @return array|RedirectResponse
-     *
-     * @Route("/{id}")
-     * @Method("PUT")
-     * @Template("EcommerceBundle:Product:edit.html.twig")
-     */
-    public function updateAction(Request $request, $id)
-    {
-        $em = $this->getDoctrine()->getManager();
-
-        /** @var Product $entity */
-        $entity = $em->getRepository('EcommerceBundle:Product')->find($id);
-
-        if (!$entity) {
-            throw $this->createNotFoundException('Unable to find Product entity.');
-        }
-
-        $deleteForm = $this->createDeleteForm($id);
-        
-        $formConfig = array();
-        $user = $this->container->get('security.context')->getToken()->getUser();  
-        if ($user->isGranted('ROLE_USER')) {
-            $formConfig['actor'] = $user;
-        }
-        $editForm = $this->createForm(new ProductType($formConfig), $entity);
-        $attributesForm = $this->createForm(new ProductAttributesType($entity->getCategory()), $entity);
-        $featuresForm = $this->createForm(new ProductFeaturesType($entity->getCategory()), $entity);
-        $relatedProductsForm = $this->createForm(new ProductRelatedType(), $entity);
-
-        $form = $editForm;
-        $redirectParams = array('id' => $id);
-
-        if ($request->request->has('ecommercebundle_productattributestype')) {
-
-            // attributes were submitted
-            $form = $attributesForm;
-            $redirectParams = array_merge($redirectParams, array('attributes' => 1));
-
-        } else if ($request->request->has('ecommercebundle_productfeaturestype')) {
-
-            // features were submitted
-            $form = $featuresForm;
-            $redirectParams = array_merge($redirectParams, array('features' => 1));
-
-        } else if ($request->request->has('ecommercebundle_productrelatedtype')) {
-
-            // related products were submitted
-            $form = $relatedProductsForm;
-            $redirectParams = array_merge($redirectParams, array('related' => 1));
-
-        }
-
-        $form->bind($request);
-
-        if ($form->isValid()) {
-
-            $em->persist($entity);
-            $em->flush();
-
-            $this->get('session')->getFlashBag()->add('success', 'product.edited');
-
-            return $this->redirect($this->generateUrl('ecommerce_product_show', $redirectParams));
-        }else{
-            $string = (string) $form->getErrors(true, false);
-            print_r($string);
-            die('asd');
-        }
-
-        return array(
-            'entity'          => $entity,
-            'edit_form'       => $editForm->createView(),
-            'attributes_form' => $attributesForm->createView(),
-            'features_form'   => $featuresForm->createView(),
-            'delete_form'     => $deleteForm->createView(),
-            'related_form'    => $relatedProductsForm->createView(),
-        );
-    }
-
-    /**
+ 
+   /**
      * Deletes a Product entity.
-     *
-     * @param Request $request The request
-     * @param int     $id      The entity id
-     *
-     * @throws NotFoundHttpException
-     * @return RedirectResponse
      *
      * @Route("/{id}")
      * @Method("DELETE")
      */
-    public function deleteAction(Request $request, $id)
+    public function deleteAction(Request $request, Product $product)
     {
-        $form = $this->createDeleteForm($id);
-        $form->bind($request);
+        $form = $this->createDeleteForm($product);
+        $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
+            
             $em = $this->getDoctrine()->getManager();
-            /** @var Product $entity */
-            $entity = $em->getRepository('EcommerceBundle:Product')->find($id);
-
-            if (!$entity) {
-                throw $this->createNotFoundException('Unable to find Product entity.');
-            }
- 
-            try {
-                $em->remove($entity);
-                $em->flush();
-                $this->get('session')->getFlashBag()->add('info', 'product.deleted');
-            } catch (\Exception $exc) {
-                $this->get('session')->getFlashBag()->add('warning', 'product.deleted.error');
-            }
+            $em->remove($product);
+            $em->flush();
+            
+            $this->get('session')->getFlashBag()->add('info', 'product.deleted');
         }
 
-        return $this->redirect($this->generateUrl('ecommerce_product_index'));
+        return $this->redirectToRoute('ecommerce_product_index');
     }
 
+   /**
+     * Creates a form to delete a Product entity.
+     *
+     * @param Product $product The Product entity
+     *
+     * @return \Symfony\Component\Form\Form The form
+     */
+    private function createDeleteForm(Product $product)
+    {
+        return $this->createFormBuilder()
+            ->setAction($this->generateUrl('ecommerce_product_delete', array('id' => $product->getId())))
+            ->setMethod('DELETE')
+            ->getForm()
+        ;
+    }
+    
+    
     /**
      * Manages a product image
      *
@@ -476,20 +359,6 @@ class ProductController extends Controller
             
 
         return new JsonResponse(array('success' => true));
-    }
-    
-    /**
-     * Creates a form to delete a Product entity by id.
-     *
-     * @param int $id The entity id
-     *
-     * @return Form The form
-     */
-    private function createDeleteForm($id)
-    {
-        return $this->createFormBuilder(array('id' => $id))
-            ->add('id', 'hidden')
-            ->getForm();
     }
     
     

@@ -30,11 +30,14 @@
             {% include 'CoreBundle:Base:alert.messages.html.twig' %}
             <div class="box box-info">
                 <!-- BEGIN FORM-->
-                <form action="{{ path('ecommerce_category_update', { id: entity.id }) }}" method="post" {{ form_enctype(edit_form) }} class="form-horizontal form-row-seperated">
+                {{ form_start(edit_form, {
+                                    'action': path('ecommerce_category_edit', { id: entity.id }), 
+                                    'method': 'post', 
+                                    'attr': {'class': 'form-horizontal form-row-seperated'}
+                                    }) }}
                     <div class="box-body">
                         {{ include('EcommerceBundle:Category:_form.html.twig', { form: edit_form }) }}
                     </div><!-- /.box-body -->
-                    <input type="hidden" name="_method" value="PUT" />
                     
                     <div class="box-footer">
                         <div class="col-sm-12">
@@ -43,7 +46,7 @@
                             <button type="submit" class="btn btn-danger btn-flat pull-right" id="delete-btn">{{ "delete" | trans }}</button>
                         </div>
                     </div>
-                </form>
+                {{ form_end(edit_form) }}
                 <form id="delete-entity" action="{{ path('ecommerce_category_delete', { id: entity.id }) }}" method="post">
                     <input type="hidden" name="_method" value="DELETE" />
                     {{ form_widget(delete_form) }}

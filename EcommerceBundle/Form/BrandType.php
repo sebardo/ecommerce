@@ -6,6 +6,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use CoreBundle\Form\ImageType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 
 /**
  * Class BrandType
@@ -22,10 +23,12 @@ class BrandType extends AbstractType
             ->add('available', null, array(
                 'required' => false
             ))
-            ->add('image', new ImageType(), array(
-                'error_bubbling' => false,
+            ->add('image', ImageType::class, array(
                 'required' => false
             ))
+            ->add('removeImage', HiddenType::class, array( 'attr' => array(
+                'class' => 'remove-image'
+                )))
             ->add('url')
             ->add('category')
             ;
@@ -38,7 +41,6 @@ class BrandType extends AbstractType
     {
         $resolver->setDefaults(array(
             'data_class' => 'EcommerceBundle\Entity\Brand',
-            'cascade_validation' => true,
         ));
     }
 

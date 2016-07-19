@@ -25,7 +25,11 @@
         <div class="col-xs-12">
             <div class="box box-info">
                 <!-- form start -->
-                <form name="ecommercebundle_producttype" action="{{ path('ecommerce_product_create') }}" method="post" {{ form_enctype(form) }} class="form-horizontal form-row-seperated">
+                {{ form_start(form, {
+                                    'action': path('ecommerce_product_new'), 
+                                    'method': 'post', 
+                                    'attr': {'class': 'form-horizontal form-row-seperated'}
+                                    }) }}
                     <div class="box-body">
                         {{ include('EcommerceBundle:Product:_form.html.twig', { form: form }) }}
                     </div><!-- /.box-body -->
@@ -36,7 +40,7 @@
                             <a href="{{ path('ecommerce_product_index') }}" class="btn btn-default btn-flat">{{ "cancel.singular" | trans }}</a>
                         </div>
                     </div>
-                </form>
+                {{ form_end(form) }}
             </div>
         </div>
     </section>
@@ -50,7 +54,7 @@
     <script>
         jQuery(document).ready(function() {
             
-            $('#ecommercebundle_producttype_publishDateRange').daterangepicker(
+            $('#product_publishDateRange').daterangepicker(
                 {
                     separator: ' ',   
                     format: 'DD/MM/YYYY',
@@ -59,18 +63,18 @@
                 }
             );
     
-            $('#ecommercebundle_producttype_category').select2({
+            $('#product_category').select2({
                 placeholder: "{{ "category.choose" | trans }}",
                 allowClear: true
             });
 
-            $('#ecommercebundle_producttype_brand').select2({
+            $('#product_brand').select2({
                 placeholder: "{{ "brand.choose" | trans }}",
                 allowClear: true
             });
             
-            $('#ecommercebundle_producttype_brand').change(function(){
-                var id = $('#ecommercebundle_producttype_brand').val();
+            $('#product_brand').change(function(){
+                var id = $('#product_brand').val();
                 $.ajax({
                     method: "GET",
                     url: '{{path('ecommerce_brandmodel_modeljson' )}}/'+id,
@@ -81,10 +85,8 @@
                          options += "<option value="+ key + ">" + value + "</option>";
                     });
  
-                    //console.log(options);
-                    
-                    $('#ecommercebundle_producttype_model').html(options);
-                    $('#ecommercebundle_producttype_model').select2({
+                    $('#product_model').html(options);
+                    $('#product_model').select2({
                         placeholder: "{{ "model.choose" | trans }}",
                         allowClear: true
                     });
@@ -95,7 +97,7 @@
             
              
             
-            var tipo_precio = jQuery('#ecommercebundle_producttype_priceType').val();
+            var tipo_precio = jQuery('#product_priceType').val();
             if(tipo_precio == '1'){
                 jQuery('.orifinal-price').hide();
                 jQuery('.discount').hide();
@@ -103,7 +105,7 @@
                 $('.end-price').text('Porcentaje a aplicar');
             }
                 
-            jQuery('#ecommercebundle_producttype_priceType').change(function(){
+            jQuery('#product_priceType').change(function(){
                 var val= $(this).val();
                 console.log(val);
                 if(val == '1'){
@@ -121,15 +123,15 @@
                 
             });
             
-            jQuery('#ecommercebundle_producttype_discount').focusout(function(){
+            jQuery('#product_discount').focusout(function(){
                 precioFinal();
             });
             
-            jQuery('#ecommercebundle_producttype_initPrice').focusout(function(){
+            jQuery('#product_initPrice').focusout(function(){
                 precioFinal();
             });
             
-            jQuery('#ecommercebundle_producttype_discountType').focusout(function(){
+            jQuery('#product_discountType').focusout(function(){
                 precioFinal();
             });
             
@@ -140,12 +142,12 @@
         });
         
         function precioFinal(){
-            var precioOri = $('#ecommercebundle_producttype_initPrice').val();
-            var tipoDescuento = $('#ecommercebundle_producttype_discountType').val();
-            var descuento = $('#ecommercebundle_producttype_discount').val();
+            var precioOri = $('#product_initPrice').val();
+            var tipoDescuento = $('#product_discountType').val();
+            var descuento = $('#product_discount').val();
             if(precioOri > 0 ){
                 var precio_final = calculo(precioOri, tipoDescuento, descuento);
-                jQuery('#ecommercebundle_producttype_price').val(precio_final);
+                jQuery('#product_price').val(precio_final);
                 //console.log('tiene precio original hay que realizar calculo'+precio_final);
             }
         }

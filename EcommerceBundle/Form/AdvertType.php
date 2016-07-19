@@ -8,6 +8,10 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use EcommerceBundle\Form\AdvertImageType;
 use EcommerceBundle\Form\CreditCardType;
 use Doctrine\ORM\EntityRepository;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
 class AdvertType extends AbstractType
 {
@@ -25,7 +29,7 @@ class AdvertType extends AbstractType
         
         $actorArray = array (
                     'class' => 'CoreBundle:Actor',
-                    'property' => 'name',
+                    'choice_label' => 'name',
                     'query_builder' => function(EntityRepository $er) {
                         return $er->createQueryBuilder('o')
                             ->orderBy('o.name', 'ASC');
@@ -38,7 +42,7 @@ class AdvertType extends AbstractType
         $builder
             ->add('title')
             ->add('description')
-            ->add('geolocated', 'choice', array(
+            ->add('geolocated', ChoiceType::class, array(
                 'choices'  => array(0 => 'No', 1 => 'Si', 'all' => 'Todo'),
                 'required' => true,
                 'expanded' => true,
@@ -46,8 +50,8 @@ class AdvertType extends AbstractType
                 'empty_data' => null
 //                'placeholder' => 'Selecciona el tipo de envío'
             ))
-            ->add('rangeDate', 'text')
-            ->add('days', 'hidden')
+            ->add('rangeDate', TextType::class)
+            ->add('days', HiddenType::class)
             ->add('image', new AdvertImageType(), array(
                 'error_bubbling' => false,
                 'required' => false
@@ -64,9 +68,9 @@ class AdvertType extends AbstractType
                     },
                     'data' => $actor
                 ));
-                $builder->add('actor', 'entity', $actorArray);
+                $builder->add('actor', EntityType::class, $actorArray);
             }else{
-                $builder->add('actor', 'entity', $actorArray);
+                $builder->add('actor', EntityType::class, $actorArray);
                 $builder->add('brand');
             }
         
@@ -74,7 +78,7 @@ class AdvertType extends AbstractType
             
             $builder->add('located')
             ->add('cities', 'hidden')
-            ->add('cityAutocomplete', 'text', array(
+            ->add('cityAutocomplete', TextType::class, array(
                 'required' => false,
                 'attr' => array(
                         'multiple'=> true,
@@ -90,7 +94,7 @@ class AdvertType extends AbstractType
                         )
                     )
                 )
-            ->add('creditCard', new CreditCardType())
+            ->add('creditCard', CreditCardType::class)
         ;
     }
     

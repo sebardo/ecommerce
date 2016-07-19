@@ -7,6 +7,9 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use EcommerceBundle\Form\AdvertImageType;
 use EcommerceBundle\Form\CreditCardType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 
 class AdvertFrontType extends AbstractType
 {
@@ -22,7 +25,7 @@ class AdvertFrontType extends AbstractType
             ->add('brand', null, array(
                 'required' => false,
             ))
-            ->add('geolocated', 'choice', array(
+            ->add('geolocated', ChoiceType::class, array(
                 'choices'  => array(0 => 'No', 1 => 'Si', 'all' => 'Todo'),
                 'required' => true,
                 'expanded' => true,
@@ -30,15 +33,14 @@ class AdvertFrontType extends AbstractType
                 'empty_data' => null
 //                'placeholder' => 'Selecciona el tipo de envío'
             ))
-            ->add('rangeDate', 'text')
-            ->add('days', 'hidden')
-            ->add('image', new AdvertImageType(), array(
-                'error_bubbling' => false,
+            ->add('rangeDate', TextType::class)
+            ->add('days', HiddenType::class)
+            ->add('image', AdvertImageType::class, array(
                 'required' => false
             ))
             ->add('located')
-            ->add('cities', 'hidden')
-            ->add('cityAutocomplete', 'text', array(
+            ->add('cities', HiddenType::class)
+            ->add('cityAutocomplete', TextType::class, array(
                 'required' => false,
                 'attr' => array(
                         'multiple'=> true,
@@ -47,7 +49,7 @@ class AdvertFrontType extends AbstractType
                         )
                     )
                 )    
-            ->add('codes', 'text', array(
+            ->add('codes', TextType::class, array(
                 'attr' => array(
                         'multiple'=> true,
                         'data-url' => "/postalcodes.json",
@@ -56,7 +58,7 @@ class AdvertFrontType extends AbstractType
                         )
                     )
                 )
-            ->add('creditCard', new CreditCardType())
+            ->add('creditCard', CreditCardType::class)
         ;
     }
     

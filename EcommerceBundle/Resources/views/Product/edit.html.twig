@@ -38,10 +38,10 @@
                                 not app.request.get('related') ? 'active' }}">
                       <a href="#info_tab" data-toggle="tab">{{ "information" | trans }}</a>
                   </li>
-                  {#<li class="{{ app.request.get('attributes') ? 'active' }}"><a href="#attributes_tab" data-toggle="tab">{{ "attribute.plural" | trans }}</a></li>#}
+                  <li class="{{ app.request.get('attributes') ? 'active' }}"><a href="#attributes_tab" data-toggle="tab">{{ "attribute.plural" | trans }}</a></li>
                   <li class="{{ app.request.get('images') ? 'active' }}"><a href="#images_tab" data-toggle="tab">{{ "image.plural" | trans }}</a></li>
                   <li class="{{ app.request.get('features') ? 'active' }}"><a href="#features_tab" data-toggle="tab">{{ "feature.plural" | trans }}</a></li>
-                  {#<li class="{{ app.request.get('related') ? 'active' }}"><a href="#related_tab" data-toggle="tab">{{ "product.related" | trans }}</a></li>#}
+                  <li class="{{ app.request.get('related') ? 'active' }}"><a href="#related_tab" data-toggle="tab">{{ "product.related" | trans }}</a></li>
               </ul>
               <div class="tab-content">
                 <div class="tab-pane {{ not app.request.get('attributes') and
@@ -50,17 +50,20 @@
                                         not app.request.get('related') ? 'active' }}" id="info_tab">
                   
                     <!-- BEGIN FORM-->
-                    <form action="{{ path('ecommerce_product_update', { id: entity.id }) }}" method="post" {{ form_enctype(edit_form) }} class="form-horizontal form-row-seperated">
+                    {{ form_start(edit_form, {
+                                    'action': path('ecommerce_product_edit', { id: entity.id }), 
+                                    'method': 'post', 
+                                    'attr': {'class': 'form-horizontal form-row-seperated'}
+                                    }) }}
                         <div class="box-body">
                             {{ include('EcommerceBundle:Product:_form.html.twig', { form: edit_form }) }}
-                            <input type="hidden" name="_method" value="PUT" />
                         </div>
                         <div class="box-footer">
                             <button type="submit" class="btn btn-primary btn-flat"><i class="ion-checkmark"></i> {{ "save" | trans }}</button>
                             <a href="{{ path('ecommerce_product_show', { id: entity.id }) }}" class="btn btn-default btn-flat">{{ "cancel.singular" | trans }}</a>
                             <button type="submit" class="btn btn-danger btn-flat pull-right" id="delete-btn">{{ "delete" | trans }}</button>
                         </div>
-                    </form>
+                    {{ form_end(edit_form) }}
                     <!-- END FORM-->
                        
                     <form id="delete-entity" action="{{ path('ecommerce_product_delete', { id: entity.id }) }}" method="post">
@@ -71,7 +74,11 @@
                 <div class="tab-pane {{ app.request.get('attributes') ? 'active' }}" id="attributes_tab">
                     
                     <!-- BEGIN FORM-->
-                    <form action="{{ path('ecommerce_product_update', { id: entity.id }) }}" method="post" {{ form_enctype(attributes_form) }} class="form-horizontal form-row-seperated">
+                    {{ form_start(edit_form, {
+                                    'action': path('ecommerce_product_edit', { id: entity.id }), 
+                                    'method': 'post', 
+                                    'attr': {'class': 'form-horizontal form-row-seperated'}
+                                    }) }}
                         <div class="box-body">
                             {{ include('EcommerceBundle:Product:_attributes_form.html.twig', { form: attributes_form }) }}
                             <input type="hidden" name="_method" value="PUT" />
@@ -86,7 +93,11 @@
                 </div>
                 <div class="tab-pane {{ app.request.get('features') ? 'active' }}" id="features_tab">
                     <!-- BEGIN FORM-->
-                    <form action="{{ path('ecommerce_product_update', { id: entity.id }) }}" method="post" {{ form_enctype(features_form) }} class="form-horizontal form-row-seperated">
+                    {{ form_start(edit_form, {
+                                    'action': path('ecommerce_product_edit', { id: entity.id }), 
+                                    'method': 'post', 
+                                    'attr': {'class': 'form-horizontal form-row-seperated'}
+                                    }) }}
                         <div class="box-body">
                             {{ include('EcommerceBundle:Product:_features_form.html.twig', { form: features_form }) }}
                             <input type="hidden" name="_method" value="PUT" />
@@ -109,7 +120,11 @@
                 <div class="tab-pane {{ app.request.get('related') ? 'active' }}" id="related_tab">
                     
                     <!-- BEGIN FORM-->
-                    <form action="{{ path('ecommerce_product_update', { id: entity.id }) }}" method="post" {{ form_enctype(related_form) }} class="form-horizontal form-row-seperated">
+                    {{ form_start(edit_form, {
+                                    'action': path('ecommerce_product_edit', { id: entity.id }), 
+                                    'method': 'post', 
+                                    'attr': {'class': 'form-horizontal form-row-seperated'}
+                                    }) }}
                         <div class="box-body">
                             {{ include('EcommerceBundle:Product:_related_form.html.twig', { form: related_form }) }}
                             <input type="hidden" name="_method" value="PUT" />
@@ -193,7 +208,7 @@
                 }
             });
             
-            $('#ecommercebundle_producttype_publishDateRange').daterangepicker(
+            $('#product_publishDateRange').daterangepicker(
                 {
                     separator: ' ',   
                     format: 'DD/MM/YYYY',
@@ -202,18 +217,18 @@
                 }
             );
     
-            $('#ecommercebundle_producttype_category').select2({
+            $('#product_category').select2({
                 placeholder: "{{ "category.choose" | trans }}",
                 allowClear: true
             });
 
-            $('#ecommercebundle_producttype_brand').select2({
+            $('#product_brand').select2({
                 placeholder: "{{ "brand.choose" | trans }}",
                 allowClear: true
             });
             
-            $('#ecommercebundle_producttype_brand').change(function(){
-                var id = $('#ecommercebundle_producttype_brand').val();
+            $('#product_brand').change(function(){
+                var id = $('#product_brand').val();
                 $.ajax({
                     method: "GET",
                     url: '{{path('ecommerce_brandmodel_modeljson' )}}/'+id,
@@ -226,8 +241,8 @@
  
                     //console.log(options);
                     
-                    $('#ecommercebundle_producttype_model').html(options);
-                    $('#ecommercebundle_producttype_model').select2({
+                    $('#product_model').html(options);
+                    $('#product_model').select2({
                         placeholder: "{{ "model.choose" | trans }}",
                         allowClear: true
                     });
@@ -238,7 +253,7 @@
             
              
             
-            var tipo_precio = jQuery('#ecommercebundle_producttype_priceType').val();
+            var tipo_precio = jQuery('#product_priceType').val();
             if(tipo_precio == '1'){
                 jQuery('.orifinal-price').hide();
                 jQuery('.discount').hide();
@@ -246,7 +261,7 @@
                 $('.end-price').text('Porcentaje a aplicar');
             }
                 
-            jQuery('#ecommercebundle_producttype_priceType').change(function(){
+            jQuery('#product_priceType').change(function(){
                 var val= $(this).val();
                 console.log(val);
                 if(val == '1'){
@@ -264,15 +279,15 @@
                 
             });
             
-            jQuery('#ecommercebundle_producttype_discount').focusout(function(){
+            jQuery('#product_discount').focusout(function(){
                 precioFinal();
             });
             
-            jQuery('#ecommercebundle_producttype_initPrice').focusout(function(){
+            jQuery('#product_initPrice').focusout(function(){
                 precioFinal();
             });
             
-            jQuery('#ecommercebundle_producttype_discountType').focusout(function(){
+            jQuery('#product_discountType').focusout(function(){
                 precioFinal();
             });
             
@@ -281,7 +296,7 @@
             $('#ecommercebundle_productattributestype_attributeValues').select2({
                 width: '700px'
             });
-            $('#ecommercebundle_productfeaturestype_featureValues').select2({
+            $('#product_features_featureValues').select2({
                 width: '700px'
             });
             $('#ecommercebundle_productrelatedtype_relatedProducts').select2({
@@ -292,12 +307,12 @@
         });
         
         function precioFinal(){
-            var precioOri = $('#ecommercebundle_producttype_initPrice').val();
-            var tipoDescuento = $('#ecommercebundle_producttype_discountType').val();
-            var descuento = $('#ecommercebundle_producttype_discount').val();
+            var precioOri = $('#product_initPrice').val();
+            var tipoDescuento = $('#product_discountType').val();
+            var descuento = $('#product_discount').val();
             if(precioOri > 0 ){
                 var precio_final = calculo(precioOri, tipoDescuento, descuento);
-                jQuery('#ecommercebundle_producttype_price').val(precio_final);
+                jQuery('#product_price').val(precio_final);
                 //console.log('tiene precio original hay que realizar calculo'+precio_final);
             }
         }

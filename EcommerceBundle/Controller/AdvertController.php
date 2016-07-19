@@ -127,7 +127,7 @@ class AdvertController extends Controller
             if($answer->redirectUrl == '/response-ok'){
                 $this->get('session')->getFlashBag()->add('success', 'advert.created');
                 
-                $user = $this->container->get('security.context')->getToken()->getUser();  
+                $user = $this->container->get('security.token_storage')->getToken()->getUser();  
 
                 return $this->redirect($this->generateUrl('ecommerce_advert_show', array('id' => $entity->getId())));
                 
@@ -154,7 +154,7 @@ class AdvertController extends Controller
     private function createCreateForm(Advert $entity)
     {
         $formConfig = array();
-        $user = $this->container->get('security.context')->getToken()->getUser();  
+        $user = $this->container->get('security.token_storage')->getToken()->getUser();  
         if ($user->isGranted('ROLE_USER')) {
             $formConfig['actor'] = $user;
         }
@@ -248,7 +248,7 @@ class AdvertController extends Controller
     private function createEditForm(Advert $entity)
     {
         $formConfig = array();
-        $user = $this->container->get('security.context')->getToken()->getUser();  
+        $user = $this->container->get('security.token_storage')->getToken()->getUser();  
         if ($user->isGranted('ROLE_ADMIN') || $user->isGranted('ROLE_SUPER_ADMIN')) {
             $formConfig['admin'] = true;
         }

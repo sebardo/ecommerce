@@ -5,6 +5,7 @@ namespace EcommerceBundle\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use CoreBundle\Form\ImageType;
 
 /**
@@ -19,10 +20,12 @@ class AttributeValueType extends AbstractType
     {
         $builder
             ->add('name')
-            ->add('image', new ImageType(), array(
-                'error_bubbling' => false,
+            ->add('image', ImageType::class, array(
                 'required' => false
-            ));
+            ))
+            ->add('removeImage', HiddenType::class, array( 'attr' => array(
+            'class' => 'remove-image'
+            )));
     }
 
     /**

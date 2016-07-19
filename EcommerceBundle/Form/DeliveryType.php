@@ -5,7 +5,6 @@ namespace EcommerceBundle\Form;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityRepository;
 use EcommerceBundle\Entity\Delivery;
-use EcommerceBundle\Entity\Actor;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
@@ -13,6 +12,10 @@ use Symfony\Component\Form\FormEvents;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Security\Core\SecurityContext;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 
 /**
  * Class DeliveryType
@@ -65,10 +68,10 @@ class DeliveryType extends AbstractType
             ->add('address', null, array(
                 'required' => false
             ))
-            ->add('city', 'text', array(
+            ->add('city', TextType::class, array(
                 'required' => false
             ))
-            ->add('state', 'entity', array(
+            ->add('state', EntityType::class, array(
                 'class' => 'CoreBundle:State',
                 'query_builder' => function(EntityRepository $er) {
                     return $er->createQueryBuilder('c');
@@ -87,21 +90,21 @@ class DeliveryType extends AbstractType
             ->add('phone2', null, array(
                 'required' => false
             ))
-            ->add('preferredSchedule', 'choice', array(
+            ->add('preferredSchedule', ChoiceType::class, array(
                 'choices'  => Delivery::getSchedules(),
                 'required' => false
             ))
 
-            ->add('deliveryDni', 'text', array(
+            ->add('deliveryDni', TextType::class, array(
                 'required' => false
             ))
-            ->add('deliveryAddress', 'text', array(
+            ->add('deliveryAddress', TextType::class, array(
                 'required' => false
             ))
-            ->add('deliveryCity', 'text', array(
+            ->add('deliveryCity', TextType::class, array(
                 'required' => false
             ))
-            ->add('deliveryState', 'entity', array(
+            ->add('deliveryState', EntityType::class, array(
                     'class' => 'CoreBundle:State',
                     'query_builder' => function(EntityRepository $er) {
                         return $er->createQueryBuilder('c');
@@ -110,28 +113,20 @@ class DeliveryType extends AbstractType
                     'placeholder' => 'Selecciona tu provincia',
                     'empty_data'  => null
                 ))
-            ->add('deliveryPostalCode', 'text', array(
+            ->add('deliveryPostalCode', TextType::class, array(
                 'required' => false
             ))
-            ->add('deliveryPhone', 'text', array(
+            ->add('deliveryPhone', TextType::class, array(
                 'required' => false
             ))
-            ->add('deliveryPhone2', 'text', array(
+            ->add('deliveryPhone2', TextType::class, array(
                 'required' => false
             ))
-            ->add('deliveryPreferredSchedule', 'choice', array(
+            ->add('deliveryPreferredSchedule', ChoiceType::class, array(
                 'choices'  => Delivery::getSchedules(),
                 'required' => false
             ))
-
-//            ->add('carrier', 'entity', array(
-//                'class' => 'ModelBundle:Carrier',
-//                'query_builder' => function(EntityRepository $er) {
-//                    return $er->createQueryBuilder('c')
-//                        ->orderBy('c.expenses', 'asc');
-//                }
-//            ))
-            ->add('notes', 'textarea', array(
+            ->add('notes', TextareaType::class, array(
                 'required' => false
             ));
 
@@ -173,7 +168,7 @@ class DeliveryType extends AbstractType
             }
         });
 
-        $builder->add('selectDelivery', 'choice', array(
+        $builder->add('selectDelivery', ChoiceType::class, array(
             'choices'  => $selectDelivery,
             'multiple' => false,
             'expanded' => true,

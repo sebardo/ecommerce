@@ -81,7 +81,7 @@ class AdvertFrontController extends Controller
                     $entity->addPostalCode($postalCodeEntity);
                 }
             }
-            $user = $this->container->get('security.context')->getToken()->getUser();
+            $user = $this->container->get('security.token_storage')->getToken()->getUser();
             if($user instanceof Actor){
                 $entity->setActor($user);
             }
@@ -124,7 +124,7 @@ class AdvertFrontController extends Controller
                 $this->get('session')->getFlashBag()->add('success', 'advert.created');
                 //return $this->redirect($answer->redirectUrl);
                 
-                if($this->get('security.context')->getToken()->getUser() instanceof Actor){
+                if($this->get('security.token_storage')->getToken()->getUser() instanceof Actor){
                     return $this->redirect($this->generateUrl('core_profile_index', array('adverts' => true )));
                 }
             }else{
@@ -177,7 +177,7 @@ class AdvertFrontController extends Controller
     private function createEditForm(Advert $entity)
     {
         $formConfig = array();
-        $user = $this->container->get('security.context')->getToken()->getUser();  
+        $user = $this->container->get('security.token_storage')->getToken()->getUser();  
         if ($user->isGranted('ROLE_ADMIN') || $user->isGranted('ROLE_SUPER_ADMIN')) {
             $formConfig['admin'] = true;
         }

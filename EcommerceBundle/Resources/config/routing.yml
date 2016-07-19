@@ -1,0 +1,4 @@
+ecommerce:
+    resource: "@EcommerceBundle/Controller/"
+    type:     annotation
+    prefix:   /

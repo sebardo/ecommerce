@@ -3,10 +3,7 @@
 namespace EcommerceBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
-use Symfony\Component\Validator\Constraints as Assert;
 use CoreBundle\Entity\Timestampable;
-use CoreBundle\Entity\Pack;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
@@ -123,15 +120,6 @@ class Plan extends Timestampable
      * @ORM\OneToMany(targetEntity="Agreement", mappedBy="plan", cascade={"remove"})
      */
     private $agreements;
-    
-    
-    /**
-     * @var Pack
-     *
-     * @ORM\ManyToOne(targetEntity="\CoreBundle\Entity\Pack", inversedBy="plans")
-     * @ORM\JoinColumn(name="pack_id", referencedColumnName="id", nullable=true)
-     */
-    private $pack;
     
     /**
      * @var boolean
@@ -448,27 +436,6 @@ class Plan extends Timestampable
     public function getState() {
         return $this->state;
     }
-
-    
-    /**
-     * Get Pack $pack
-     *
-     * @return Plan
-     */
-    public function setPack($pack) {
-        $this->pack = $pack;
-        return $this;
-    }
-
-    /**
-     * Get pack
-     *
-     * @return Pack
-     */
-    public function getPack() {
-        return $this->pack;
-    }   
-    
    
      /**
      * Add agreement

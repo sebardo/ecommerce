@@ -27,18 +27,21 @@
             {% include 'CoreBundle:Base:alert.messages.html.twig' %}
             
             <div class="box box-info">
-                <form action="{{ path('ecommerce_brand_update', { id: entity.id }) }}" method="post" {{ form_enctype(edit_form) }} class="form-horizontal form-row-seperated">
+                {{ form_start(edit_form, {
+                                    'action': path('ecommerce_brand_edit', { id: entity.id }), 
+                                    'method': 'post', 
+                                    'attr': {'class': 'form-horizontal form-row-seperated'}
+                                    }) }}
                     <div class="box-body">
                         {{ include('EcommerceBundle:Brand:_form.html.twig', { form: edit_form }) }}
                     </div><!-- /.box-body -->
-                    <input type="hidden" name="_method" value="PUT" />
 
                     <div class="box-footer">
                         <button type="submit" class="btn btn-primary btn-flat"><i class="ion-checkmark"></i> {{ "save" | trans }}</button>
                         <a href="{{ path('ecommerce_brand_show', { id: entity.id }) }}" class="btn btn-default btn-flat">{{ "cancel.singular" | trans }}</a>
                         <button type="submit" class="btn btn-danger btn-flat pull-right" id="delete-btn">{{ "delete" | trans }}</button>
                     </div>
-                </form>
+                {{ form_end(edit_form) }}
                 <form id="delete-entity" action="{{ path('ecommerce_brand_delete', { id: entity.id }) }}" method="post">
                     <input type="hidden" name="_method" value="DELETE" />
                     {{ form_widget(delete_form) }}

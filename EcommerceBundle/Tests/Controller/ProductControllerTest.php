@@ -95,7 +95,7 @@ class ProductControllerTest extends CoreTest
         $manager = $container->get('doctrine')->getManager();
         
         $uid = rand(999,9999);
-        $crawler = $this->createProduct($uid);
+        $crawler = $this->createProduct($uid, false, false);
         
         ///////////////////////////////////////////////////////////////////////////////////////////
         //Click edit///////////////////////////////////////////////////////////////////////////////

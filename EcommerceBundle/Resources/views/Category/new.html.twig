@@ -25,7 +25,11 @@
         <div class="col-xs-12">
             <div class="box box-info">
                 <!-- form start -->
-                <form action="{{ path('ecommerce_category_create') }}" method="post" {{ form_enctype(form) }} class="form-horizontal form-row-seperated">
+                {{ form_start(form, {
+                                    'action': path('ecommerce_category_new'), 
+                                    'method': 'post', 
+                                    'attr': {'class': 'form-horizontal form-row-seperated'}
+                                    }) }}
                     <div class="box-body">
                         {{ include('EcommerceBundle:Category:_form.html.twig', { form: form }) }}
                     </div><!-- /.box-body -->
@@ -36,7 +40,7 @@
                             <a href="{{ path('ecommerce_category_index') }}" class="btn btn-default btn-flat">{{ "cancel.singular" | trans }}</a>
                         </div>
                     </div>
-                </form>
+                {{ form_end(form) }}
             </div>
         </div>
     </section>

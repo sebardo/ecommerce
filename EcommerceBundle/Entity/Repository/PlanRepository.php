@@ -37,11 +37,8 @@ class PlanRepository  extends EntityRepository
         // select
         $qb = $this->getQueryBuilder()
             ->select('p.id, p.paypalId, p.name,  p.state, p.setupAmount, p.amount, p.cycles, p.frequency, p.frequencyInterval , '
-                    . 'p.trialAmount, p.trialCycles, p.trialFrequency, p.trialFrequencyInterval ,pack.id packId, pack.name packName, '
+                    . 'p.trialAmount, p.trialCycles, p.trialFrequency, p.trialFrequencyInterval ,'
                     . ' p.created ');
-
-        //join
-        $qb->leftJoin('p.pack', 'pack');
         
         // search
         if (!empty($search)) {

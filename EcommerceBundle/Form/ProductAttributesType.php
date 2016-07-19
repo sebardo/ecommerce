@@ -7,32 +7,24 @@ use EcommerceBundle\Entity\Category;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
 /**
  * Class ProductAttributesType
  */
 class ProductAttributesType extends AbstractType
 {
-    private $category;
-
-
-    /**
-     * @param Category $category
-     */
-    public function __construct($category)
-    {
-        $this->category = $category;
-    }
 
     /**
      * {@inheritDoc}
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $category = $this->category;
-
+    
+        $category = $options['category'];
+        
         $builder
-            ->add('attributeValues', 'entity', array(
+            ->add('attributeValues', EntityType::class, array(
                 'class'         => 'EcommerceBundle:AttributeValue',
                 'group_by'      => 'attribute.name',
                 'multiple'      => true,
@@ -53,6 +45,7 @@ class ProductAttributesType extends AbstractType
     {
         $resolver->setDefaults(array(
             'data_class' => 'EcommerceBundle\Entity\Product',
+            'category' => null,
         ));
     }
 

@@ -1,12 +1,10 @@
 <?php
-
 namespace EcommerceBundle\Form;
 
-use Doctrine\ORM\EntityRepository;
-use EcommerceBundle\Entity\Category;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
 /**
  * Class ProductRelatedType
@@ -19,7 +17,7 @@ class ProductRelatedType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('relatedProducts', 'entity', array(
+            ->add('relatedProducts', EntityType::class, array(
                 'class'    => 'EcommerceBundle:Product',
                 'multiple' => true,
             ));

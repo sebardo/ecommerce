@@ -226,7 +226,7 @@ class CheckoutController extends BaseController
      */
     public function identificationAction(Request $request)
     {
-        if ($this->get('security.context')->isGranted('IS_AUTHENTICATED_FULLY')) {
+        if ($this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
             return $this->redirect($this->generateUrl('ecommerce_checkout_deliveryinfo'));
         }
 
@@ -264,7 +264,7 @@ class CheckoutController extends BaseController
      */
     public function deliveryInfoAction(Request $request)
     {
-        if (!$this->get('security.context')->isGranted('IS_AUTHENTICATED_FULLY')) {
+        if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
             return $this->redirect($this->generateUrl('index'));
         }
         
@@ -275,7 +275,7 @@ class CheckoutController extends BaseController
         
         $transaction = $checkoutManager->getCurrentTransaction();
         $delivery = $checkoutManager->getDelivery($transaction);
-        $securityContext = $this->get('security.context');
+        $securityContext = $this->get('security.token_storage');
         $manager = $this->get('doctrine')->getManager();
         $session = $this->get('session');
 
@@ -496,7 +496,7 @@ class CheckoutController extends BaseController
             $tokenEntity = $em->getRepository('CoreBundle:EmailToken')->findOneByToken($token);
             $actor =  $em->getRepository('CoreBundle:Actor')->findOneByEmail($tokenEntity->getEmail());
         }else{
-            $actor = $this->get('security.context')->getToken()->getUser();
+            $actor = $this->get('security.token_storage')->getToken()->getUser();
             //Promotion code part
             if($request->query->get('promotionCode') != ''){
                 $promotionCode = $request->query->get('promotionCode');

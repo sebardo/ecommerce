@@ -6,6 +6,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use EcommerceBundle\Entity\Actor;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use CoreBundle\Form\EmailType;
 
 /**
  * {@inheritDoc}
@@ -19,7 +20,7 @@ class ProfileType extends AbstractType
     {
         
         $builder
-            ->add('email', 'email', array('label' => 'form.email'))
+            ->add('email', EmailType::class, array('label' => 'form.email'))
             ->add('name')
             ->add('surnames')
             ;

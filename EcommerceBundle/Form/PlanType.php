@@ -42,7 +42,6 @@ class PlanType extends AbstractType
             ->add('trialFrequencyInterval', 'integer', array('required' => false))
             ->add('trialCycles', 'integer', array('required' => false))
             ->add('trialAmount', null, array('required' => false))
-            ->add('pack')
             ->add('visible', null, array('required' => false))
             ->add('active', null, array('required' => false))
         ;

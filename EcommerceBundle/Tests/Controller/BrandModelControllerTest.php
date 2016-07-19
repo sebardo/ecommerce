@@ -53,8 +53,8 @@ class BrandModelControllerTest  extends CoreTest
         //fill form
         $form = $crawler->selectButton('Guardar')->form();
         $uid = rand(999,9999);
-        $form['brandmodel[name]'] = 'brandmodel '.$uid;
-        $form['brandmodel[available]']->tick();
+        $form['brand_model[name]'] = 'brandmodel '.$uid;
+        $form['brand_model[available]']->tick();
         $crawler = $this->client->submit($form);// submit the form
         
         //Asserts

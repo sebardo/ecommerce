@@ -6,6 +6,8 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use CoreBundle\Form\ImageType;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 
 /**
  * Class CategoryType
@@ -25,15 +27,14 @@ class CategoryType extends AbstractType
             ->add('metaTitle')
             ->add('metaDescription')
             ->add('metaTags')
-            ->add('parentCategory', 'entity', array(
+            ->add('parentCategory', EntityType::class, array(
                 'class' => 'EcommerceBundle:Category',
                 'required' => false
             ))
-            ->add('image', new ImageType(), array(
-                'error_bubbling' => false,
+            ->add('image', ImageType::class, array(
                 'required' => false
             ))
-            ->add('removeImage', 'hidden', array( 'attr' => array(
+            ->add('removeImage', HiddenType::class, array( 'attr' => array(
                 'class' => 'remove-image'
                 )))
             ->add('url')
@@ -47,7 +48,6 @@ class CategoryType extends AbstractType
     {
         $resolver->setDefaults(array(
             'data_class' => 'EcommerceBundle\Entity\Category',
-            //'cascade_validation' => true,
         ));
     }
 

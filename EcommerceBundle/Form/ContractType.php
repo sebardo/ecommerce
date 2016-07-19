@@ -7,6 +7,9 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Doctrine\ORM\EntityRepository;
 use EcommerceBundle\Form\AgreementType;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+Use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 
 class ContractType extends AbstractType
 {
@@ -17,27 +20,27 @@ class ContractType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('actor', 'entity', array(
+            ->add('actor', EntityType::class, array(
                 'class' => 'CoreBundle:Actor',
-                'property' => 'name',
+                'choice_label' => 'name',
                 'query_builder' => function(EntityRepository $er) {
                     return $er->createQueryBuilder('u')
                         ->orderBy('u.name', 'ASC');
                 },
             ))
-            ->add('url', 'text', array(
+            ->add('url', TextType::class, array(
                 'attr' => array(
                     'placeholder' => 'http://'
                 )
             ))
-            ->add('created', 'datetime', array(
+            ->add('created', DateTimeType::class, array(
                     'label' => 'Fecha inicio',
                     'format' => 'dd/MM/yyyy',
                     'widget' => 'single_text',
                     'required' => false
                 )
             )
-            ->add('finished', 'datetime', array(
+            ->add('finished', DateTimeType::class, array(
                     'label' => 'Fecha límite',
                     'format' => 'dd/MM/yyyy',
                     'widget' => 'single_text',
@@ -45,7 +48,7 @@ class ContractType extends AbstractType
                 )
             )
             
-           ->add('agreement', new AgreementType())
+           ->add('agreement', AgreementType::class)
                       
         ;
     }

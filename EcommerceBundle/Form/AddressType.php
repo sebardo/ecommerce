@@ -10,6 +10,8 @@ use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Security\Core\SecurityContext;
 use Doctrine\ORM\EntityRepository;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 
 /**
  * Class AddressType
@@ -36,7 +38,7 @@ class AddressType extends AbstractType
             ->add('dni')
             ->add('address')
             ->add('city')
-            ->add('state', 'entity', array(
+            ->add('state', EntityType::class, array(
                     'class' => 'CoreBundle:State',
                     'query_builder' => function(EntityRepository $er) {
                         return $er->createQueryBuilder('c');
@@ -48,9 +50,10 @@ class AddressType extends AbstractType
             ->add('postalCode')
             ->add('phone')
             ->add('phone2')
-            ->add('preferredSchedule', 'choice', array(
+            ->add('preferredSchedule', ChoiceType::class, array(
                 'choices'  => Address::getSchedules(),
-                'required' => false
+                'required' => false,
+                'choices_as_values' => true,
             ));
 
         $user = $this->securityContext->getToken()->getUser();

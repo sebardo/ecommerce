@@ -59,6 +59,8 @@ class BrandModel extends Timestampable
      */
     private $image;
 
+    public $removeImage;
+    
     /**
      * @var Family
      *
@@ -174,6 +176,18 @@ class BrandModel extends Timestampable
         return $this->image;
     }
 
+    public function setRemoveImage($removeImage)
+    {
+        $this->removeImage = $removeImage;
+
+        return $this->removeImage;
+    }
+
+    public function getRemoveImage()
+    {
+        return $this->removeImage;
+    }
+    
     /**
      * set brand
      *

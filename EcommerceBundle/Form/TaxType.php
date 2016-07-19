@@ -29,7 +29,6 @@ class TaxType extends AbstractType
     {
         $resolver->setDefaults(array(
             'data_class' => 'EcommerceBundle\Entity\Tax',
-            //'cascade_validation' => true,
         ));
     }
 

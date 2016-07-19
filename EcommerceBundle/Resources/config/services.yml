@@ -16,11 +16,10 @@ services:
             - @session
             - @doctrine.orm.entity_manager
             - @cart_provider
-            - @security.context
+            - @security.token_storage
             - @router
             - @kernel
             - @core.mailer
-            - @phpexcel
 
     cart_provider:
         class: EcommerceBundle\Service\CartProvider

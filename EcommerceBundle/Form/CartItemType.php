@@ -5,6 +5,9 @@ namespace EcommerceBundle\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 
 class CartItemType extends AbstractType
 {
@@ -14,9 +17,9 @@ class CartItemType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('quantity', 'integer', array('attr' => array('min' => 1, 'class' => 'quantity')))
-            ->add('shippingCost', 'hidden')
-            ->add('storePickup', 'choice', array(
+            ->add('quantity', IntegerType::class, array('attr' => array('min' => 1, 'class' => 'quantity')))
+            ->add('shippingCost', HiddenType::class)
+            ->add('storePickup', ChoiceType::class, array(
                 'choices'  => array(1 => 'Recoger en tienda', 0 => 'Envio On-line'),
                 'required' => true,
                 'expanded' => true,

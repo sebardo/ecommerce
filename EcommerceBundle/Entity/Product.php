@@ -104,13 +104,6 @@ class Product extends Timestampable
      * @ORM\Column(name="weight", type="float", nullable=true)
      */
     private $weight;
-
-    /**
-     * @var boolean
-     *
-     * @ORM\Column(name="outlet", type="boolean")
-     */
-    private $outlet;
     
     /**
      * @var boolean
@@ -155,9 +148,8 @@ class Product extends Timestampable
     private $metaTags;
 
     /**
-     * @ORM\ManyToOne(targetEntity="\CoreBundle\Entity\Actor", inversedBy="products")
-     * @ORM\JoinColumn(nullable=false)
-     * @Assert\NotBlank
+     * @ORM\ManyToOne(targetEntity="\CoreBundle\Entity\Actor")
+     * @ORM\JoinColumn(nullable=true)
      */
     protected $actor;
     
@@ -567,30 +559,6 @@ class Product extends Timestampable
     public function setWeight($weight)
     {
         $this->weight = $weight;
-
-        return $this;
-    }
-    
-    /**
-     * Get outlet
-     *
-     * @return float
-     */
-    public function getOutlet()
-    {
-        return $this->outlet;
-    }
-
-    /**
-     * Set outlet
-     *
-     * @param float $outlet
-     *
-     * @return Product
-     */
-    public function setOutlet($outlet)
-    {
-        $this->outlet = $outlet;
 
         return $this;
     }

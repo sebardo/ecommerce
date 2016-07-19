@@ -6,6 +6,10 @@ use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use CoreBundle\Form\ImageType;
 
 /**
@@ -20,7 +24,7 @@ class AttributeType extends AbstractType
     {
         $builder
             ->add('name')
-            ->add('category', 'entity', array(
+            ->add('category', EntityType::class, array(
                 'class' => 'EcommerceBundle:Category',
                 'query_builder' => function(EntityRepository $er) {
                     return $er->createQueryBuilder('c');
@@ -28,19 +32,21 @@ class AttributeType extends AbstractType
                 },
                 'required' => false
             ))
-            ->add('order', 'number', array(
+            ->add('order', NumberType::class, array(
                 'required' => false
             ))
-            ->add('filtrable', 'checkbox', array(
+            ->add('filtrable', CheckboxType::class, array(
                 'required' => false
             ))
-            ->add('rangeable', 'checkbox', array(
+            ->add('rangeable', CheckboxType::class, array(
                 'required' => false
             ))
-            ->add('image', new ImageType(), array(
-                'error_bubbling' => false,
+            ->add('image', ImageType::class, array(
                 'required' => false
-            ));
+            ))
+            ->add('removeImage', HiddenType::class, array( 'attr' => array(
+                'class' => 'remove-image'
+            )));
     }
 
     /**
