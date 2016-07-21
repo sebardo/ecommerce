@@ -75,24 +75,24 @@
 
     <script> 
         
-    pcode = [];
     sections = [];
     $(document).ready(function () {
 
         //calculate total
         function calculateTotal(city){
-            var unitPrice = '{{core.advert_unit_price}}';
-            var count = pcode.length;
+            alert('asd');
+            var unitPrice = '{{core.ecommerce.advert_unit_price}}';
+            var count = 1;
             //days
             var days = 0;
-            if($('#bundle_ecommercebundle_advert_rangeDate').val() != ''){
-                var tempValues = $('#bundle_ecommercebundle_advert_rangeDate').val().split(' ');
+            if($('#advert_rangeDate').val() != ''){
+                var tempValues = $('#advert_rangeDate').val().split(' ');
                 var days = daydiff(parseDate(tempValues[0]), parseDate(tempValues[1]));
             }
             
             //sections
             $('#sections-count').text(sections.length);
-            if($('#bundle_ecommercebundle_advert_located option').length == sections.length){
+            if($('#advert_located option').length == sections.length){
                 $('#sections').text('(todas)');
             }else if(0 == sections.length){
                 $('#sections').text('');
@@ -103,7 +103,7 @@
             var result = (parseFloat(unitPrice) * count * days) * sections.length;
           
             $('#days').text(days);
-            $('#bundle_ecommercebundle_advert_days').val(days);
+            $('#advert_days').val(days);
             $('#subtotal').text(result);
             $('#quantity').text(count);
             var vat =result*0.21;
@@ -123,48 +123,8 @@
           return newArray;
         }
 
-        function removeCity(city){
-            var selectedCities = $('#bundle_ecommercebundle_advert_cities').val();
-            var coma = selectedCities.indexOf(',');
-            if (coma > -1) {
-                var res = selectedCities.split(",");
-                var res = cleanArray(res);
-                var index = res.indexOf(city);
-                if (index > -1) {
-                    res.splice(index, 1);
-                };
-                if(res.length > 0)
-                $('#bundle_ecommercebundle_advert_cities').val(res.join(','));
-            }else{
-                var c = selectedCities.indexOf(city);
-                if (c > -1) {
-                     $('#bundle_ecommercebundle_advert_cities').val('');
-                }
-            }
-        }
-
-        fastSelectInstance = $('#bundle_ecommercebundle_advert_codes').fastselect({
-            placeholder: 'Selecciona un código postal',
-            noResultsText: 'Sin resultados',
-            onItemSelect: function($item, itemModel) {
-                pcode.push(itemModel.value);
-                $('#bundle_ecommercebundle_advert_codes').val(pcode.join(','));
-                //bind remove option
-                $('.codes .fstChoiceRemove').click(function(){
-                    var parent = $(this).parent();
-                    var text = parent.attr('data-text');
-                    var value = parent.attr('data-value');
-                    var i = pcode.indexOf(value);
-                    if (i > -1) {
-                        pcode.splice(i, 1);
-                        $('#bundle_ecommercebundle_advert_codes').val(pcode.join(','));
-                        calculateTotal();
-                    }
-                });
-                calculateTotal();
-            }
-        }).data('fastselect');
         
+      
         //bind remove option
         function clickRemove(elem){
             var parent = $(elem).parent();
@@ -174,7 +134,7 @@
             //remove postal codes
             $.each(res, function( index, value ) {
                 fastSelectInstance.removeSelectedOption({text: value, value: value});
-                var selectedCodes= $('#bundle_ecommercebundle_advert_codes').val();
+                var selectedCodes= $('#advert_codes').val();
                 var coma = selectedCodes.indexOf(',');
                 if (coma > -1) {
                     var result = selectedCodes.split(",");
@@ -191,7 +151,7 @@
                     }
 
                     //if(res.length > 0)
-                    //$('#bundle_ecommercebundle_advert_codes').val(res.join(','));
+                    //$('#advert_codes').val(res.join(','));
                 }
             });
 
@@ -202,42 +162,9 @@
             clickRemove(this);
         });
 
-        fastSelectInstance2 = $('#bundle_ecommercebundle_advert_cityAutocomplete').fastselect({
-            placeholder: 'Selecciona una ciudad',
-            noResultsText: 'Sin resultados',
-            onItemSelect: function($item, itemModel) {
-                var postalCodes = itemModel.value;
-                var res = postalCodes.split(",");
-                var res = cleanArray(res);
-                //add postal codes
-                $.each(res, function( index, value ) {
-                    fastSelectInstance.addChoiceItem({text: value, value: value});
-                    //update input "codes"
-                    pcode.push(value);
-                    $('#bundle_ecommercebundle_advert_codes').val(pcode.join(','));
-                });
-                
-                //add city name on cities inpunt
-                var selectedCities = $('#bundle_ecommercebundle_advert_cities').val();
-                var res = selectedCities.split(",");
-                var res = cleanArray(res);
-                res.push(itemModel.text);
-                if(res.length > 0)
-                $('#bundle_ecommercebundle_advert_cities').val(res.join(','));
-                
-                //bind remove option
-                $('.fstChoiceRemove').click(function(){
-                    clickRemove(this);
-                });
-                
-                //calculate total
-                calculateTotal();
-            },
-           
-        }).data('fastselect');
- 
+        
         $(function () {
-            CKEDITOR.replace('bundle_ecommercebundle_advert_description', {
+            CKEDITOR.replace('advert_description', {
                 extraPlugins: 'uploadimage,image2',
                 height: 150,
 
@@ -269,7 +196,7 @@
             });
         });
       
-        $('#bundle_ecommercebundle_advert_rangeDate').daterangepicker(
+        $('#advert_rangeDate').daterangepicker(
             {
                 separator: ' ',   
                 format: 'DD/MM/YYYY',
@@ -287,7 +214,7 @@
             return Math.round((second-first)/(1000*60*60*24));
         }
 
-        $('#bundle_ecommercebundle_advert_rangeDate').on('apply.daterangepicker', function(ev, picker) {
+        $('#advert_rangeDate').on('apply.daterangepicker', function(ev, picker) {
           calculateTotal();
         });
 
@@ -300,7 +227,7 @@
             }
         });
     
-        fastSelectInstance3 = $('#bundle_ecommercebundle_advert_located').fastselect({
+        fastSelectInstance3 = $('#advert_located').fastselect({
             placeholder: 'Seleccione una ubicación',
             noResultsText: 'Sin resultados',
             onItemSelect: function($item, itemModel) {

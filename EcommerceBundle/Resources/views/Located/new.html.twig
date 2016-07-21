@@ -26,7 +26,7 @@
           <div class="box">
             <div class="box-body">
                 <!-- BEGIN FORM-->
-                <form action="{{ path('ecommerce_located_create') }}" method="post" {{ form_enctype(form) }} class="form-horizontal form-row-seperated">
+                {{ form_start(form, {'attr': {'class': 'form-horizontal form-row-seperated'} }) }}
                     <div class="box-body">
                         {{ include('EcommerceBundle:Located:_form.html.twig', { form: form }) }}
                     </div>
@@ -37,7 +37,7 @@
                             <a href="{{ path('ecommerce_located_index') }}" class="btn btn-default btn-flat">{{ "cancel.singular" | trans }}</a>
                         </div>
                     </div>
-                </form>
+                {{ form_end(form) }}
                 <!-- END FORM-->
             </div>
           </div>

@@ -25,39 +25,13 @@ class AdvertFrontType extends AbstractType
             ->add('brand', null, array(
                 'required' => false,
             ))
-            ->add('geolocated', ChoiceType::class, array(
-                'choices'  => array(0 => 'No', 1 => 'Si', 'all' => 'Todo'),
-                'required' => true,
-                'expanded' => true,
-                'multiple' => false,
-                'empty_data' => null
-//                'placeholder' => 'Selecciona el tipo de envío'
-            ))
+
             ->add('rangeDate', TextType::class)
             ->add('days', HiddenType::class)
             ->add('image', AdvertImageType::class, array(
                 'required' => false
             ))
             ->add('located')
-            ->add('cities', HiddenType::class)
-            ->add('cityAutocomplete', TextType::class, array(
-                'required' => false,
-                'attr' => array(
-                        'multiple'=> true,
-                        'data-url' => "/cities-postalcodes.json",
-//                        'name' => "language"
-                        )
-                    )
-                )    
-            ->add('codes', TextType::class, array(
-                'attr' => array(
-                        'multiple'=> true,
-                        'data-url' => "/postalcodes.json",
-                        'name' => "language",
-                        'autocomplete' => 'off'
-                        )
-                    )
-                )
             ->add('creditCard', CreditCardType::class)
         ;
     }

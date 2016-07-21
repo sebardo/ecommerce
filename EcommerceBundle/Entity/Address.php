@@ -72,7 +72,6 @@ class Address extends Addressable
      *
      * @ORM\ManyToOne(targetEntity="CoreBundle\Entity\Actor")
      * @ORM\JoinColumn(name="actor_id", referencedColumnName="id", nullable=false)
-     * @Assert\NotBlank
      */
     private $actor;
 

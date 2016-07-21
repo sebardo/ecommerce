@@ -38,7 +38,7 @@ class LocatedController extends Controller
     }
     
     /**
-     * Returns a list of Advert entities in JSON format.
+     * Returns a list of Located entities in JSON format.
      *
      * @return JsonResponse
      *
@@ -52,7 +52,6 @@ class LocatedController extends Controller
         /** @var \Kitchenit\AdminBundle\Services\DataTables\JsonList $jsonList */
         $jsonList = $this->get('json_list');
         $jsonList->setRepository($em->getRepository('EcommerceBundle:Located'));
-
         $response = $jsonList->get();
 
         return new JsonResponse($response);
@@ -61,69 +60,35 @@ class LocatedController extends Controller
     /**
      * Creates a new Located entity.
      *
-     * @Route("/", )
-     * @Method("POST")
-     * @Template("EcommerceBundle:Located:new.html.twig")
+     * @Route("/new")
+     * @Method({"GET", "POST"})
+     * @Template()
      */
-    public function createAction(Request $request)
+    public function newAction(Request $request)
     {
         $entity = new Located();
-        $form = $this->createCreateForm($entity);
+        $form = $this->createForm('EcommerceBundle\Form\LocatedType', $entity, array(
+            'action' => $this->generateUrl('ecommerce_located_new'),
+            'method' => 'POST',
+        ));
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
             $em->persist($entity);
             $em->flush();
-
-            $this->get('session')->getFlashBag()->add('success', 'located.created');
             
-            return $this->redirect($this->generateUrl('ecommerce_located_show', array('id' => $entity->getId())));
+            $this->get('session')->getFlashBag()->add('success', 'located.created');
+
+            return $this->redirectToRoute('ecommerce_located_show', array('id' => $entity->getId()));
         }
 
         return array(
             'entity' => $entity,
-            'form'   => $form->createView(),
+            'form' => $form->createView(),
         );
     }
-
-    /**
-     * Creates a form to create a Located entity.
-     *
-     * @param Located $entity The entity
-     *
-     * @return \Symfony\Component\Form\Form The form
-     */
-    private function createCreateForm(Located $entity)
-    {
-        $form = $this->createForm(new LocatedType(), $entity, array(
-            'action' => $this->generateUrl('ecommerce_located_create'),
-            'method' => 'POST',
-        ));
-
-//        $form->add('submit', 'submit', array('label' => 'Create'));
-
-        return $form;
-    }
-
-    /**
-     * Displays a form to create a new Located entity.
-     *
-     * @Route("/new")
-     * @Method("GET")
-     * @Template()
-     */
-    public function newAction()
-    {
-        $entity = new Located();
-        $form   = $this->createCreateForm($entity);
-
-        return array(
-            'entity' => $entity,
-            'form'   => $form->createView(),
-        );
-    }
-
+    
     /**
      * Finds and displays a Located entity.
      *
@@ -131,146 +96,86 @@ class LocatedController extends Controller
      * @Method("GET")
      * @Template()
      */
-    public function showAction($id)
+    public function showAction(Located $located)
     {
-        $em = $this->getDoctrine()->getManager();
-
-        $entity = $em->getRepository('EcommerceBundle:Located')->find($id);
-
-        if (!$entity) {
-            throw $this->createNotFoundException('Unable to find Located entity.');
-        }
-
-        $deleteForm = $this->createDeleteForm($id);
+        $deleteForm = $this->createDeleteForm($located);
 
         return array(
-            'entity'      => $entity,
+            'entity' => $located,
             'delete_form' => $deleteForm->createView(),
         );
     }
-
-    /**
+    
+     /**
      * Displays a form to edit an existing Located entity.
      *
      * @Route("/{id}/edit")
-     * @Method("GET")
+     * @Method({"GET", "POST"})
      * @Template()
      */
-    public function editAction($id)
+    public function editAction(Request $request, Located $located)
     {
-        $em = $this->getDoctrine()->getManager();
-
-        $entity = $em->getRepository('EcommerceBundle:Located')->find($id);
-
-        if (!$entity) {
-            throw $this->createNotFoundException('Unable to find Located entity.');
-        }
-
-        $editForm = $this->createEditForm($entity);
-        $deleteForm = $this->createDeleteForm($id);
-
-        return array(
-            'entity'      => $entity,
-            'edit_form'   => $editForm->createView(),
-            'delete_form' => $deleteForm->createView(),
-        );
-    }
-
-    /**
-    * Creates a form to edit a Located entity.
-    *
-    * @param Located $entity The entity
-    *
-    * @return \Symfony\Component\Form\Form The form
-    */
-    private function createEditForm(Located $entity)
-    {
-        $form = $this->createForm(new LocatedType(), $entity, array(
-            'action' => $this->generateUrl('ecommerce_located_update', array('id' => $entity->getId())),
-            'method' => 'PUT',
+        
+        $deleteForm = $this->createDeleteForm($located);
+        $editForm = $this->createForm('EcommerceBundle\Form\LocatedType', $located, array(
+            'action' => $this->generateUrl('ecommerce_located_edit', array('id' => $located->getId())),
+            'method' => 'POST',
         ));
-
-//        $form->add('submit', 'submit', array('label' => 'Update'));
-
-        return $form;
-    }
-    /**
-     * Edits an existing Located entity.
-     *
-     * @Route("/{id}")
-     * @Method("PUT")
-     * @Template("EcommerceBundle:Located:edit.html.twig")
-     */
-    public function updateAction(Request $request, $id)
-    {
-        $em = $this->getDoctrine()->getManager();
-
-        $entity = $em->getRepository('EcommerceBundle:Located')->find($id);
-
-        if (!$entity) {
-            throw $this->createNotFoundException('Unable to find Located entity.');
-        }
-
-        $deleteForm = $this->createDeleteForm($id);
-        $editForm = $this->createEditForm($entity);
         $editForm->handleRequest($request);
 
-        if ($editForm->isValid()) {
-            $em->flush();
-
-            $this->get('session')->getFlashBag()->add('success', 'located.updated');
+        if ($editForm->isSubmitted() && $editForm->isValid()) {
+            $em = $this->getDoctrine()->getManager();
             
-            return $this->redirect($this->generateUrl('ecommerce_located_edit', array('id' => $id)));
+            $em->persist($located);
+            $em->flush();
+            
+            $this->get('session')->getFlashBag()->add('success', 'located.edited');
+            
+            return $this->redirectToRoute('ecommerce_located_show', array('id' => $located->getId()));
         }
 
         return array(
-            'entity'      => $entity,
-            'edit_form'   => $editForm->createView(),
+            'entity' => $located,
+            'edit_form' => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
         );
     }
+
     /**
      * Deletes a Located entity.
      *
      * @Route("/{id}")
      * @Method("DELETE")
      */
-    public function deleteAction(Request $request, $id)
+    public function deleteAction(Request $request, Located $located)
     {
-        $form = $this->createDeleteForm($id);
+        $form = $this->createDeleteForm($located);
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
+            
             $em = $this->getDoctrine()->getManager();
-            $entity = $em->getRepository('EcommerceBundle:Located')->find($id);
-
-            if (!$entity) {
-                throw $this->createNotFoundException('Unable to find Located entity.');
-            }
-
-            $em->remove($entity);
+            $em->remove($located);
             $em->flush();
             
             $this->get('session')->getFlashBag()->add('info', 'located.deleted');
-            
         }
 
-        return $this->redirect($this->generateUrl('ecommerce_located_index'));
+        return $this->redirectToRoute('ecommerce_located_index');
     }
 
-    /**
-     * Creates a form to delete a Located entity by id.
+   /**
+     * Located a form to delete a Located entity.
      *
-     * @param mixed $id The entity id
+     * @param Located $located The Located entity
      *
      * @return \Symfony\Component\Form\Form The form
      */
-    private function createDeleteForm($id)
+    private function createDeleteForm(Located $located)
     {
         return $this->createFormBuilder()
-            ->setAction($this->generateUrl('ecommerce_located_delete', array('id' => $id)))
+            ->setAction($this->generateUrl('ecommerce_located_delete', array('id' => $located->getId())))
             ->setMethod('DELETE')
-//            ->add('submit', 'submit', array('label' => 'Delete'))
             ->getForm()
         ;
     }

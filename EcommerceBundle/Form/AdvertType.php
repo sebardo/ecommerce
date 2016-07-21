@@ -15,11 +15,6 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
 class AdvertType extends AbstractType
 {
-    public $formConfig;
-    
-    public function __construct($formConfig) {
-        $this->formConfig = $formConfig;
-    }
     /**
      * @param FormBuilderInterface $builder
      * @param array $options
@@ -36,65 +31,32 @@ class AdvertType extends AbstractType
                     },
                     'required' => false     
                 );
-                  
-       
-            
+        if(isset($options['actor'])){
+            $actor = $options['actor'];
+            $actorArray = array_merge($actorArray, array (
+                'query_builder' => function(EntityRepository $er)use($actor) {
+                    return $er->createQueryBuilder('o')
+                        ->where('o.id = :actor')
+                        ->setParameter('actor', $actor)
+                        ->orderBy('o.name', 'ASC');
+                },
+                'data' => $actor
+            ));
+
+        }
+
         $builder
             ->add('title')
             ->add('description')
-            ->add('geolocated', ChoiceType::class, array(
-                'choices'  => array(0 => 'No', 1 => 'Si', 'all' => 'Todo'),
-                'required' => true,
-                'expanded' => true,
-                'multiple' => false,
-                'empty_data' => null
-//                'placeholder' => 'Selecciona el tipo de envío'
-            ))
             ->add('rangeDate', TextType::class)
             ->add('days', HiddenType::class)
             ->add('image', new AdvertImageType(), array(
                 'error_bubbling' => false,
                 'required' => false
-            ));
-                
-            if(isset($this->formConfig['actor'])){
-                $actor = $this->formConfig['actor'];
-                $actorArray = array_merge($actorArray, array (
-                    'query_builder' => function(EntityRepository $er)use($actor) {
-                        return $er->createQueryBuilder('o')
-                            ->where('o.id = :actor')
-                            ->setParameter('actor', $actor)
-                            ->orderBy('o.name', 'ASC');
-                    },
-                    'data' => $actor
-                ));
-                $builder->add('actor', EntityType::class, $actorArray);
-            }else{
-                $builder->add('actor', EntityType::class, $actorArray);
-                $builder->add('brand');
-            }
-        
-            
-            
-            $builder->add('located')
-            ->add('cities', 'hidden')
-            ->add('cityAutocomplete', TextType::class, array(
-                'required' => false,
-                'attr' => array(
-                        'multiple'=> true,
-                        'data-url' => "/cities-postalcodes.json",
-                        )
-                    )
-                )    
-            ->add('codes', 'text', array(
-                'attr' => array(
-                        'multiple'=> true,
-                        'data-url' => "/postalcodes.json",
-                        'name' => "language"
-                        )
-                    )
-                )
-            ->add('creditCard', CreditCardType::class)
+            ))
+            ->add('actor', EntityType::class, $actorArray)
+            ->add('located')
+            ->add('creditCard', CreditCardType::class);
         ;
     }
     
@@ -104,7 +66,8 @@ class AdvertType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'EcommerceBundle\Entity\Advert'
+            'data_class' => 'EcommerceBundle\Entity\Advert',
+            'actor' => null
         ));
     }
 

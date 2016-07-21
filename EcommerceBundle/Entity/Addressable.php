@@ -19,10 +19,10 @@ use CoreBundle\Entity\Country;
 abstract class Addressable extends Timestampable
 {
     protected static $schedules = array(
-        0 => 'schedule.empty',
-        1 => 'schedule.anytime',
-        2 => 'schedule.morning',
-        3 => 'schedule.evening'
+        'schedule.empty' => 0,
+        'schedule.anytime' => 1,
+        'schedule.morning' => 2,
+        'schedule.evening' => 3
     );
 
     /**

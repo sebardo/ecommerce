@@ -2,7 +2,7 @@
     <thead>
         <tr>
             <th>{{ "product.singular" | trans }}</th>
-            <td class="code">Codigos postales</td>
+            <td class="code">Cantidad</td>
             <td class="unit">Precio unitario</td>
             <td class="day">Dias</td>
             <td class="section">Secciones</td>
@@ -13,7 +13,7 @@
         {% for item in entity.items %}
             <tr>
                 <td style="text-align: left"><a href="{{ path('ecommerce_advert_show', { id: item.advert.id }) }}">{{ item.advert.title }}</a></td>
-                <td>{{ item.quantity }}</td>
+                <td>1</td>
                 <td>{{ item.basePrice }}</td>
                 <td>{{ item.advert.days }}</td>
                 <td>{{ item.advert.located | length }}</td>

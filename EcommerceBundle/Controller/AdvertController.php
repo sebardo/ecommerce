@@ -96,7 +96,7 @@ class AdvertController extends Controller
             
             //calculate total
             $params = $this->getParameter('core');
-            $unitPrice = $params['advert_unit_price'];
+            $unitPrice = $params['ecommerce']['advert_unit_price'];
             $quantity = count($postalCodes);
             $discount = 0;
             $subtotal = (($unitPrice * $quantity* $days) * $sectionCount ) - $discount;
@@ -158,10 +158,10 @@ class AdvertController extends Controller
         if ($user->isGranted('ROLE_USER')) {
             $formConfig['actor'] = $user;
         }
-        $form = $this->createForm(new AdvertType($formConfig), $entity, array(
+        $form = $this->createForm('EcommerceBundle\Form\AdvertType', $entity, array_merge($formConfig, array(
             'action' => $this->generateUrl('ecommerce_advert_create'),
             'method' => 'POST',
-        ));
+        )));
 
 //        $form->add('submit', 'submit', array('label' => 'Create'));
 

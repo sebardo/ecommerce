@@ -77,8 +77,8 @@ td    { vertical-align: top; }
                     <td style="padding:10px;border: solid 1px #d2d2d2;">{{ item.advert.id }}</td>
                     <td style="padding:10px;border: solid 1px #d2d2d2;">{{ item.advert.title }}</td>
                     <td style="padding:10px;border: solid 1px #d2d2d2;text-align:center;">{{ item.quantity }}</td>
-                    <td style="padding:10px;border: solid 1px #d2d2d2;text-align:center;">{{ core.advert_unit_price | price(true) }}</td>
-                    <td style="padding:10px;border: solid 1px #d2d2d2;text-align:center;"><strong>{{ (core.advert_unit_price * item.quantity) | price }}</strong></td>
+                    <td style="padding:10px;border: solid 1px #d2d2d2;text-align:center;">{{ core.ecommerce.advert_unit_price | price(true) }}</td>
+                    <td style="padding:10px;border: solid 1px #d2d2d2;text-align:center;"><strong>{{ (core.ecommerce.advert_unit_price * item.quantity) | price }}</strong></td>
                 </tr>
             {% endif %}
         {% endfor %}

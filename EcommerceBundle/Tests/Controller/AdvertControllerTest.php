@@ -34,6 +34,7 @@ class AdvertControllerTest extends CoreTest
         $container = $this->client->getContainer();
         $manager = $container->get('doctrine')->getManager();
         $actor = $manager->getRepository('CoreBundle:Actor')->findOneByEmail($email);
+        $this->addTestAddress($actor);
         
         //////////////////////////////////////////////////////////////////////////////////////////
         // Advert //////////////////////////////////////////////////////////////////////////////

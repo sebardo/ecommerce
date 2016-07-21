@@ -158,6 +158,7 @@ status:
 address:
   singular: Dirección
   plural: Direcciones
+  new: Nueva dirección
 
 page:
   plural: Páginas
@@ -765,6 +766,7 @@ all: Todo
 Paid: Pagado
 credit_card: Tarjeta de crédito
 
+adverts: Publicidades
 advert:
   singular: Publicidad
   plural: Publicidades
@@ -801,6 +803,7 @@ advert:
       Publicidad adquirida: <b>%advert_name%</b> <br>
     thanks: ¡Gracias por confiar en %app_name%!
     
+advertslocated: Ubicaciones
 located:
   singular: Ubicación
   plural: Ubicaciones
@@ -808,7 +811,7 @@ located:
   width: Ancho
   created: Se ha creado la ubicación satisfactoriamente
   deleted: Se ha eliminado la ubicación satisfactoriamente
-  updated: Se ha editado la ubicación satisfactoriamente
+  edited: Se ha editado la ubicación satisfactoriamente
   
 new.advert: Nueva publicidad  
 new.located: Nueva ubicación

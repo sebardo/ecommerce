@@ -8,32 +8,23 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Security\Core\SecurityContext;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 
 /**
  * Class AddressType
  */
 class AddressType extends AbstractType
 {
-    private $securityContext;
-
-
-    /**
-     * @param SecurityContext $securityContext
-     */
-    public function __construct(SecurityContext $securityContext)
-    {
-        $this->securityContext = $securityContext;
-    }
 
     /**
      * {@inheritDoc}
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $tokenStorage = $options['token_storage'];
         $builder
             ->add('dni')
             ->add('address')
@@ -47,6 +38,15 @@ class AddressType extends AbstractType
                     'placeholder' => 'Selecciona tu provincia',
                     'empty_data'  => null
                 ))
+            ->add('country', EntityType::class, array(
+                    'class' => 'CoreBundle:Country',
+                    'query_builder' => function(EntityRepository $er) {
+                        return $er->createQueryBuilder('c');
+                    },
+                    'required' => false,
+                    'placeholder' => 'Selecciona tu país',
+                    'empty_data'  => null
+                ))
             ->add('postalCode')
             ->add('phone')
             ->add('phone2')
@@ -56,7 +56,7 @@ class AddressType extends AbstractType
                 'choices_as_values' => true,
             ));
 
-        $user = $this->securityContext->getToken()->getUser();
+        $user = $tokenStorage->getToken()->getUser();
         if (!$user) {
             throw new \LogicException(
                 'The AddressFormType cannot be used without an authenticated user!'
@@ -86,6 +86,7 @@ class AddressType extends AbstractType
     {
         $resolver->setDefaults(array(
             'data_class' => 'EcommerceBundle\Entity\Address',
+            'token_storage' => null
         ));
     }
 }

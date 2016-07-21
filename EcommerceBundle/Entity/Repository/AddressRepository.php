@@ -18,7 +18,7 @@ class AddressRepository extends EntityRepository
      *
      * @return integer
      */
-    public function countTotal($actorId, $includeBilling = true)
+    public function countTotal($actorId=null, $includeBilling = true)
     {
         $qb = $this->getQueryBuilder()
             ->select('COUNT(a)');

@@ -36,23 +36,11 @@ class Advert  extends Rangeable
      * @ORM\Column(type="text", nullable=true)
      */
     protected $description;
-
-    /**
-     * @var boolean
-     *
-     * @ORM\Column(name="geolocated", type="string", options={"default":0})
-     */
-    private $geolocated;
     
      /**
      * @ORM\Column(type="string", nullable=true)
      */
     protected $days;
-    
-     /**
-     * @ORM\Column(type="text", nullable=true)
-     */
-    protected $cities;
     
     /**
      * @var Image
@@ -83,19 +71,6 @@ class Advert  extends Rangeable
      */
     protected $located;
     
-    /**
-     * @ORM\ManyToMany(targetEntity="\CoreBundle\Entity\PostalCode", inversedBy="adverts")
-     * @ORM\JoinTable(name="adverts_postalcode",
-     *      joinColumns={@ORM\JoinColumn(name="advert_id", referencedColumnName="id", nullable=true)},
-     *      inverseJoinColumns={@ORM\JoinColumn(name="postalcode_id", referencedColumnName="id")}
-     *      )
-     */
-    protected $postalCodes;
-    
-    protected $codes;
-    
-    public $cityAutocomplete;
-    
     private $creditCard;
     
     /**
@@ -111,14 +86,7 @@ class Advert  extends Rangeable
      * @ORM\Column(name="active", type="boolean")
      */
     private $active;
-    
-    /**
-     * @var Brand
-     *
-     * @ORM\ManyToOne(targetEntity="Brand")
-     * @ORM\JoinColumn(name="brand_id", referencedColumnName="id", nullable=true, onDelete="set null")
-     */
-    private $brand;
+
     
     /**
      * Constructor
@@ -126,7 +94,6 @@ class Advert  extends Rangeable
     public function __construct()
     {
         $this->located = new ArrayCollection();
-        $this->postalCodes = new ArrayCollection();
         $this->active = false;
         $this->transactions = new ArrayCollection();
     }
@@ -194,29 +161,7 @@ class Advert  extends Rangeable
     {
         return $this->description;
     }
-    
-    /**
-     * Get geolocated
-     *
-     * @return string
-     */
-    public function getGeolocated()
-    {
-        return $this->geolocated;
-    }
-    
-    /**
-     * Set geolocated
-     *
-     * @param string $geolocated
-     * @return $this
-     */
-    public function setGeolocated($geolocated)
-    {
-        $this->geolocated = $geolocated;
-
-        return $this;
-    }
+   
     
     /**
      * Get days
@@ -344,63 +289,6 @@ class Advert  extends Rangeable
         return $this->located;
     }
     
-    /**
-     * Add postalCode
-     *
-     * @param PostalCode $postalCode
-     *
-     * @return Advert
-     */
-    public function addPostalCode(PostalCode $postalCode)
-    {
-        $this->postalCodes[] = $postalCode;
-
-        return $this;
-    }
-
-    /**
-     * Remove postalCode
-     *
-     * @param PostalCode $postalCode
-     */
-    public function removePostalCode(PostalCode $postalCode)
-    {
-        $this->postalCodes->removeElement($postalCode);
-    }
-
-    /**
-     * Get postalCodes
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getPostalCodes()
-    {
-        return $this->postalCodes;
-    }
-    
-    /**
-     * Set codes
-     *
-     * @param  string $title
-     * @return Advert
-     */
-    public function setCodes($codes)
-    {
-        $this->codes = $codes;
-
-        return $this;
-    }
-
-    /**
-     * Get codes
-     *
-     * @return string
-     */
-    public function getCodes()
-    {
-        return $this->codes;
-    }
-    
      /**
      * Set creditCard
      *
@@ -422,52 +310,6 @@ class Advert  extends Rangeable
      */
     public function getCreditCard() {
         return $this->creditCard;
-    }
-    
-     /**
-     * Set cityAutocomplete
-     *
-     * @param string $cityAutocomplete
-     *
-     * @return Advert
-     */
-    public function setCityAutcomplete($cityAutocomplete)
-    {
-        $this->cityAutocomplete = $cityAutocomplete;
-
-        return $this;
-    }
-    
-    /**
-     * Get cityAutocomplete
-     *
-     * @return cityAutocomplete
-     */
-    public function getCityAutcomplete() {
-        return $this->cityAutocomplete;
-    }
-    
-     /**
-     * Set cities
-     *
-     * @param string $cities
-     *
-     * @return Advert
-     */
-    public function setCities($cities)
-    {
-        $this->cities = $cities;
-
-        return $this;
-    }
-    
-    /**
-     * Get cities
-     *
-     * @return cities
-     */
-    public function getCities() {
-        return $this->cities;
     }
     
     
@@ -526,29 +368,5 @@ class Advert  extends Rangeable
     {
         return $this->transactions;
     }
-    
-    /**
-     * Get brand
-     *
-     * @return Brand
-     */
-    public function getBrand()
-    {
-        return $this->brand;
-    }
-
-    /**
-     * Set brand
-     *
-     * @param Brand $brand
-     *
-     * @return Advert
-     */
-    public function setBrand(Brand $brand)
-    {
-        $this->brand = $brand;
-
-        return $this;
-    }
-        
+   
 }

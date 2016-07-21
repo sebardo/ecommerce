@@ -1,19 +1,7 @@
 {{ form_errors(form) }}
 
     {{ form_row(form.actor, { label: 'user.singular'}) }}
-    
-    {% if form.geolocated is defined %}
-    <div class="form-group ">
-        <label class="col-sm-2 control-label required">{{ 'advert.geolocated' | trans }}</label>
-        <div class="col-sm-10">
-            <div id="bundle_ecommercebundle_advert_geolocated">
-                {{ form_widget(form.geolocated.1, { attr: {class: 'minimal'} }) }} <label class="required">Si</label><br/>
-                {{ form_widget(form.geolocated.0, { attr: {class: 'minimal'} }) }} <label class="required">No</label><br/>
-                {{ form_widget(form.geolocated.2, { attr: {class: 'minimal'} }) }} <label class="required">Ambos</label><br/>
-            </div>
-        </div>
-    </div>
-    {% endif %}            
+               
     
     {% if form.located is defined %}
     <div class="form-group ">
@@ -24,25 +12,7 @@
     </div>
     {% endif %}    
     
-    {% if form.codes is defined %}
-    <div class="form-group ">
-        <label class="col-sm-2 control-label required">{{ 'advert.postalcodes' | trans }}</label>
-        <div class="col-sm-10 codes">
-            {{ form_widget(form.codes) }}   
-        </div>
-    </div>
-    {% endif %} 
-     
-    {% if form.cityAutocomplete is defined %}
-    <div class="form-group ">
-        <label class="col-sm-2 control-label required">{{ 'advert.cities' | trans }}</label>
-        <div class="col-sm-10 cityAutocomplete">
-            {{ form_widget(form.cityAutocomplete) }}
-            {{ form_widget(form.cities) }}   
-        </div>
-    </div>
-    {% endif %}     
-
+  
 
 {% if entity is defined and entity.image is not null %}
     {% if edit_front is defined and edit_form%}{{ form_widget(form.image.file, { div_class: 'no-bottom', image: entity.image.path }) }}{% else %}{{ form_row(form.image.file, { div_class: 'no-bottom', image: entity.image.path }) }}{% endif %}
@@ -68,7 +38,7 @@
 
             <tr class="header">
                 <td></td>
-                <td class="code">Codigos postales</td>
+                <td class="code">Cantidad</td>
                 <td class="unit">Precio unitario</td>
                 <td class="day">Dias</td>
                 <td class="section">Secciones</td>
@@ -79,8 +49,8 @@
                 <td>
                     <span><strong>{{ "checkout.subtotal" | trans }}</strong>:</span> 
                 </td>
-                <td><span id="quantity">0</span></td>
-                <td>x {{core.advert_unit_price}} €</td>
+                <td><span id="quantity">1</span></td>
+                <td>x {{core.ecommerce.advert_unit_price}} €</td>
                 <td>x <span id="days">0</span></td>
                 <td><span id="section-content">x <span id="sections-count">0</span></span> <span id="sections"></span></td>
                 <td class="price"><em id="subtotal">0</em><span>€</span></td>

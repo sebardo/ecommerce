@@ -779,7 +779,7 @@ class CheckoutManager
                 $sub['price'] = number_format($productPurchase->getProduct()->getPrice(), 2);
             }elseif($productPurchase->getAdvert() instanceof Advert){
                 $sub['name'] = $productPurchase->getAdvert()->getTitle();
-                $sub['price'] = number_format($this->parameters['advert_unit_price'], 2);
+                $sub['price'] = number_format($this->parameters['ecommerce']['advert_unit_price'], 2);
             }
             
             
