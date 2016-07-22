@@ -59,10 +59,10 @@
                         <div class="col-md-1"></div>      
                         <div class="col-md-10">        
                             <div class="bill-buttons">
-                                <a class="btn" href="{{ path('front_profile_showinvoice', { number: invoice.invoiceNumber, download: 'true' }) }}">
+                                <a class="btn" href="{{ path('core_actor_showinvoice', { number: invoice.invoiceNumber, download: 'true' }) }}">
                                     {{ "invoice.download.pdf" | trans }}
                                 </a>
-                                <a class="btn" href="{{ path('front_profile_index') }}?transactions=1">{{ "transaction.view" | trans }}</a>
+                                <a class="btn" href="{{ path('core_actor_index') }}?transactions=1">{{ "transaction.view" | trans }}</a>
                             </div>
                         </div> 
                         <div class="col-md-1"></div>      

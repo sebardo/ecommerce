@@ -50,6 +50,8 @@ class Advert  extends Rangeable
      */
     private $image;
     
+    public $removeImage;
+    
     /**
      * @Gedmo\Slug(fields={"title"}, updatable=true, separator="-")
      * @ORM\Column(name="slug", type="string", length=140)
@@ -207,6 +209,18 @@ class Advert  extends Rangeable
     public function getImage()
     {
         return $this->image;
+    }
+    
+    public function setRemoveImage($removeImage)
+    {
+        $this->removeImage = $removeImage;
+
+        return $this->removeImage;
+    }
+
+    public function getRemoveImage()
+    {
+        return $this->removeImage;
     }
     
     /**

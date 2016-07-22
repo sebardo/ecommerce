@@ -10,11 +10,7 @@ use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 
 class AdvertEditType extends AbstractType
 {
-    public $formConfig;
-    
-    public function __construct($formConfig) {
-        $this->formConfig = $formConfig;
-    }
+
     /**
      * @param FormBuilderInterface $builder
      * @param array $options
@@ -31,7 +27,7 @@ class AdvertEditType extends AbstractType
                 'class' => 'remove-image'
                 )))
             ;
-        if(isset($this->formConfig['admin'])){
+        if(isset($options['admin'])){
             $builder->add('active');
         }
         
@@ -43,7 +39,8 @@ class AdvertEditType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'EcommerceBundle\Entity\Advert'
+            'data_class' => 'EcommerceBundle\Entity\Advert',
+            'admin' => null
         ));
     }
 

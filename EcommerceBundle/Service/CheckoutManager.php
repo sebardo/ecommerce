@@ -536,7 +536,7 @@ class CheckoutManager
             'transaction.success'
         );
 
-        return $this->router->generate('front_profile_showinvoice', array('number' => $invoice->getInvoiceNumber()));
+        return $this->router->generate('core_actor_showinvoice', array('number' => $invoice->getInvoiceNumber()));
     }
     
      /**
@@ -565,11 +565,9 @@ class CheckoutManager
             $invoice->setFullName($this->securityContext->getToken()->getUser()->getFullName());
             if(!is_null($delivery)){
                $invoice->setDni($delivery->getDni());
-                $invoice->setAddressInfo($delivery->getAddressInfo()); 
+               $invoice->setAddressInfo($delivery->getAddressInfo()); 
             }else{
-                if(count($transaction->getActor()->getAddresses()) > 0){
-                    $invoice->setAddressInfo($transaction->getActor()->getAddresses()->first());
-                }
+                $invoice->setAddressInfo($this->getBillingAddress($transaction->getActor()));
             }
             
             $invoice->setTransaction($transaction);
@@ -633,18 +631,20 @@ class CheckoutManager
      *
      * @return Address
      */
-    public function getBillingAddress($securityContext)
+    public function getBillingAddress($actor=null)
     {
-        $user = $securityContext->getToken()->getUser();
-        if (!$user || !is_object($user)) {
-            throw new \LogicException(
-                'The getBillingAddress cannot be used without an authenticated user!'
-            );
+        if(is_null($actor)){
+            $actor = $this->securityContext->getToken()->getUser();
+            if (!$actor || !is_object($actor)) {
+                throw new \LogicException(
+                    'The getBillingAddress cannot be used without an authenticated user!'
+                );
+            }
         }
         /** @var Address $address */
         $address = $this->manager->getRepository('EcommerceBundle:Address')
             ->findOneBy(array(
-                    'actor'       => $user,
+                    'actor'       => $actor,
                     'forBilling' => true
                 ));
 
@@ -654,7 +654,7 @@ class CheckoutManager
             $address->setForBilling(true);
             $country = $this->manager->getRepository('CoreBundle:Country')->find('es');
             $address->setCountry($country);
-            $address->setActor($this->securityContext->getToken()->getUser());
+            $address->setActor($actor);
         }
 
         return $address;

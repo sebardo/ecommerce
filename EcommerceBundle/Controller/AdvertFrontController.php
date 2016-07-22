@@ -125,7 +125,7 @@ class AdvertFrontController extends Controller
                 //return $this->redirect($answer->redirectUrl);
                 
                 if($this->get('security.token_storage')->getToken()->getUser() instanceof Actor){
-                    return $this->redirect($this->generateUrl('core_profile_index', array('adverts' => true )));
+                    return $this->redirect($this->generateUrl('core_actor_index', array('adverts' => true )));
                 }
             }else{
                 die('invalid');

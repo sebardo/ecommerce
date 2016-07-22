@@ -30,11 +30,12 @@ class AdvertControllerTest extends CoreTest
         ////////////////////////////////////////////////////////////////////////////
         $uid = rand(999,9999);
         $crawler = $this->createUser('actor', $uid);
-        $email = 'user+'.$uid.'@gmail.com';
+        $email = 'actor+'.$uid.'@email.com';
         $container = $this->client->getContainer();
         $manager = $container->get('doctrine')->getManager();
         $actor = $manager->getRepository('CoreBundle:Actor')->findOneByEmail($email);
         $this->addTestAddress($actor);
+        
         
         //////////////////////////////////////////////////////////////////////////////////////////
         // Advert //////////////////////////////////////////////////////////////////////////////
@@ -62,8 +63,8 @@ class AdvertControllerTest extends CoreTest
         //fill form
         $form = $crawler->selectButton('Guardar')->form();
         $uid = rand(999,9999);
-        $form['advert[title]'] = 'advert '.$uid;
-        $form['advert[active]']->tick();
+        $form['advert_edit[title]'] = 'advert '.$uid;
+        $form['advert_edit[active]']->tick();
         $crawler = $this->client->submit($form);// submit the form
         
         //Asserts
@@ -77,7 +78,7 @@ class AdvertControllerTest extends CoreTest
         //Click delete/////////////////////////////////////////////////////////////////////////////
         ///////////////////////////////////////////////////////////////////////////////////////////
         $form = $crawler->filter('form[id="delete-entity"]')->form();
-        $crawler = $this->client->submit($form);// submit the form
+        $crawler = $this->client->submit($form);// submit the form        
         $this->assertTrue($this->client->getResponse() instanceof RedirectResponse);
         $crawler = $this->client->followRedirect();
         //Asserts
@@ -93,12 +94,15 @@ class AdvertControllerTest extends CoreTest
      */
     public function testAdvertActor()
     {
+        $this->markTestIncomplete(
+          'This test need company role implementation.'
+        );
         ////////////////////////////////////////////////////////////////////////////
         // Actor ///////////////////////////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////
         $userId = rand(999,9999);
         $crawler = $this->createUser('actor', $userId);
-        $username = 'actor+'.$userId.'@gmail.com';
+        $username = 'actor+'.$userId.'@email.com';
         $container = $this->client->getContainer();
         $manager = $container->get('doctrine')->getManager();
         $actor = $manager->getRepository('CoreBundle:Actor')->findOneByEmail($username);
@@ -128,7 +132,7 @@ class AdvertControllerTest extends CoreTest
         //fill form
         $form = $crawler->selectButton('Guardar')->form();
         $uid = rand(999,9999);
-        $form['advert[title]'] = 'advert '.$uid;
+        $form['advert_edit[title]'] = 'advert '.$uid;
         $crawler = $this->client->submit($form);// submit the form
         
         //Asserts

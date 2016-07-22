@@ -34,7 +34,6 @@ class CreditCardType extends AbstractType
                 },
                 'required' => true,
                 'placeholder' => 'Selecciona tu plan',
-                'empty_data'  => null
             );
         if(isset($this->formConfig['plan'])){
             if($this->formConfig['plan'] instanceof Plan){
@@ -57,7 +56,9 @@ class CreditCardType extends AbstractType
                                 'visa' => 'visa', 
                                 'mastercard' => 'mastercard', 
                                 'discover' => 'discover', 
-                                'amex' => 'amex'),
+                                'amex' => 'amex'
+                                ),
+                            'choices_as_values' => true
                            )
                      );
         $builder->add('cardNo', TextType::class, array('label' => 'Número', 'max_length' => 16, 'data' => '4548812049400004'));
@@ -65,7 +66,7 @@ class CreditCardType extends AbstractType
                        DateType::class,
                        array(
                             'label' => 'Fecha de vencimiento',
-                            'empty_value' => array('year' => 'Año',
+                            'placeholder' => array('year' => 'Año',
                                                   'month' => 'Mes',
                                                     'day' => false),
                             'years' => range(date("Y"), date("Y") + 10),

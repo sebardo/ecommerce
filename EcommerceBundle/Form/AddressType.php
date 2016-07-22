@@ -36,7 +36,6 @@ class AddressType extends AbstractType
                     },
                     'required' => false,
                     'placeholder' => 'Selecciona tu provincia',
-                    'empty_data'  => null
                 ))
             ->add('country', EntityType::class, array(
                     'class' => 'CoreBundle:Country',
@@ -45,7 +44,6 @@ class AddressType extends AbstractType
                     },
                     'required' => false,
                     'placeholder' => 'Selecciona tu país',
-                    'empty_data'  => null
                 ))
             ->add('postalCode')
             ->add('phone')

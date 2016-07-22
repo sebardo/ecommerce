@@ -480,6 +480,7 @@ account:
   login.subtitle: Entra en tu cuenta
   my: Mi cuenta
   user: Usuario
+  forBilling: Para facturación
   email:
     singular: Email
     repeat: Repite el email

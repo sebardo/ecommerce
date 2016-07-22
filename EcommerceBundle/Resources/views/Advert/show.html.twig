@@ -47,10 +47,6 @@
                                             <td>{{ 'user.singular' | trans  }}</td>
                                             <td>{{ entity.actor.fullName }}</td>
                                         </tr>
-                                        <tr>
-                                            <td>{{ 'brand.singular' | trans  }}</td>
-                                            <td>{{ entity.brand.name }}</td>
-                                        </tr>
                                    {% endif %}
                                    <tr>
                                        <td>{{ 'title' | trans  }}</td>
@@ -71,28 +67,8 @@
                                        </td>
                                    </tr>
                                    <tr>
-                                       <td>{{ 'advert.geolocated' | trans  }}</td>
-                                       <td>
-                                           {% if entity.geolocated == '1' %}
-                                               <span class="label label-warning">{{ "yes" | trans }}</span>
-                                           {% elseif entity.geolocated == '0' %}
-                                               <span class="label label-danger">{{ "no" | trans }}</span>
-                                           {% elseif entity.geolocated == 'all' %}
-                                               <span class="label label-success">{{ "all" | trans }}</span>
-                                           {% endif %}
-                                       </td>
-                                   </tr>
-                                   <tr>
-                                       <td>{{ 'advert.postalcodes' | trans  }}</td>
-                                       <td>{% for code in entity.postalCodes %}{{ code.postalCode }}{% if not loop.last %},{% endif %} {% endfor %}</td>
-                                   </tr>
-                                   <tr>
                                        <td>{{ 'advert.located' | trans  }}</td>
                                        <td>{% for locate in entity.located %}{{ locate.name }}{% if not loop.last %},{% endif %} {% endfor %}</td>
-                                   </tr>
-                                   <tr>
-                                       <td>{{ 'city.plural' | trans  }}</td>
-                                       <td>{{ entity.cities }}</td>
                                    </tr>
                                    <tr>
                                        <td>{{ 'advert.range.date' | trans  }}</td>

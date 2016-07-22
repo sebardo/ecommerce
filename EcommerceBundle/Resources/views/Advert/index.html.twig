@@ -41,7 +41,6 @@
                             <th class="hidden-480">ID</th>
                             <th class="hidden-480">{{ "title" | trans }}</th>
                             <th class="hidden-480">{{ "description" | trans }}</th>
-                            <th class="hidden-480">{{ "advert.geolocated" | trans }}</th>
                             <th style="width:150px;"></th>
                         </tr>
                     </thead>
@@ -70,22 +69,6 @@
             {
                 "mData": function (source) {
                     return '<a href="' + source.id + '">' + source.description + '</a>';
-                }
-            },
-            {
-                "mData": "geolocated",
-                "mRender": function(data) {
-                    var code = '';
-
-                    if (1 == data) {
-                        code = '<span class="label label-info">{{ "yes" | trans }}</span>';
-                    } else if(0 == data) {
-                        code = '<span class="label label-danger">{{ "no" | trans }}</span>';
-                    } else if('all' == data) {
-                        code = '<span class="label label-success">{{ "all" | trans }}</span>';
-                    }
-
-                    return code;
                 }
             },
             {

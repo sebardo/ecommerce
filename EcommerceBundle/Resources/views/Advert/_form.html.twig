@@ -1,7 +1,8 @@
 {{ form_errors(form) }}
 
+    {% if form.located is defined %}
     {{ form_row(form.actor, { label: 'user.singular'}) }}
-               
+    {% endif %}             
     
     {% if form.located is defined %}
     <div class="form-group ">

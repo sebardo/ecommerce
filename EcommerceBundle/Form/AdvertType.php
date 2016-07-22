@@ -50,7 +50,7 @@ class AdvertType extends AbstractType
             ->add('description')
             ->add('rangeDate', TextType::class)
             ->add('days', HiddenType::class)
-            ->add('image', new AdvertImageType(), array(
+            ->add('image', AdvertImageType::class, array(
                 'error_bubbling' => false,
                 'required' => false
             ))

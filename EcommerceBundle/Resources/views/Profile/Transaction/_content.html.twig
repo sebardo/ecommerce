@@ -1,28 +1,5 @@
 <h3>{{'transaction.plural' | trans}}</h3>
     
-{% if is_mobile() %}
-   
-    {% for transaction in transactions %}
-        <div>
-            <div>{{ transaction.transactionKey }}</div>
-            <div>{{ transaction.created | date('d/m/Y') }}</div>
-            {% if transaction.items.first.product.id is defined %}
-                <div>{{ transaction.totalPrice | prices(transaction.items.first.product.priceType) }}</div>
-            {% else %}
-                <div>{{ transaction.totalPrice | prices(0) }}</div>
-            {% endif %}
-            <div>{{ include('EcommerceBundle:Profile:Transaction/_status.html.twig', { transaction: transaction }) }}</div>
-            <div>{{ transaction.paymentMethod }}</div>
-            <div>
-                {% if transaction.invoice.invoiceNumber is defined %}
-                    <a href="{{ path('front_profile_showinvoice', { number: transaction.invoice.invoiceNumber }) }}" class="btn btn-primary">{{ 'transaction.details' | trans }}</a>
-                {% endif %}
-            </div>
-            <div style="clear: both"></div>
-        </div>
-    {% endfor %}
-
-{% else %}
 <table class="table table-striped ">
     <thead>
         <tr>
@@ -54,12 +31,12 @@
             </td>
             <td>
                 {% if transaction.invoice.invoiceNumber is defined %}
-                    <a href="{{ path('front_profile_showinvoice', { number: transaction.invoice.invoiceNumber }) }}" class="btn btn-primary">{{ 'transaction.details' | trans }}</a>
+                    <a href="{{ path('core_actor_showinvoice', { number: transaction.invoice.invoiceNumber }) }}" class="btn btn-primary">{{ 'transaction.details' | trans }}</a>
                 {% endif %}
             </td>
         </tr>
         {% endfor %}
     </tbody>
 </table> 
-{% endif %}
+ 
 

@@ -48,8 +48,9 @@ class AddressRepository extends EntityRepository
     {
         // select
         $qb = $this->getQueryBuilder()
-            ->select('a.id, a.dni, a.address, a.postalCode, a.city, IDENTITY(a.actor) actorId');
-
+            ->select('a.id, a.dni, a.phone, a.address,  a.city, s.name stateName, c.name countryName, a.postalCode, a.forBilling, IDENTITY(a.actor) actorId')
+            ->join('a.state', 's')
+            ->join('a.country', 'c');
         // where
         $qb->where('a.actor = :actor_id')
             ->setParameter('actor_id', $actorId);
