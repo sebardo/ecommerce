@@ -1,4 +1,4 @@
-{% if is_tablet() %}
+ 
 <div class="row">
     <div class="checkout-steps">
         <hr>
@@ -33,58 +33,4 @@
             <span>Factura</span>
         </div>
     </div>
-</div>
-{% elseif is_mobile() %}  
-    <div class="row">
-    <div class="checkout-steps col-xs-12">     
-        <div class="step {% if step == 'summary' %}step-1 active{% endif%}
-                         {% if step == 'identification' %}step-2 active{% endif%}
-                         {% if step == 'delivery' %}step-3 active{% endif%}
-                         {% if step == 'pay' %}step-4 active{% endif%}
-                         {% if step == 'invoice' %}step-5 active{% endif%}
-                         ">
-            {% if step == 'summary' %}<div><span>1</span>/5</div><span>Vista previa</span>{% endif%}
-            {% if step == 'identification' %}<div><span>2</span>/5</div><span>Identificación</span>{% endif%}
-            {% if step == 'delivery' %}<div><span>3</span>/5</div><span>Datos envío</span>{% endif%}
-            {% if step == 'pay' %}<div><span>4</span>/5</div><span>Detalle y Pago</span>{% endif%}
-            {% if step == 'invoice' %}<div><span>5/5</span></div><span>Factura</span>{% endif%}
-        </div>
-    </div>
-</div>
-{% else %}
-    <div class="row">
-    <div class="checkout-steps">
-        <hr>
-        <div class="step step-1 {% if step == 'summary' or
-                                      step == 'identification' or
-                                      step == 'delivery' or
-                                      step == 'pay' or
-                                      step == 'invoice'%}active{% endif%}">
-            <span>1</span>
-            <span>Vista previa</span>
-        </div>
-        <div class="step step-2 {% if step == 'identification' or
-                                      step == 'delivery' or
-                                      step == 'pay' or
-                                      step == 'invoice' %}active{% endif%}">
-            <span>2</span>
-            <span>Identificación</span>
-        </div>
-        <div class="step step-3 {% if step == 'delivery' or
-                                      step == 'pay' or
-                                      step == 'invoice' %}active{% endif%}">
-            <span>3</span>
-            <span>Datos para el envio</span>
-        </div>
-        <div class="step step-4 {% if step == 'pay' or
-                                      step == 'invoice' %}active{% endif%}">
-            <span>4</span>
-            <span>Detalle y Pago</span>
-        </div>
-        <div class="step step-5 {% if step == 'invoice' %}active{% endif%}">
-            <span>5</span>
-            <span>Factura</span>
-        </div>
-    </div>
-</div>    
-{% endif %}
+</div>   

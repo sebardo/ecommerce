@@ -45,6 +45,7 @@ class EcommerceExtension extends \Twig_Extension
             new Twig_SimpleFunction('get_adverts', array($this, 'getAdverts')),
             new Twig_SimpleFunction('get_advert', array($this, 'getAdvert')),
             new Twig_SimpleFunction('get_product_stats', array($this, 'getProductStats')),
+            new Twig_SimpleFunction('get_product_image', array($this, 'getProductImage')),
         );
     }
     
@@ -190,15 +191,11 @@ class EcommerceExtension extends \Twig_Extension
      */
     public function priceFilter($number, $applyOtherPercentageCharge = false, $applyVat = false, $round = false, $decimals = 2, $decPoint = ',', $thousandsSep = '.', $applyNewVat = 0)
     {
-//        currency_symbol: app.currency_symbol 
-//        vat: app.vat 
-//        special_percentage_charge: app.special_percentage_charge
-
         // apply VAT
         if($applyVat){
             // apply new vat inline
             if($applyNewVat==0){
-                $price = $applyVat ? $number * (1 + $this->parameters['company']['vat'] / 100) : $number;
+                $price = $applyVat ? $number * (1 + $this->parameters['ecommerce']['vat'] / 100) : $number;
             }else{
                 $price = $number * (1 + $applyNewVat / 100);
             }   
@@ -210,7 +207,7 @@ class EcommerceExtension extends \Twig_Extension
 
         // apply other percentage charge
         if ($applyOtherPercentageCharge) {
-            $price = $price * (1 + $this->parameters['company']['special_percentage_charge'] / 100);
+            $price = $price * (1 + $this->parameters['ecommerce']['special_percentage_charge'] / 100);
         }
 
         
@@ -277,6 +274,43 @@ class EcommerceExtension extends \Twig_Extension
         return  $stats;
     }
     
+    public function getProductImage(Product $product, $size='400') {
+        
+        if(count($product->getImages())>0){
+            $imageEntity = $product->getImages()->first();
+            $instance = new \CoreBundle\Twig\CoreExtension();
+            $instance->setContainer($this->container);
+            $image = $instance->getThumbImage($imageEntity->getPath(), $size);
+            if($image == ''){
+                return $this->getDefaultProductImage($size);
+            }
+            return $image;
+        }else{
+            return $this->getDefaultProductImage($size);
+        }
+        
+    }
+    
+    public function getDefaultProductImage($size='400')
+    {
+        switch ($size) {
+            case '400':
+                return 'http://placehold.it/400x250/000/fff';
+                break;
+            case '380':
+                return 'http://placehold.it/380x180/000/fff';
+                break;
+            case '260':
+                return 'http://placehold.it/260x123/000/fff';
+                break;
+            case '142':
+                return 'http://placehold.it/142x88/000/fff';
+                break;
+            default:
+                return 'http://placehold.it/60x60/000/fff';
+                break;
+        }
+    }
     /**
      * {@inheritDoc}
      */

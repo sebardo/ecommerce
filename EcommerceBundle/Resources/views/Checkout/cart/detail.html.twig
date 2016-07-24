@@ -4,33 +4,21 @@
  
 
 {% block breadcrumb %}
-    {% if not is_mobile() %}
+   
     <div class="col-md-12 col-xs-12">
         <ol class="breadcrumb">
             <li ><a href="/">Inicio</a></li>
             <li class="active"><a href="{{path('ecommerce_checkout_detail')}}">Carrito</a></li>
         </ol>
     </div>
-    {% endif %}         
+       
 {% endblock %}
     
  
 
 {% block content %}
-     
-    {% if is_mobile() and not is_tablet() %}
-    <div class="col-md-6 col-xs-12 stepsCartDetail">
-        {% include 'EcommerceBundle:Checkout:steps.html.twig' with {'step': 'summary'}  %}
-    </div>    
-    <div class="col-md-6 col-xs-12">
-        <h1 class="title cartDetailTitle">
-            {{ "cart.singular" | trans }}
-        </h1>
-        <div class="subtitle-section">{{ "cart.items" | transchoice(cart.totalItems, { '%items%': '<a href="javascript:void(0)" data-placement="bottom" data-toggle="popover">' ~ cart.totalItems ~ '</a>' }) | raw }}</div> 
-    </div>
-    
-    {% else %}
-        <div class="col-md-6 col-sm-4 cartDetailTablet">
+  
+        {#<div class="col-md-6 col-sm-4 cartDetailTablet">
             <h1 class="title">
                 {{ "cart.singular" | trans }}
             </h1>
@@ -38,177 +26,28 @@
         <div class="col-md-6 col-sm-8 cartDetailTablet">
             {% include 'EcommerceBundle:Checkout:steps.html.twig' with {'step': 'summary'}  %}
         </div>
-    {% endif %}    
-    <div style="clear: both"></div>
+    
+    <div style="clear: both"></div>#}
     
     {% set cart = cart_get() %}
     <div id="cart-detail">
         <div class="col-md-1"></div>
-        {% if is_tablet() %}
-            <div class="col-md-12 container-content">
-        {% else %}
             <div class="col-md-10 col-xs-12 container-content">
-        {% endif %}    
-        
-            
-            {% if cart.totalItems > 0%}
-                {{ form_errors(form) }}
-                
-                <div class="container-table-cart">
-                    <form name="ecommercebundle_carttype" action="{{ path('ecommerce_checkout_save') }}" method="post">
-                        
-                        {% if is_tablet() %}
+                {% if cart.totalItems > 0%}
+                    {{ form_errors(form) }}
+
+                    <div class="container-table-cart">
+                        <form name="cart" action="{{ path('ecommerce_checkout_save') }}" method="post">
                             {% include 'EcommerceBundle:Checkout/cart:table.detail.html.twig' %}
-                        {% elseif is_mobile() %}
-                            {# we must calculate the total cart price manually because the current version of SyliusCartBundle
-                                does not accept decimals #}
-                            {% set cart_total = 0 %}
-                            {% set cart_total_no_vat = 0 %}
-                            {% set amount_for_delivery_expenses = 0 %}
-                            {% for item in cart.items %}
-                                <div class="product-item-content">
-                                    {% set product = item.product %}
-                                    <div>
-                                        <a class="title" href="{{ path('ecommerce_product_show', { id: product.id, slug: product.slug }) }}" title="{{ product.name }}">
-                                        {{ product.name }}
-                                        </a>
-                                    </div>
-                                    <div class="brand">{{ product.brand.name }}</div>
-                                    {% set priceData = get_transport_data(cart.items)%}
-                                    
-                                    <div class="store-pickup">
-                                        <div class="recogerEnTienda col-xs-6">
-                                        {{ form_widget(form.items[loop.index0].storePickup.0) }} Recoger en tienda
-                                        </div>
-                                        <div class="envioOnline col-xs-6">
-                                        {% if priceData | length > 0 %}
-                                        {{ form_widget(form.items[loop.index0].storePickup.1, { attr: {'actor': product.actor.id, 'weight': product.weight, 'source':  priceData[product.id].src, 'destiny':  priceData[product.id].dst, 'price': priceData[product.id].price }   } ) }}
-                                        {% else %}
-                                            {{ form_widget(form.items[loop.index0].storePickup.1) }}
-                                        {% endif %}
-                                        
-                                        
-                                        Envio On-line
-                                        {{ form_row(form.items[loop.index0].shippingCost, { label: false , attr: {'class': 'shipping-cost'} }) }}
-                                        </div>
-                                   </div>
-                                   
-                                    <div class="col-xs-12 item-info">
-                                        <a href="{{ path('ecommerce_checkout_remove', { id: item.id }) }}" class="remove col-xs-2" title="{{ "cart.remove" | trans }}">
-                                            <span class="glyphicon glyphicon-remove"></span>
-                                        </a>
-                                        {% if product.images|length > 0 %}
-                                            {% set path = '/uploads/images/product/'~product.id~'/'~product.images.first.path %}
-                                        {% else %}
-                                            {% set path = '/bundles/front/images/default-product-image.png' %}
-                                        {% endif %}
-                                        <img class="col-xs-4" src="{{ path }}" />
-                                        
-                                    
-                                        
-                                        <div class="col-xs-3">
-                                            {{ "checkout.units" | trans }}<br>
-                                            {{ form_row(form.items[loop.index0].quantity, { label: false, attr: {'data-price':  product.price} }) }}
-                                        </div>
-                                        <div class="col-xs-3 descAlign">
-                                            {{ "checkout.discount" | trans }}<br>
-                                            {{ product.discount }}
-                                        </div>
-
-                                        
-
-                                        <div class="">
-                                            <div class="col-xs-4">{{ "checkout.rrp.unit" | trans }}</div>
-                                            <span class="col-xs-8 margin-top-item">{{ product.price | price(true,true) }}</span>
-                                        </div>
-                                        <div class="">
-                                            <div class="col-xs-4">{{ "checkout.rrp.dt.unit" | trans }}</div>  
-                                            <span class="col-xs-8 margin-top-item">{{ product.price | price(true,true) }}</span>
-
-                                        </div>
-                                        <div class="">
-                                            <div class="col-xs-3">{{ "checkout.rrp.total" | trans }}</div>  
-                                            <span class="price2 col-xs-9 margin-top-item">
-                                                <span class="price">{{ (product.price * item.quantity) | price(true,true) }}</span>
-                                            </span>
-                                        </div>
-                                    </div>
-                                            
-                                    {% if item.product.discount %}
-                                        {% set cart_total = cart_total + (item.product.price * item.quantity) %}
-                                        {% set cart_total_no_vat =  cart_total_no_vat + (item.product.price * item.quantity) %}
-                                    {% else %}
-                                        {% set cart_total = cart_total + (item.product.price * item.quantity) %}
-                                        {% set cart_total_no_vat =  cart_total_no_vat + (item.product.price * item.quantity) %}
-                                    {% endif %}
-
-                                    {% if item.product.isFreeTransport == false %}
-                                        {% if item.product.discount %}
-                                            {% set amount_for_delivery_expenses =  amount_for_delivery_expenses + (item.product.price * item.quantity) %}
-                                        {% else %}
-                                            {% set amount_for_delivery_expenses =  amount_for_delivery_expenses + (item.product.price * item.quantity) %}
-                                        {% endif %}
-                                    {% endif %}
-                                </div>
-                            {% endfor %}
-                            <div class="checkout-pre-footer col-xs-12"> 
-                                <div class="delivery-line">
-
-                                    <div class="title col-xs-10">
-                                        <span>{{ 'checkout.delivery.quantity' | trans }}</span>
-                                    </div>
-
-                                    <div class="price3 col-xs-2">
-                                        <strong id="articulos"></strong>
-                                    </div>
-                                </div>
-                                    <br>
-                                <div class="delivery-line">
-
-                                    <div class="title col-xs-10">
-                                        <span>{{ 'checkout.delivery.costs' | trans }}</span>
-                                    </div>
-
-                                    <div class="price3 col-xs-2" >
-                                        {% set delivery_expenses = (amount_for_delivery_expenses * (core['company']['delivery_expenses_percentage'] / 100)) | price(false,false,false,2,'.',',') %}
-                                        <strong id="gastos_envio">{{ delivery_expenses | price(true,true) }}</strong>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="checkout-footer"> 
-                            <div class="total col-xs-6">
-                                <span>{{ "total" | trans }}: </span>
-                                <strong id="total">
-                                    {% if 'by_percentage' == core['company']['delivery_expenses_type'] %}
-                                        {{ (cart_total_no_vat + delivery_expenses) | price(true, true) }}
-                                    {% else %}
-                                        {{ cart_total_no_vat | price(true, true) }}
-                                    {% endif %}
-                                </strong>
-                                <em>{{ "vat.included" | trans }}</em>
-                            </div>
-
-                            <div class="cart-options col-xs-6">
-                                <button type="submit" class="btn btn-primary btn-lg orange pay pull-right" title="{{ "checkout.pay" | trans }}">{{ "checkout.pay" | trans }}</button>
-                            </div>
-                            {% set referer = get_referer(app.request)%}
-                            {% if app.request.query.get('referer') != '' %}{% set referer = pp.request.query.get('referer') %}{% endif %}
-                            <a href="{{ referer }}" class="pull-right continue col-xs-12" title="{{ "checkout.add.more" | trans }}" >{{ "checkout.add.more" | trans }}</a>
-                            </div>
-                            
-                        {% else %}
-                            {% include 'EcommerceBundle:Checkout/cart:table.detail.html.twig' %}
-                        {% endif %}
-                        
-                        {{ form_rest(form) }}
-                    </form>  
-                </div>
-            {% else %}
-                <div style="margin-bottom: 100px;margin-top: 50px">
-                    <div class="alert alert-warning">Su carrito esta vacio, hasta el momento no ha seleccionado ningun producto.</div> 
-                </div>
-            {% endif %}
-        </div>
+                            {{ form_rest(form) }}
+                        </form>  
+                    </div>
+                {% else %}
+                    <div style="margin-bottom: 100px;margin-top: 50px">
+                        <div class="alert alert-warning">Su carrito esta vacio, hasta el momento no ha seleccionado ningun producto.</div> 
+                    </div>
+                {% endif %}
+            </div>
         <div class="col-md-1"></div>
     </div>    
 {% endblock %}

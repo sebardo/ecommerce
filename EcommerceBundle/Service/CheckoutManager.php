@@ -90,9 +90,6 @@ class CheckoutManager
         if($transaction->getItems()->first()->getAdvert() instanceof  Advert){
             return $this->calculateTotalsAdvert($transaction);
         }
-        $totals['delivery_expenses'] = 0;
-        $totals['vat'] = $this->parameters['company']['vat'];
-        
         if($transaction->getPaymentMethod() == Transaction::PAYMENT_METHOD_STORE_PICKUP){
             $totals['amount'] = $transaction->getTotalPrice();
             $totals['amount_clean'] = $transaction->getTotalPrice();
@@ -101,14 +98,16 @@ class CheckoutManager
             // return total
             return $totals;
         }
-        
+        $totals['delivery_expenses'] = 0;
         $totals['amount'] = $transaction->getTotalPrice();
         $totals['amount_clean'] = $transaction->getTotalPrice();
+        $totals['vat'] = number_format($totals['amount_clean'] * $this->parameters['ecommerce']['vat'], 2);
+        
         if(!is_null($delivery)){
             $totalPerDeliveryExpenses = $this->calculateTotalAmountForDeliveryExpenses($transaction);
 
             // calculate delivery expenses
-            if ('by_percentage' === $this->parameters['company']['delivery_expenses_type']) {
+            if ('by_percentage' === $this->parameters['ecommerce']['delivery_expenses_type']) {
                 $totals['delivery_expenses'] = round($totalPerDeliveryExpenses * ($delivery->getExpenses() / 100),2);
             } else {
                 $totals['delivery_expenses'] = $delivery->getExpenses();
@@ -119,12 +118,9 @@ class CheckoutManager
         if(!is_null($transaction->getVat())){
             $vat = $transaction->getVat();
             $totals['vat'] = ($totals['amount'] + $totals['delivery_expenses']) * ($vat / 100);
-            // calculate amount
-            $totals['amount'] += $totals['delivery_expenses'] + $totals['vat'];
-        }else{
-             $totals['amount'] += $totals['delivery_expenses'];
         }
- 
+        // calculate amount
+        $totals['amount'] += $totals['delivery_expenses'] + $totals['vat'];
         // return total
         return $totals;
     }
@@ -816,7 +812,7 @@ class CheckoutManager
 
         $json = json_encode($payment);
         $json_resp = $this->paypalCall('POST', $url, $json);
-                
+               
         if(!is_null($credtCard)){
             if($json_resp['state'] == 'approved'){
                  //UPDATE TRANSACTION
@@ -2159,8 +2155,8 @@ class CheckoutManager
     {
         
         $productId = $request->query->get('id');
-        $itemForm = $request->request->get('ecommercebundle_cartitemtype');
-        
+        $itemForm = $request->request->get('cart_item_simple');
+
         $productRepository = $this->manager->getRepository('EcommerceBundle:Product');
         if (!$productId || !$product = $productRepository->find($productId)) {
             // no product id given, or product not found
@@ -2173,8 +2169,8 @@ class CheckoutManager
 
         // calculate item price adding the special charge
         $price = $product->getPrice();
-        if ($this->parameters['company']['special_percentage_charge'] > 0) {
-            $price += $price * ($this->parameters['company']['special_percentage_charge'] / 100);
+        if ($this->parameters['ecommerce']['special_percentage_charge'] > 0) {
+            $price += $price * ($this->parameters['ecommerce']['special_percentage_charge'] / 100);
         }
         $item->setUnitPrice(intval($price));
 

@@ -74,39 +74,37 @@
                 <div class="tab-pane {{ app.request.get('attributes') ? 'active' }}" id="attributes_tab">
                     
                     <!-- BEGIN FORM-->
-                    {{ form_start(edit_form, {
+                    {{ form_start(attributes_form, {
                                     'action': path('ecommerce_product_edit', { id: entity.id }), 
                                     'method': 'post', 
                                     'attr': {'class': 'form-horizontal form-row-seperated'}
                                     }) }}
                         <div class="box-body">
                             {{ include('EcommerceBundle:Product:_attributes_form.html.twig', { form: attributes_form }) }}
-                            <input type="hidden" name="_method" value="PUT" />
                         </div>
                         <div class="box-footer">
                             <button type="submit" class="btn btn-primary btn-flat"><i class="ion-checkmark"></i> {{ "save" | trans }}</button>
                             <a href="{{ path('ecommerce_product_show', { id: entity.id, attributes: 1 }) }}" class="btn btn-default btn-flat">{{ "cancel.singular" | trans }}</a>
                         </div>
-                    </form>
+                    {{ form_end(attributes_form) }}
                     <!-- END FORM-->
                         
                 </div>
                 <div class="tab-pane {{ app.request.get('features') ? 'active' }}" id="features_tab">
                     <!-- BEGIN FORM-->
-                    {{ form_start(edit_form, {
+                    {{ form_start(features_form, {
                                     'action': path('ecommerce_product_edit', { id: entity.id }), 
                                     'method': 'post', 
                                     'attr': {'class': 'form-horizontal form-row-seperated'}
                                     }) }}
                         <div class="box-body">
                             {{ include('EcommerceBundle:Product:_features_form.html.twig', { form: features_form }) }}
-                            <input type="hidden" name="_method" value="PUT" />
                         </div>
                         <div class="box-footer">
                             <button type="submit" class="btn btn-primary btn-flat"><i class="ion-checkmark"></i> {{ "save" | trans }}</button>
                             <a href="{{ path('ecommerce_product_show', { id: entity.id, features: 1 }) }}" class="btn btn-default btn-flat">{{ "cancel.singular" | trans }}</a>
                         </div>
-                    </form>
+                    {{ form_end(features_form) }}
                     <!-- END FORM-->
                 </div>
                 <div class="tab-pane {{ app.request.get('images') ? 'active' }}" id="images_tab">
@@ -120,20 +118,19 @@
                 <div class="tab-pane {{ app.request.get('related') ? 'active' }}" id="related_tab">
                     
                     <!-- BEGIN FORM-->
-                    {{ form_start(edit_form, {
+                    {{ form_start(related_form, {
                                     'action': path('ecommerce_product_edit', { id: entity.id }), 
                                     'method': 'post', 
                                     'attr': {'class': 'form-horizontal form-row-seperated'}
                                     }) }}
                         <div class="box-body">
                             {{ include('EcommerceBundle:Product:_related_form.html.twig', { form: related_form }) }}
-                            <input type="hidden" name="_method" value="PUT" />
                         </div> 
                         <div class="box-footer">
                             <button type="submit" class="btn btn-primary btn-flat"><i class="ion-checkmark"></i> {{ "save" | trans }}</button>
                             <a href="{{ path('ecommerce_product_show', { id: entity.id, related: 1 }) }}" class="btn btn-default btn-flat">{{ "cancel.singular" | trans }}</a>
                         </div>
-                    </form>
+                    {{ form_end(related_form) }}
                     <!-- END FORM-->
                         
                 </div>
@@ -299,7 +296,7 @@
             $('#product_features_featureValues').select2({
                 width: '700px'
             });
-            $('#ecommercebundle_productrelatedtype_relatedProducts').select2({
+            $('#product_related_relatedProducts').select2({
                 width: '700px'
             });
         

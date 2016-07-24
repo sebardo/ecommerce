@@ -37,7 +37,7 @@ class LoadAdvertData extends SqlScriptFixture
     
     public function getOrder()
     {
-        return 2; // the order in which fixtures will be loaded
+        return 4; // the order in which fixtures will be loaded
     }
 }
 

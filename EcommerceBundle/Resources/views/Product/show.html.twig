@@ -32,10 +32,10 @@
                                 not app.request.get('related') ? 'active' }}">
                       <a href="#info_tab" data-toggle="tab">{{ "information" | trans }}</a>
                   </li>
-                  {#<li class="{{ app.request.get('attributes') ? 'active' }}"><a href="#attributes_tab" data-toggle="tab">{{ "attribute.plural" | trans }}</a></li>#}
+                  <li class="{{ app.request.get('attributes') ? 'active' }}"><a href="#attributes_tab" data-toggle="tab">{{ "attribute.plural" | trans }}</a></li>
                   <li class="{{ app.request.get('images') ? 'active' }}"><a href="#images_tab" data-toggle="tab">{{ "image.plural" | trans }}</a></li>
                   <li class="{{ app.request.get('features') ? 'active' }}"><a href="#features_tab" data-toggle="tab">{{ "feature.plural" | trans }}</a></li>
-                  {#<li class="{{ app.request.get('related') ? 'active' }}"><a href="#related_tab" data-toggle="tab">{{ "product.related" | trans }}</a></li>#}
+                  <li class="{{ app.request.get('related') ? 'active' }}"><a href="#related_tab" data-toggle="tab">{{ "product.related" | trans }}</a></li>
                     
                 </ul>
                 <div class="tab-content">
@@ -115,16 +115,6 @@
                                 <tr>
                                     <td>{{ "weight" | trans }}</td>
                                     <td>{{ entity.weight }}</td>
-                                </tr>
-                                <tr>
-                                    <td>{{ "public" | trans }}</td>
-                                    <td>
-                                        {% if entity.public %}
-                                            <span class="label label-success">{{ "yes" | trans }}</span>
-                                        {% else %}
-                                            <span class="label label-danger">{{ "no" | trans }}</span>
-                                        {% endif %}
-                                    </td>
                                 </tr>
                                 <tr>
                                     <td>{{ "reference" | trans }}</td>
@@ -328,9 +318,6 @@
                                         </td>
                                         <td>
                                             <a href="{{ path('ecommerce_category_show', { id: product.category.id }) }}" title="{{ product.category.name }}">{{ product.category.name }}</a>
-                                        </td>
-                                        <td>
-                                            {{ product.excerpt }}
                                         </td>
                                     </tr>
                                 {% endfor %}

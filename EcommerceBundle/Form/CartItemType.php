@@ -18,15 +18,15 @@ class CartItemType extends AbstractType
     {
         $builder
             ->add('quantity', IntegerType::class, array('attr' => array('min' => 1, 'class' => 'quantity')))
-            ->add('shippingCost', HiddenType::class)
-            ->add('storePickup', ChoiceType::class, array(
-                'choices'  => array(1 => 'Recoger en tienda', 0 => 'Envio On-line'),
-                'required' => true,
-                'expanded' => true,
-                'multiple' => false,
-                'empty_data' => null
-//                'placeholder' => 'Selecciona el tipo de envío'
-            ))
+//            ->add('shippingCost', HiddenType::class)
+//            ->add('storePickup', ChoiceType::class, array(
+//                'choices'  => array(1 => 'Recoger en tienda', 0 => 'Envio On-line'),
+//                'required' => true,
+//                'expanded' => true,
+//                'multiple' => false,
+//                'empty_data' => null
+////                'placeholder' => 'Selecciona el tipo de envío'
+//            ))
         ;
     }
 

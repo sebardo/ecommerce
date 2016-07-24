@@ -69,12 +69,15 @@ subcategory:
   plural: Subcategorías
   from_category: Subcategorías de %category%
 
+attributes: Funciones
 attribute:
+  singular: Función
   plural: Funciones
   created: Se ha creado la función satisfactoriamente
   edited: Se ha editado la función satisfactoriamente
   deleted: Se ha eliminado la función satisfactoriamente
   sort: Ordenar funciones de %entity%
+  empty: No se han asigando funciones por el momento
 
 features: Características
 feature:
@@ -83,6 +86,7 @@ feature:
   edited: Se ha editado la característica satisfactoriamente
   deleted: Se ha eliminado la característica satisfactoriamente
   sort: Ordenar características de %entity%
+  empty: No se han asignado características por el momento
 
 value:
   plural: Valores
@@ -422,10 +426,10 @@ checkout:
   identification: Identificación
   summary: Resumen y finalizar
   units: Unidades
-  rrp.unit: Unidad
+  unit: Unidad
   discount: Dto
-  rrp.dt.unit: Dto/Unidad
-  rrp.total: Total
+  dt.unit: Dto/Unidad
+  total: Total
   subtotal: Subtotal
   add: Añadir productos
   add.more: Añadir más productos

@@ -1,4 +1,4 @@
-{% form_theme creditcard_form 'FrontBundle:Form:base.fields.html.twig' %}
+{% form_theme creditcard_form 'CoreBundle:Form:base.fields.html.twig' %}
 
 
 <div class="col-md-12 cc-content" id="payment-paypal-cc">
@@ -62,7 +62,7 @@
         <div class="col-md-2" ></div>
 
         <div class="col-sm-12 priceAndCheck">
-            <a href="{{ path('ecommerce_checkout_deliveryinfo') }}" class="{%if is_tablet()%}btn btn-primary{% elseif is_mobile() %}back{% else%}btn btn-primary{% endif %}" title="{{ "back" | trans }}">{{ "back" | trans }}</a>
+            <a href="{{ path('ecommerce_checkout_deliveryinfo') }}" class="btn btn-primary" title="{{ "back" | trans }}">{{ "back" | trans }}</a>
         </div>
     </div>
      

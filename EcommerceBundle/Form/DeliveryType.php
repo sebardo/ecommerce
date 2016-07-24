@@ -11,7 +11,6 @@ use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Security\Core\SecurityContext;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -31,7 +30,7 @@ class DeliveryType extends AbstractType
      * @param EntityManager   $em
      * @param Session         $session
      */
-    public function __construct(SecurityContext $securityContext, EntityManager $em, Session $session)
+    public function __construct($securityContext, EntityManager $em, Session $session)
     {
         $this->securityContext = $securityContext;
         $this->em = $em;
@@ -92,7 +91,8 @@ class DeliveryType extends AbstractType
             ))
             ->add('preferredSchedule', ChoiceType::class, array(
                 'choices'  => Delivery::getSchedules(),
-                'required' => false
+                'required' => false,
+                'choices_as_values' => true,
             ))
 
             ->add('deliveryDni', TextType::class, array(

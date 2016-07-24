@@ -23,7 +23,7 @@ class LoadEcommerceData extends SqlScriptFixture
     public function createFixtures()
     {
         $core = $this->container->getParameter('core');
-        if($core['fixture_data'])
+        if($core['ecommerce']['fixture_data'])
         {
             //Create Families
             $family = new Family();
@@ -102,7 +102,11 @@ class LoadEcommerceData extends SqlScriptFixture
             //Create Products
             $product = new Product();
             $product->setName('Product test 1');
+            $product->setInitPrice(1.84);
             $product->setPrice(0.84);
+            $product->setPriceType(Product::PRICE_TYPE_FIXED);
+            $product->setDiscount(1);
+            $product->setDiscountType(Product::PRICE_TYPE_FIXED);
             $product->setBrand($brand);
             $product->setModel($brandModel);
             $product->setCategory($category);
@@ -110,20 +114,22 @@ class LoadEcommerceData extends SqlScriptFixture
             $product->setAvailable(true);
             $product->setHighlighted(true);
             $product->setDescription('Description product test 1 for testing.');
-            $product->setExcerpt('Excerpt product test 1 for testing.');
             $product->setReference(uniqid());
             $product->setMetaTitle('Meta titlte test 1');
             $product->setMetaDescription('Meta description test 1');
             $product->setStock(7);
             $product->addAttributeValue($attrValue2);
             $product->addFeatureValue($featureValue);
+            $product->setStorePickup(false);
             $product->setFreeTransport(true);
-            $product->setFinalShot(true);
             $product->setTechnicalDetails('Technical details test.');
 
             $product2 = new Product();
             $product2->setName('Product test 2');
             $product2->setPrice(1.14);
+            $product2->setPriceType(Product::PRICE_TYPE_FIXED);
+            $product2->setDiscount(0);
+            $product2->setDiscountType(Product::PRICE_TYPE_FIXED);
             $product2->setBrand($brand2);
             $product->setModel($brandModel2);
             $product2->setCategory($category2);
@@ -131,7 +137,6 @@ class LoadEcommerceData extends SqlScriptFixture
             $product2->setAvailable(true);
             $product2->setHighlighted(true);
             $product2->setDescription('Description product test 2 for testing.');
-            $product2->setExcerpt('Excerpt product test 2 for testing.');
             $product2->setReference(uniqid());
             $product2->setMetaTitle('Meta titlte test 2');
             $product2->setMetaDescription('Meta description test 2');
@@ -139,13 +144,17 @@ class LoadEcommerceData extends SqlScriptFixture
             $product2->addAttributeValue($attrValue);
             $product2->addFeatureValue($featureValue2);
             $product2->addRelatedProduct($product);
+            $product2->setStorePickup(false);
             $product2->setFreeTransport(true);
-            $product2->setFinalShot(true);
             $product2->setTechnicalDetails('Technical details test 2.');
 
             $product3 = new Product();
             $product3->setName('Product test 3');
-            $product3->setPrice(0.14);
+            $product3->setInitPrice(10.14);
+            $product3->setPrice(7.98);
+            $product3->setPriceType(Product::PRICE_TYPE_FIXED);
+            $product3->setDiscount(10);
+            $product3->setDiscountType(Product::PRICE_TYPE_PERCENT);
             $product3->setBrand($brand);
             $product->setModel($brandModel);
             $product3->setCategory($category);
@@ -153,7 +162,6 @@ class LoadEcommerceData extends SqlScriptFixture
             $product3->setAvailable(true);
             $product3->setHighlighted(true);
             $product3->setDescription('Description product test 3 for testing.');
-            $product3->setExcerpt('Excerpt product test 3 for testing.');
             $product3->setReference(uniqid());
             $product3->setMetaTitle('Meta titlte test 3');
             $product3->setMetaDescription('Meta description test 3');
@@ -162,13 +170,13 @@ class LoadEcommerceData extends SqlScriptFixture
             $product3->addFeatureValue($featureValue);
             $product3->addRelatedProduct($product);
             $product3->addRelatedProduct($product2);
-            $product3->setFreeTransport(true);
-            $product3->setFinalShot(true);
+            $product3->setStorePickup(true);
+            $product3->setFreeTransport(false);
             $product3->setTechnicalDetails('Technical details test 3.');
 
             //Create a sale (create all entities needed)
-            $actor = $this->getManager()->getRepository('CoreBundle:Actor')->findOneByUsername('test');
-            $actor2 = $this->getManager()->getRepository('CoreBundle:Actor')->findOneByUsername('test2');
+            $actor = $this->getManager()->getRepository('CoreBundle:Actor')->findOneByUsername('user');
+            $actor2 = $this->getManager()->getRepository('CoreBundle:Actor')->findOneByUsername('user2');
             $country = $this->getManager()->getRepository('CoreBundle:Country')->find('es');
             $state = $this->getManager()->getRepository('CoreBundle:State')->findOneByName('Barcelona');
 
@@ -178,7 +186,7 @@ class LoadEcommerceData extends SqlScriptFixture
             $transaction->setTransactionKey(uniqid());
             $transaction->setStatus(Transaction::STATUS_PENDING);
             $transaction->setTotalPrice(2.12);
-            $transaction->setVat($core['company']['vat']);
+            $transaction->setVat($core['ecommerce']['vat']);
             $transaction->setPaymentMethod(Transaction::PAYMENT_METHOD_PAYPAL);
             $transaction->setActor($actor);
             $transaction->setCreated(new \DateTime('now'));
@@ -191,9 +199,7 @@ class LoadEcommerceData extends SqlScriptFixture
             $productPurchase->setTransaction($transaction);
             $productPurchase->setCreated(new \DateTime('now'));
             $productPurchase->setReturned(false);
-            $productPurchase->setAssembly(false);
 
-            
             $address = new Address();
             $address->setAddress('Test address 113');
             $address->setPostalCode('08349');
@@ -243,8 +249,8 @@ class LoadEcommerceData extends SqlScriptFixture
             $delivery->setDeliveryAddress('Address test 113');
             $delivery->setDeliveryPostalCode('08349');
             $delivery->setDeliveryCity('Cabrera de Mar');
-            $delivery->setDeliveryProvince(10);
-            $delivery->setDeliveryCountry(1);
+            $delivery->setDeliveryState($state);
+            $delivery->setDeliveryCountry($country);
 
             $this->getManager()->persist($family);
             $this->getManager()->persist($category);
@@ -279,6 +285,6 @@ class LoadEcommerceData extends SqlScriptFixture
 
     public function getOrder()
     {
-        return 2; // the order in which fixtures will be loaded
+        return 3; // the order in which fixtures will be loaded
     }
 }

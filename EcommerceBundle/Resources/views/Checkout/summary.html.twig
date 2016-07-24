@@ -1,32 +1,21 @@
 {% extends core['extended_layout'] ? core['extended_layout'] : 'CoreBundle:Base:base.layout.html.twig' %}
 
 {% block breadcrumb %}
-    {% if not is_mobile() %}
+   
         <div class="col-md-12 col-xs-12">
             <ol class="breadcrumb">
                 <li ><a href="/">Inicio</a></li>
                 <li class="active"><a href="{{path('ecommerce_checkout_summary')}}">Detalle y pago</a></li>
             </ol>
         </div>
-    {% endif %}
+    
 {% endblock %}
 
 {% block  content %}
     <div class="container">
         <div class="row summary summary-mobile">
   
-                    {% if is_mobile() and not is_tablet() %}
-                        <div class="col-xs-6"></div>
-                        <div class="col-xs-6 stepSummary">
-                            {% include 'EcommerceBundle:Checkout:steps.html.twig' with {'step': 'pay'}  %}
-                        </div>
-                        <div class="col-md-6 col-xs-12">
-                            <h1>Detalle y Pago</h1>
-                            <div>Mira los detalles y agrega un metodo de pago</div> 
-                        </div>
-                        
-                    {% else %}
-                        
+                     
                         <div class="col-md-6">
                             <h1 class="title">
                                 Detalle y Pago
@@ -38,29 +27,19 @@
                         </div>
                         <div style="clear: both"></div>
                         
-                    {% endif %}
                     
-                
                 {% block content_body %}
                     <!--content-->
                     <div class="col-md-1"></div>
-                    {% if is_tablet() %}
-                        <div class="col-md-12 container-content" id="summary" >
-                    {% else %}
+                     
                         <div class="col-md-10 col-xs-12 container-content" id="summary" >
-                    {% endif %}
-                        
+                    
                                            
                         <h3>{{ "checkout.details" | trans }}</h3>
                         <div class="container-table-summary">
-                            {% if is_tablet() %}
+                            
                                 {% include 'EcommerceBundle:Checkout:summary.table.html.twig' %}
-                            {% elseif is_mobile() %} 
-                                {% include 'EcommerceBundle:Checkout:summary.table.mobile.html.twig' %}
-                            {% else %}
-                                {% include 'EcommerceBundle:Checkout:summary.table.html.twig' %}
-                            {% endif %}
-
+                          
                         </div>
                         
                   
@@ -85,7 +64,7 @@
                                         <div class="col-sm-12">
                                             <p>{{ include('EcommerceBundle:Checkout:addresses/_delivery.html.twig') }}</p>
                                             <p>
-                                                <b>{{ "account.chosen.schedule" | trans }}</b>: {{ delivery.schedules[delivery.deliveryPreferredSchedule] | trans }}<br />
+                                                <b>{{ "account.chosen.schedule" | trans }}</b>: {{ delivery.deliveryPreferredSchedule }}<br />
                                                 <b>{{ "account.phone.singular" | trans }}</b>: {{ delivery.deliveryPhone }}
                                                 {{ delivery.deliveryPhone2 is not null ? '- ' ~ delivery.deliveryPhone2 }}
                                                 {% if delivery.notes is not null %}

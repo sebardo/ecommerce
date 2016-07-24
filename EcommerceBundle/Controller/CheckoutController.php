@@ -6,18 +6,17 @@ use CoreBundle\Controller\BaseController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use FrontBundle\Form\RegistrationType;
-use FrontBundle\Form\Model\Registration;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\SecurityContext;
 use EcommerceBundle\Form\DeliveryType;
-use Symfony\Component\HttpFoundation\RedirectResponse;
+use CoreBundle\Form\Model\Registration;
 use EcommerceBundle\Form\BankTransferType;
 use EcommerceBundle\Form\PayPalType;
 use EcommerceBundle\Entity\Transaction;
 use EcommerceBundle\Form\RedsysType;
 use EcommerceBundle\Lib\RedsysResponse;
-use Symfony\Component\HttpFoundation\Response;
 use EcommerceBundle\Entity\CartItem;
 use EcommerceBundle\Form\CartType;
 use EcommerceBundle\Entity\CreditCardForm;
@@ -96,10 +95,11 @@ class CheckoutController extends BaseController
     public function addAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
+        $coreManager = $this->get('core_manager');
         $checkoutManager = $this->get('checkout_manager');
         $cart = $this->getCurrentCart();
         $emptyItem = new CartItem();
-
+        
         try {
             $item = $checkoutManager->resolve($emptyItem, $request);
         } catch (\Exception $exception) {
@@ -122,8 +122,8 @@ class CheckoutController extends BaseController
         $em->flush();
        
         // Write flash message
-
-        return $this->redirect($this->generateUrl('ecommerce_checkout_detail').'?referer='.$request->query->get('referer'));
+        $referer = $coreManager->getRefererPath($request);
+        return $this->redirect($this->generateUrl('ecommerce_checkout_detail').'?referer='.$referer);
     }
     
     /**
@@ -241,8 +241,9 @@ class CheckoutController extends BaseController
             $session->remove(SecurityContext::AUTHENTICATION_ERROR);
         }
         
-        $form = $this->createForm(new RegistrationType(), new Registration());
-
+        $registration = new Registration();
+        $form = $this->createForm('CoreBundle\Form\RegistrationType', $registration);
+        
         return array(
                 // last username entered by the user
                 'last_username' => $session->get(SecurityContext::LAST_USERNAME),
@@ -286,7 +287,7 @@ class CheckoutController extends BaseController
 
             if ($form->isValid()) {
                 $cart = $this->getCurrentCart();
-                $this->get('checkout_manager')->saveDelivery($delivery, $request->get('ecommercebundle_deliverytype'), $cart);
+                $this->get('checkout_manager')->saveDelivery($delivery, $request->get('delivery'), $cart);
 
                 $url = $this->container->get('router')->generate('ecommerce_checkout_summary');
 
@@ -340,7 +341,7 @@ class CheckoutController extends BaseController
         }
 
         $parameters = $this->container->getParameter('core');
-        $deliveryCosts = round((($totalForDelivery * $parameters['company']['delivery_expenses_percentage']) / 100),2);
+        $deliveryCosts = round((($totalForDelivery * $parameters['ecommerce']['delivery_expenses_percentage']) / 100),2);
 
         $vat = round(((($transaction->getTotalPrice() + $deliveryCosts) * $transaction->getVat()) / 100),2);
         $total = $transaction->getTotalPrice() + $vat + $deliveryCosts;
@@ -349,19 +350,19 @@ class CheckoutController extends BaseController
         // process payment method form
         if ($request->isMethod('POST')) {
 
-            if ($request->request->has('ecommercebundle_banktransfertype')) {
+            if ($request->request->has('bank_transfer')) {
                 $checkoutManager->processBankTransfer($transaction);
 
                 return $this->redirect($checkoutManager->getRedirectUrlInvoice($delivery));
-            }elseif ($request->request->has('ecommercebundle_paypaltype')) {
+            }elseif ($request->request->has('paypal')) {
                 $answer = $checkoutManager->processPaypalSale($transaction, $delivery);
 
                 return $this->redirect($answer->redirectUrl);
-            }elseif ($request->request->has('ecommercebundle_redsystype')) {
+            }elseif ($request->request->has('redsys')) {
                 $answer = $checkoutManager->processRedsysSale($transaction, $delivery);
 
                 return $this->redirect($answer->redirectUrl);
-            }elseif ($request->request->has('ecommerce_creditcard')) {
+            }elseif ($request->request->has('credit_card')) {
                 
                 $creditCardform->bind($request);
                 if ($creditCardform->isValid()){
@@ -686,7 +687,7 @@ class CheckoutController extends BaseController
          if ($this->get('session')->has('transaction-id')) {
             /** @var Transaction $transaction */
             $transaction = $em->getRepository('EcommerceBundle:Transaction')->find($this->get('session')->get('transaction-id'));
-            $this->get('checkout_manager')->sendToTransport($transaction);
+//            $this->get('checkout_manager')->sendToTransport($transaction);
          }
         
 

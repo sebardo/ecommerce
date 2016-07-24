@@ -1,36 +1,24 @@
 {% extends core['extended_layout'] ? core['extended_layout'] : 'CoreBundle:Base:base.layout.html.twig' %}
-{% form_theme form 'CoreBundle:Form:fields.html.twig' %}
+{% form_theme form 'CoreBundle:Form:base.fields.html.twig' %}
 
 
 
 {% block breadcrumb %}
-    {% if not is_mobile() %}
+    
     <div class="col-md-12 col-xs-12">
         <ol class="breadcrumb">
             <li ><a href="/">Inicio</a></li>
             <li class="active"><a href="{{path('ecommerce_checkout_detail')}}">Datos de envío</a></li>
         </ol>
     </div>
-    {% endif %} 
+    
 {% endblock %}
 
 {% block  content %}
  <div class="col-md-12 core-row delivery">
      
-     {% if is_mobile() and not is_tablet() %}
-         
-        <div class="col-xs-12 stepsCartDelivery">
-            {% include 'EcommerceBundle:Checkout:steps.html.twig' with {'step': 'delivery'}  %}
-        </div>     
-        <div class="col-xs-12">
-            <h1 class="title">
-                Datos para el envío
-            </h1>
-            <div class="subtitle-section">Introduce tus datos para poder realizar el envío</div>
-        </div>
-    
-    {% else %}
-        
+      
+      
         <div class="col-md-6">
             <h1 class="title">
                 Datos para el envío
@@ -40,14 +28,14 @@
         <div class="col-md-6">
             {% include 'EcommerceBundle:Checkout:steps.html.twig' with {'step': 'delivery'}  %}
         </div>
-    {% endif%}
+    
     <div style="clear: both"></div>
     
 
     <div class="col-md-12 col-xs-12 container-content">
         <!--content-->
         <div class="cart">
-            <form name="ecommercebundle_deliverytype" id="delivery-form" method="post" action="{{ path('ecommerce_checkout_deliveryinfo') }}">
+            <form name="delivery" id="delivery-form" method="post" action="{{ path('ecommerce_checkout_deliveryinfo') }}">
                 {{ form_errors(form) }}
                 <div>
                     <h3>{{ "account.user.profile" | trans }}</h3>

@@ -10,6 +10,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use EcommerceBundle\Entity\Product;
 
 /**
  * Class ProductType
@@ -78,13 +79,13 @@ class ProductType extends AbstractType
             ->add('initPrice', TextType::class, array('required' => false))
             ->add('price', TextType::class)    
             ->add('priceType', ChoiceType::class, array(
-                'choices'  => array('Euro "€"'=> '0', 'Porcentaje "%"' => '1'),
+                'choices'  => array('Euro "€"'=> Product::PRICE_TYPE_FIXED, 'Porcentaje "%"' => Product::PRICE_TYPE_PERCENT),
                 'required' => true,
                 'choices_as_values' => true,
             ))
             ->add('discount', TextType::class, array('required' => false))    
             ->add('discountType', ChoiceType::class, array(
-                'choices'  => array('Fijo "€"'=> '0', 'Porcentaje "%"' => '1'),
+                'choices'  => array('Fijo "€"'=> Product::PRICE_TYPE_FIXED, 'Porcentaje "%"' => Product::PRICE_TYPE_PERCENT),
                 'required' => false,
                 'choices_as_values' => true,
             ))

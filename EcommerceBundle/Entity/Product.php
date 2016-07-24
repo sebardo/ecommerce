@@ -21,6 +21,9 @@ use EcommerceBundle\Entity\ProductStats;
  */
 class Product extends Timestampable
 {
+    const PRICE_TYPE_FIXED = 0;
+    const PRICE_TYPE_PERCENT = 1;
+    
     /**
      * @var integer
      *
@@ -45,6 +48,14 @@ class Product extends Timestampable
      * @Assert\NotBlank
      */
     private $description;
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="technical_details", type="text")
+     * @Assert\NotBlank
+     */
+    private $technicalDetails;
     
     /**
      * @var string
@@ -104,13 +115,6 @@ class Product extends Timestampable
      * @ORM\Column(name="weight", type="float", nullable=true)
      */
     private $weight;
-    
-    /**
-     * @var boolean
-     *
-     * @ORM\Column(name="public", type="boolean")
-     */
-    private $public;
     
     /**
      * @var boolean
@@ -368,6 +372,30 @@ class Product extends Timestampable
         return $this;
     }
 
+    /**
+     * Get $technicalDetails
+     *
+     * @return string
+     */
+    public function getTechnicalDetails()
+    {
+        return $this->technicalDetails;
+    }
+
+    /**
+     * Set technicalDetails
+     *
+     * @param string $technicalDetails
+     *
+     * @return Product
+     */
+    public function setTechnicalDetails($technicalDetails)
+    {
+        $this->technicalDetails = $technicalDetails;
+
+        return $this;
+    }
+            
      /**
      * Get slug
      *
@@ -563,30 +591,6 @@ class Product extends Timestampable
         return $this;
     }
     
-    /**
-     * Get public
-     *
-     * @return float
-     */
-    public function getPublic()
-    {
-        return $this->public;
-    }
-
-    /**
-     * Set public
-     *
-     * @param float $public
-     *
-     * @return Product
-     */
-    public function setPublic($public)
-    {
-        $this->public = $public;
-
-        return $this;
-    }
-
     /**
      * Get storePickup
      *
