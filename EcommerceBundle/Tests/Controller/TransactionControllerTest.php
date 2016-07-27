@@ -35,13 +35,13 @@ class TransactionControllerTest extends CoreTest
         
         //front product show
         $crawler = $this->client->request('GET', '/logout');
-        $crawler = $this->client->request('GET', '/products/'.$product->getSlug());
+        $crawler = $this->client->request('GET', '/cart/product/'.$product->getSlug());
         //Asserts
         $this->assertTrue($this->client->getResponse()->isSuccessful());
         $this->assertGreaterThan(0, $crawler->filter('html:contains("product '.$productId.'")')->count());
         
         //click buy
-        $form = $crawler->filter('form[name="cartitem"]')->form();
+        $form = $crawler->filter('form[name="cart_item_simple"]')->form();
         $crawler = $this->client->submit($form);// submit the form
         //Asserts
         $this->assertTrue($this->client->getResponse() instanceof RedirectResponse);
@@ -60,8 +60,8 @@ class TransactionControllerTest extends CoreTest
        
         //register user
         $uid = rand(999,9999);
-        $crawler = $this->registerUser($uid, $crawler);
-        
+        $crawler = $this->fillRegisterFormUser($uid, $crawler);
+
         //click pay again
         $form = $crawler->filter('form[name="cart"]')->form();
         $crawler = $this->client->submit($form);// submit the form
@@ -82,6 +82,7 @@ class TransactionControllerTest extends CoreTest
         //fill sumary form
         $summaryId = rand(999,9999);
         $crawler = $this->fillSummary($summaryId, $crawler);
+        
         //Asserts redirection confirmation 
         $this->assertTrue($this->client->getResponse() instanceof RedirectResponse);
         $crawler = $this->client->followRedirect();
@@ -113,12 +114,12 @@ class TransactionControllerTest extends CoreTest
         $crawler = $this->client->request('GET', '/logout');
         $this->getTransaction();
         $crawler = $this->client->request('GET', '/admin/transaction/'. $this->transaction->getId(), array(), array(), array(
-                'PHP_AUTH_USER' => $this->actor->getEmail(),
-                'PHP_AUTH_PW'   => $this->password,
+                'PHP_AUTH_USER' => 'admin',
+                'PHP_AUTH_PW'   => 'admin',
             ));
         
         //set traking code
-        $form = $crawler->filter('form[name="traking_code"]')->form();
+        $form = $crawler->filter('form[name="ecommerce_traking_code"]')->form();
         $trakingCode = rand(999,9999);
         $form['form[trackingCode]'] = $trakingCode;
         $crawler = $this->client->submit($form);// submit the form
@@ -128,7 +129,6 @@ class TransactionControllerTest extends CoreTest
         $this->assertTrue($this->client->getResponse()->isSuccessful());
         $this->assertGreaterThan(0, $crawler->filter('html:contains("'.$trakingCode.'")')->count());
         
-            
     }
   
     

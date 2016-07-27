@@ -37,13 +37,13 @@ class InvoiceControllerTest extends CoreTest
         
         //front product show
         $crawler = $this->client->request('GET', '/logout');
-        $crawler = $this->client->request('GET', '/products/'.$product->getSlug());
+        $crawler = $this->client->request('GET', '/cart/product/'.$product->getSlug());
         //Asserts
         $this->assertTrue($this->client->getResponse()->isSuccessful());
         $this->assertGreaterThan(0, $crawler->filter('html:contains("product '.$productId.'")')->count());
         
         //click buy
-        $form = $crawler->filter('form[name="cartitem"]')->form();
+        $form = $crawler->filter('form[name="cart_item_simple"]')->form();
         $crawler = $this->client->submit($form);// submit the form
         //Asserts
         $this->assertTrue($this->client->getResponse() instanceof RedirectResponse);
@@ -62,7 +62,7 @@ class InvoiceControllerTest extends CoreTest
        
         //register user
         $uid = rand(999,9999);
-        $crawler = $this->registerUser($uid, $crawler);
+        $crawler = $this->fillRegisterFormUser($uid, $crawler);
         
         //click pay again
         $form = $crawler->filter('form[name="cart"]')->form();

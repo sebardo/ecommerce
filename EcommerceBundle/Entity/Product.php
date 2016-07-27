@@ -52,8 +52,7 @@ class Product extends Timestampable
     /**
      * @var string
      *
-     * @ORM\Column(name="technical_details", type="text")
-     * @Assert\NotBlank
+     * @ORM\Column(name="technical_details", type="text", nullable=true)
      */
     private $technicalDetails;
     

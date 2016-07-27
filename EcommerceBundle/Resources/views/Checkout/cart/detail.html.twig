@@ -18,7 +18,7 @@
 
 {% block content %}
   
-        {#<div class="col-md-6 col-sm-4 cartDetailTablet">
+        <div class="col-md-6 col-sm-4 cartDetailTablet">
             <h1 class="title">
                 {{ "cart.singular" | trans }}
             </h1>
@@ -27,7 +27,7 @@
             {% include 'EcommerceBundle:Checkout:steps.html.twig' with {'step': 'summary'}  %}
         </div>
     
-    <div style="clear: both"></div>#}
+    <div style="clear: both"></div>
     
     {% set cart = cart_get() %}
     <div id="cart-detail">
@@ -37,10 +37,13 @@
                     {{ form_errors(form) }}
 
                     <div class="container-table-cart">
-                        <form name="cart" action="{{ path('ecommerce_checkout_save') }}" method="post">
+                        {{ form_start(form, {
+                                    'action': path('ecommerce_checkout_save'), 
+                                    'method': 'post'
+                                    }) }}
                             {% include 'EcommerceBundle:Checkout/cart:table.detail.html.twig' %}
                             {{ form_rest(form) }}
-                        </form>  
+                        {{ form_end(form) }} 
                     </div>
                 {% else %}
                     <div style="margin-bottom: 100px;margin-top: 50px">

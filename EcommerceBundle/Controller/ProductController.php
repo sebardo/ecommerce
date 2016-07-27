@@ -100,7 +100,7 @@ class ProductController extends Controller
     }
     
     /**
-     * Creates a new Category entity.
+     * Creates a new Product entity.
      *
      * @Route("/new")
      * @Method({"GET", "POST"})
@@ -108,6 +108,8 @@ class ProductController extends Controller
      */
     public function newAction(Request $request)
     {
+        
+        $em = $this->getDoctrine()->getManager();
         $formConfig = array();
         $user = $this->container->get('security.token_storage')->getToken()->getUser();  
         if ($user->isGranted('ROLE_USER')) { 
@@ -127,7 +129,6 @@ class ProductController extends Controller
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
             $em->persist($entity);
             $em->flush();
             
@@ -147,7 +148,7 @@ class ProductController extends Controller
     }
     
      /**
-     * Finds and displays a Category entity.
+     * Finds and displays a Product entity.
      *
      * @Route("/{id}")
      * @Method("GET")

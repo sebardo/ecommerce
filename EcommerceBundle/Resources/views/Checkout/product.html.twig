@@ -37,11 +37,14 @@
                     <div class="btn-group cart">
                         {% set form = cart_form() %}
 
-                        <form action="{{ path('ecommerce_checkout_add', { id: product.id }) }}" method="post">
+                         {{ form_start(form, {
+                                    'action': path('ecommerce_checkout_add', { id: product.id }), 
+                                    'method': 'post'
+                                    }) }}
                             {{ form_widget(form.quantity, { attr: { class: 'form-control'} } ) }}
                             {{ form_rest(form) }}
-                            <input type="submit" class="btn btn-success" value="{{ "cart.add" | trans }}" />
-                        </form>
+                            <input type="submit" class="btn btn-success" value="{{ "cart.add" | trans }}" />    
+                         {{ form_end(form) }} 
                     </div>
                     <div class="btn-group wishlist">
                         <button type="button" class="btn btn-danger">

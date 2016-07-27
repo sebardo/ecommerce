@@ -1,10 +1,8 @@
 <div class="bill">
     <div class="col-md-1"></div>
-    {% if is_tablet() %}
-        <div class="col-md-12">
-    {% else %}
+     
         <div class="col-md-10">
-    {% endif %}    
+      
         <div >
             <div class="col-md-4 col-sm-5 col-xs-12">
                 <div class="container-logo-invoice">
@@ -37,13 +35,9 @@
         </div>
         <div style="clear: both"></div>
         <div class="container-table-invoice">
-            {% if is_tablet() %}
-                 {% include 'EcommerceBundle:Profile/Invoice:bill.table.html.twig'%}
-            {% elseif is_mobile() %}
-                {% include 'EcommerceBundle:Profile/Invoice:bill.table.mobile.html.twig'%}
-            {% else %}
+            
                 {% include 'EcommerceBundle:Profile/Invoice:bill.table.html.twig'%}
-            {% endif %}
+            
             <div class="total">
                 <span>{{ "total" | trans }}</span>
                 <strong>{{ totals.amount | price }}</strong>
@@ -66,30 +60,13 @@
         </div>
 
         <p class="bil-footer">
-            {% if is_tablet() %}
-                 {{ core['company']['sales_email'] }}
-                <span>|</span>
-                {{ 'phone.abbr' | trans }} {{ core['company']['sales_phone'] }}
-                <span>|</span>
-                {{ 'fax.abbr' | trans }} {{ core['company']['sales_fax'] }}
-                <span>|</span>{{ core['company']['website_url'] }}
-            {% elseif is_mobile() %}
-                {{ core['company']['sales_email'] }}
-                <br>
-                {{ 'phone.abbr' | trans }} {{ core['company']['sales_phone'] }}
-                <br>
-                {{ 'fax.abbr' | trans }} {{ core['company']['sales_fax'] }}
-                <br>
-                {{ core['company']['website_url'] }}
-            {% else %}
+             
                 {{ core['company']['sales_email'] }}
                 <span>|</span>
                 {{ 'phone.abbr' | trans }} {{ core['company']['sales_phone'] }}
                 <span>|</span>
                 {{ 'fax.abbr' | trans }} {{ core['company']['sales_fax'] }}
                 <span>|</span>{{ core['company']['website_url'] }}
-            {% endif %}
-            
             
         </p>
     </div>

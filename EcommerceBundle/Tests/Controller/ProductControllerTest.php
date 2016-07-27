@@ -59,7 +59,6 @@ class ProductControllerTest extends CoreTest
         $form['product[metaDescription]'] = 'Meta description_'.$uid;
         $form['product[active]']->tick();
         $form['product[available]']->tick();
-        $form['product[public]']->tick();
         $crawler = $this->client->submit($form);// submit the form
         
         //Asserts
@@ -123,7 +122,6 @@ class ProductControllerTest extends CoreTest
         $form['product[metaTitle]'] = 'Meta title_'.$uid;
         $form['product[metaDescription]'] = 'Meta description_'.$uid;
         $form['product[available]']->tick();
-        $form['product[public]']->tick();
         $crawler = $this->client->submit($form);// submit the form
         
         //Asserts

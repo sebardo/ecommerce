@@ -1,14 +1,14 @@
 {% extends core['extended_layout'] ? core['extended_layout'] : 'CoreBundle:Base:base.layout.html.twig' %}
 
 {% block breadcrumb %}
-    {% if not is_mobile() %}
+    
     <div class="col-md-12">
         <ol class="breadcrumb">
             <li><a href="#">Inicio</a></li>
             <li class="active"><a href="#">{{ 'invoice.singular'| trans }} </a></li>
         </ol>
     </div>
-    {% endif %}
+     
 {% endblock %}
 
 {% block content %}
@@ -18,18 +18,7 @@
                 
            
                 {% block content_header %}
-                    {% if is_mobile() and not is_tablet() %}
-                        <div class="col-md-6 col-xs-12">
-                            {% include 'EcommerceBundle:Checkout:steps.html.twig' with {'step': 'invoice'}  %}
-                        </div>
-                        <div class="col-md-6 col-xs-12">
-                            <h1 class="title">
-                                FACTURA
-                            </h1>
-                         <div class="subtitle-section">Puedes ver tu factura.</div> 
-                        </div>
-                        
-                    {% else %}
+                     
                         <div class="col-md-6 col-xs-4">
                             <h1 class="title">
                                 FACTURA
@@ -40,8 +29,7 @@
                         <div class="col-md-6 col-xs-8">
                             {% include 'EcommerceBundle:Checkout:steps.html.twig' with {'step': 'invoice'}  %}
                         </div>
-                    {% endif %}    
-                     
+                    
                  {% endblock %}
                  
                  <div style="clear: both"></div>

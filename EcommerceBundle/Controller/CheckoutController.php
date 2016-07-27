@@ -71,7 +71,7 @@ class CheckoutController extends BaseController
     {
        
         $cart = $this->getCurrentCart();
-        $form = $this->createForm(new CartType(), $cart);
+        $form = $this->createForm('EcommerceBundle\Form\CartType', $cart);
 
         return array(
             'cart' => $cart,

@@ -95,9 +95,6 @@ class ProductType extends AbstractType
             ->add('weight', null, array(
                 'required' => false
             ))
-            ->add('public', null, array(
-                'required' => false
-            ))
             ->add('storePickup', null, array(
                 'required' => false
             ))
