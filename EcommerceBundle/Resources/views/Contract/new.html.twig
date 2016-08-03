@@ -56,7 +56,11 @@
       {#################################################}
       {##################PLAN FORM######################}
       {#################################################}
-      <form id="create-plan" action="{{ path('ecommerce_plan_create') }}" method="post" {{ form_enctype(planForm) }} class="form-horizontal form-row-seperated">
+      {{ form_start(planForm, {
+                                    'action': path('ecommerce_plan_new'), 
+                                    'method': 'post', 
+                                    'attr': {'class': 'form-horizontal form-row-seperated', 'id': 'create-plan'}
+                                    }) }}
         <div class="modal-body">
               <div class="box-body">
                   {{ include('EcommerceBundle:Plan:_form.html.twig', { form: planForm }) }}
@@ -68,7 +72,8 @@
                 <button type="button" class="btn btn-default" id="close" data-dismiss="modal">{{ "cancel.singular" | trans }}</button>
             </div>
         </div>
-      </form>
+      {{ form_end(planForm) }}
+
            
       
     </div>
@@ -88,7 +93,7 @@
                  $('#trial').fadeToggle('slow');
             });
             
-            $('#ecommercebundle_contract_agreement_paymentMethod').change(function(){
+            $('#contract_agreement_paymentMethod').change(function(){
                 if($(this).val() == 'credit_card'){
                     $('.cc-container').fadeIn('slow');
                 }
@@ -97,17 +102,17 @@
                 }
                 
             });
-            $('#ecommercebundle_contract_actor').select2({
+            $('#contract_actor').select2({
                 placeholder: "{{ "category.choose" | trans }}",
                 allowClear: true
             });
             
-            $('#ecommercebundle_contract_agreement').select2({
+            $('#contract_agreement').select2({
                 placeholder: "{{ "category.choose" | trans }}",
                 allowClear: true
             });
             
-            $('#ecommercebundle_contract_finished').datepicker(
+            $('#contract_finished').datepicker(
             {
                 multidate: false,
                 format: 'dd/mm/yyyy',
@@ -115,7 +120,7 @@
                 weekStart: 1
             });
                     
-            $('#ecommercebundle_contract_created').datepicker(
+            $('#contract_created').datepicker(
             {
                 multidate: false,
                 format: 'dd/mm/yyyy',
@@ -129,11 +134,11 @@
                 var loading = '<i class="fa fa-spin fa-refresh"></i>';
                 $(this).find('input[type="submit"]').append(loading);
                 var formSerialize = $(this).serialize();
-                $.post('{{ path('ecommerce_plan_create') }}', formSerialize, function(response){
-                    $('#ecommercebundle_contract_agreement_plan')
+                $.post($(this).attr('action'), formSerialize, function(response){
+                    $('#contract_agreement_plan')
                             .append('<option value="'+response.id+'">'+response.name+'</option>');
                     // Select the Option.
-                    $("#ecommercebundle_contract_agreement_plan > [value=" + response.id + "]").attr("selected", "true");
+                    $("#contract_agreement_plan > [value=" + response.id + "]").attr("selected", "true");
                     $('#close').click();
                     $('#loading').fadeOut('slow');
                },'JSON');

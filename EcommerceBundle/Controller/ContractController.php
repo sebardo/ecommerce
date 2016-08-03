@@ -99,7 +99,7 @@ class ContractController extends Controller
         $entity = new Contract();
         $form = $this->createCreateForm($entity);
         $planForm = $this->createForm(new PlanType(), new Plan(), array(
-            'action' => $this->generateUrl('ecommerce_plan_create'),
+            'action' => $this->generateUrl('ecommerce_plan_new'),
             'method' => 'POST',
         ));
         
@@ -190,7 +190,7 @@ class ContractController extends Controller
         $form   = $this->createCreateForm($entity);
 
         $planForm = $this->createForm(new PlanType(), new Plan(), array(
-            'action' => $this->generateUrl('ecommerce_plan_create'),
+            'action' => $this->generateUrl('ecommerce_plan_new'),
             'method' => 'POST',
         ));
         

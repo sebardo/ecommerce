@@ -5,6 +5,8 @@ namespace EcommerceBundle\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 
 class PlanType extends AbstractType
 {
@@ -19,18 +21,19 @@ class PlanType extends AbstractType
             ->add('name')
             ->add('description')
             ->add('setupAmount')
-            ->add('frequency' , 'choice', array(
+            ->add('frequency' , ChoiceType::class, array(
                 'choices'  => array(
                     'DAY' => 'DAY', 
                     'WEEK' => 'WEEK', 
                     'MONTH' => 'MONTH', 
                     'YEAR' => 'YEAR'
                 ),
+                'choices_as_values' => true
             ))
-            ->add('frequencyInterval', 'integer')
-            ->add('cycles', 'integer')
+            ->add('frequencyInterval', IntegerType::class)
+            ->add('cycles', IntegerType::class)
             ->add('amount')
-            ->add('trialFrequency' , 'choice', array(
+            ->add('trialFrequency' , ChoiceType::class, array(
                 'required' => false,
                 'choices'  => array(
                     'DAY' => 'DAY', 
@@ -38,9 +41,10 @@ class PlanType extends AbstractType
                     'MONTH' => 'MONTH', 
                     'YEAR' => 'YEAR'
                 ),
+                'choices_as_values' => true
             ))
-            ->add('trialFrequencyInterval', 'integer', array('required' => false))
-            ->add('trialCycles', 'integer', array('required' => false))
+            ->add('trialFrequencyInterval', IntegerType::class, array('required' => false))
+            ->add('trialCycles', IntegerType::class, array('required' => false))
             ->add('trialAmount', null, array('required' => false))
             ->add('visible', null, array('required' => false))
             ->add('active', null, array('required' => false))

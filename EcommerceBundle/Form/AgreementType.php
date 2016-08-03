@@ -9,6 +9,7 @@ use Doctrine\ORM\EntityRepository;
 use EcommerceBundle\Form\CreditCardType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
 class AgreementType extends AbstractType
 {

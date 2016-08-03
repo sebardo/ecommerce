@@ -8,7 +8,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use EcommerceBundle\Entity\Plan;
-use EcommerceBundle\Form\PlanType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 /**
@@ -58,23 +57,24 @@ class PlanController extends Controller
         return new JsonResponse($response);
     }
     
+    
     /**
      * Creates a new Plan entity.
      *
-     * @Route("/")
-     * @Method("POST")
-     * @Template("EcommerceBundle:Plan:new.html.twig")
+     * @Route("/new")
+     * @Method({"GET", "POST"})
+     * @Template()
      */
-    public function createAction(Request $request)
+    public function newAction(Request $request)
     {
         $entity = new Plan();
-        $form = $this->createCreateForm($entity);
+        $form = $this->createForm('EcommerceBundle\Form\PlanType', $entity);
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
             $em->persist($entity);
-
+            
             $checkoutManager = $this->get('checkout_manager');
             $checkoutManager->createPaypalPlan($entity);
             $checkoutManager->activePaypalPlan($entity);
@@ -88,75 +88,31 @@ class PlanController extends Controller
             }
             
             $this->get('session')->getFlashBag()->add('success', 'plan.created');
-            
-            return $this->redirect($this->generateUrl('ecommerce_plan_show', array('id' => $entity->getId())));
+
+            return $this->redirectToRoute('ecommerce_plan_show', array('id' => $entity->getId()));
         }
 
         return array(
             'entity' => $entity,
-            'form'   => $form->createView(),
+            'form' => $form->createView(),
         );
     }
 
-    /**
-     * Creates a form to create a Plan entity.
-     *
-     * @param Plan $entity The entity
-     *
-     * @return \Symfony\Component\Form\Form The form
-     */
-    private function createCreateForm(Plan $entity)
-    {
-        $form = $this->createForm(new PlanType(), $entity, array(
-            'action' => $this->generateUrl('ecommerce_plan_create'),
-            'method' => 'POST',
-        ));
-
-        return $form;
-    }
-
-    /**
-     * Displays a form to create a new Plan entity.
-     *
-     * @Route("/new")
-     * @Method("GET")
-     * @Template()
-     */
-    public function newAction()
-    {
-        $entity = new Plan();
-        $form   = $this->createCreateForm($entity);
-
-        return array(
-            'entity' => $entity,
-            'form'   => $form->createView(),
-        );
-    }
-
-    /**
+     /**
      * Finds and displays a Plan entity.
      *
      * @Route("/{id}")
      * @Method("GET")
      * @Template()
      */
-    public function showAction($id)
+    public function showAction(Plan $plan)
     {
-        $em = $this->getDoctrine()->getManager();
-
-        $entity = $em->getRepository('EcommerceBundle:Plan')->find($id);
-
-        if (!$entity) {
-            throw $this->createNotFoundException('Unable to find Plan entity.');
-        }
-
-        $deleteForm = $this->createDeleteForm($id);
-
+        $deleteForm = $this->createDeleteForm($plan);
         //get plan
-        $paypalPlan = $this->get('checkout_manager')->getPaypalPlan($entity);
-                
+        $paypalPlan = $this->get('checkout_manager')->getPaypalPlan($plan);
+        
         return array(
-            'entity'      => $entity,
+            'entity' => $plan,
             'delete_form' => $deleteForm->createView(),
             'paypalPlan' => $paypalPlan
         );
@@ -166,122 +122,70 @@ class PlanController extends Controller
      * Displays a form to edit an existing Plan entity.
      *
      * @Route("/{id}/edit")
-     * @Method("GET")
+     * @Method({"GET", "POST"})
      * @Template()
      */
-    public function editAction($id)
+    public function editAction(Request $request, Plan $plan)
     {
-        $em = $this->getDoctrine()->getManager();
-
-        $entity = $em->getRepository('EcommerceBundle:Plan')->find($id);
-
-        if (!$entity) {
-            throw $this->createNotFoundException('Unable to find Plan entity.');
-        }
-
-        $editForm = $this->createEditForm($entity);
-        $deleteForm = $this->createDeleteForm($id);
-
-        return array(
-            'entity'      => $entity,
-            'edit_form'   => $editForm->createView(),
-            'delete_form' => $deleteForm->createView(),
-        );
-    }
-
-    /**
-    * Creates a form to edit a Plan entity.
-    *
-    * @param Plan $entity The entity
-    *
-    * @return \Symfony\Component\Form\Form The form
-    */
-    private function createEditForm(Plan $entity)
-    {
-        $form = $this->createForm(new PlanType(), $entity, array(
-            'action' => $this->generateUrl('ecommerce_plan_update', array('id' => $entity->getId())),
-            'method' => 'PUT',
-        ));
-
-//        $form->add('submit', 'submit', array('label' => 'Update'));
-
-        return $form;
-    }
-    /**
-     * Edits an existing Plan entity.
-     *
-     * @Route("/{id}")
-     * @Method("PUT")
-     * @Template("EcommerceBundle:Plan:edit.html.twig")
-     */
-    public function updateAction(Request $request, $id)
-    {
-        $em = $this->getDoctrine()->getManager();
-
-        $entity = $em->getRepository('EcommerceBundle:Plan')->find($id);
-
-        if (!$entity) {
-            throw $this->createNotFoundException('Unable to find Plan entity.');
-        }
-
-        $deleteForm = $this->createDeleteForm($id);
-        $editForm = $this->createEditForm($entity);
+        
+        $deleteForm = $this->createDeleteForm($plan);
+        $editForm = $this->createForm('EcommerceBundle\Form\PlanType', $plan);
         $editForm->handleRequest($request);
 
-        if ($editForm->isValid()) {
+        if ($editForm->isSubmitted() && $editForm->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($plan);
             $em->flush();
-
-            return $this->redirect($this->generateUrl('ecommerce_plan_edit', array('id' => $id)));
+            
+            $this->get('session')->getFlashBag()->add('success', 'plan.edited');
+            
+            return $this->redirectToRoute('ecommerce_plan_edit', array('id' => $plan->getId()));
         }
 
         return array(
-            'entity'      => $entity,
-            'edit_form'   => $editForm->createView(),
+            'entity' => $plan,
+            'edit_form' => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
         );
     }
+    
     /**
      * Deletes a Plan entity.
      *
      * @Route("/{id}")
      * @Method("DELETE")
      */
-    public function deleteAction(Request $request, $id)
+    public function deleteAction(Request $request, Plan $plan)
     {
-        $form = $this->createDeleteForm($id);
+        $form = $this->createDeleteForm($plan);
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
+            
             $em = $this->getDoctrine()->getManager();
-            $entity = $em->getRepository('EcommerceBundle:Plan')->find($id);
-
-            if (!$entity) {
-                throw $this->createNotFoundException('Unable to find Plan entity.');
-            }
-
-            $em->remove($entity);
+            $em->remove($plan);
             $em->flush();
             
-             $this->get('session')->getFlashBag()->add('success', 'plan.deleted');
+            $this->get('session')->getFlashBag()->add('info', 'plan.deleted');
         }
 
-        return $this->redirect($this->generateUrl('ecommerce_plan_index'));
+        return $this->redirectToRoute('ecommerce_plan_index');
     }
-
+    
     /**
-     * Creates a form to delete a Plan entity by id.
+     * Creates a form to delete a Plan entity.
      *
-     * @param mixed $id The entity id
+     * @param Plan $plan The Plan entity
      *
      * @return \Symfony\Component\Form\Form The form
      */
-    private function createDeleteForm($id)
+    private function createDeleteForm(Plan $plan)
     {
         return $this->createFormBuilder()
-            ->setAction($this->generateUrl('ecommerce_plan_delete', array('id' => $id)))
+            ->setAction($this->generateUrl('ecommerce_plan_delete', array('id' => $plan->getId())))
             ->setMethod('DELETE')
-//            ->add('submit', 'submit', array('label' => 'Delete'))
             ->getForm()
         ;
     }
+   
 }

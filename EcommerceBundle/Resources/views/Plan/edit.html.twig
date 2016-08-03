@@ -24,10 +24,13 @@
         <div class="col-xs-12">
             <div class="box box-info">
                 <!-- form start -->
-                <form action="{{ path('ecommerce_plan_update', {'id': entity.id }) }}" method="post" {{ form_enctype(edit_form) }} class="form-horizontal form-row-seperated">
+                {{ form_start(edit_form, {
+                                    'action': path('ecommerce_plan_edit', { id: entity.id }), 
+                                    'method': 'post', 
+                                    'attr': {'class': 'form-horizontal form-row-seperated'}
+                                    }) }}
                     <div class="box-body">
                         {{ include('EcommerceBundle:Plan:_form.html.twig', { form: edit_form }) }}
-                        <input type="hidden" name="_method" value="PUT" />
                     </div><!-- /.box-body -->
                     <div class="box-footer">
                         <div class="col-sm-2"></div>
@@ -37,7 +40,7 @@
                             <button type="submit" class="btn btn-danger btn-flat pull-right" id="delete-btn">{{ "delete" | trans }}</button>
                         </div>
                     </div>
-                </form>
+                {{ form_end(edit_form) }}
                 <form id="delete-entity" action="{{ path('ecommerce_plan_delete', { id: entity.id }) }}" method="post">
                     <input type="hidden" name="_method" value="DELETE" />
                     {{ form_widget(delete_form) }}
