@@ -315,7 +315,7 @@ class EcommerceExtension extends \Twig_Extension
     
     public function getBraintreeToken() {
         // in your controller
-        $factory = $this->container->get('comet_cult_braintree.factory');
+        $factory = $this->container->get('braintree_factory');
         $clientToken = $factory->get('ClientToken', array(), 'generate');
         return $clientToken;
         

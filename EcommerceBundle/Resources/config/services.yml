@@ -1,5 +1,11 @@
-# import it in config.yml
+parameters:
+  braintree.factory.class: EcommerceBundle\Factory\BraintreeFactory
+
 services:
+    braintree_factory:
+        class:  "%braintree.factory.class%"
+        arguments: ["%braintree.environment%", "%braintree.merchant_id%", "%braintree.public_key%", "%braintree.private_key%"]
+
     ecommerce_extension:
         class: EcommerceBundle\Twig\EcommerceExtension
         arguments:
@@ -20,7 +26,7 @@ services:
             - @router
             - @kernel
             - @core.mailer
-            - @comet_cult_braintree.factory
+            - @braintree_factory
 
     cart_provider:
         class: EcommerceBundle\Service\CartProvider

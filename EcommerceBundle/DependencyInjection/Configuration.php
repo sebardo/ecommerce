@@ -20,9 +20,28 @@ class Configuration implements ConfigurationInterface
         $treeBuilder = new TreeBuilder();
         $rootNode = $treeBuilder->root('ecommerce');
 
-        // Here you should define the parameters that are allowed to
-        // configure your bundle. See the documentation linked above for
-        // more information on that topic.
+        $rootNode
+            ->children()
+                ->scalarNode('environment')
+                    ->defaultValue('sandbox')
+                    ->info('environment for the Braintree API')
+                ->end()
+                ->scalarNode('merchant_id')
+                    ->isRequired()
+                    ->cannotBeEmpty()
+                    ->info('your Braintree merchant id')
+                ->end()
+                ->scalarNode('public_key')
+                    ->isRequired()
+                    ->cannotBeEmpty()
+                    ->info('your Braintree public key')
+                ->end()
+                ->scalarNode('private_key')
+                    ->isRequired()
+                    ->cannotBeEmpty()
+                    ->info('your Braintree private key')
+                ->end()
+            ->end();
 
         return $treeBuilder;
     }
