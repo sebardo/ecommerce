@@ -20,6 +20,7 @@ services:
             - @router
             - @kernel
             - @core.mailer
+            - @comet_cult_braintree.factory
 
     cart_provider:
         class: EcommerceBundle\Service\CartProvider

@@ -88,13 +88,17 @@
                                             <div>
                                                 <div class="radio">
                                                     <label>
-                                                        <input style="margin-top: 0px" type="radio" name="payment-method" class="radio" value="paypal_cc" data-label="{{ "checkout.credit.card.singular" | trans }}" checked="checked" /> Tarjeta de crédito<br/>
+                                                        <input style="margin-top: 0px" type="radio" name="payment-method" class="radio" value="braintree_cc" data-label="{{ "checkout.credit.card.singular" | trans }}" checked="checked" /> Tarjeta de crédito (Braintree)<br/>
                                                     </label>  
                                                 </div>
                                                 <div class="radio">
                                                     <label>
-                                                        <input style="margin-top: 0px" type="radio" name="payment-method" class="radio" value="cc" data-label="{{ "checkout.credit.card.singular" | trans }}" /> Tarjeta de crédito (pasarela de pago "Banco X")
-                                                        <img style="height: 21px;" src="{{ asset('bundles/front/images/payment-options.png') }}" alt="{{ "checkout.payment.options" | trans }}" />
+                                                        <input style="margin-top: 0px" type="radio" name="payment-method" class="radio" value="paypal_cc" data-label="{{ "checkout.credit.card.singular" | trans }}" /> Tarjeta de crédito (paypal) <br/>
+                                                    </label>  
+                                                </div>
+                                                <div class="radio">
+                                                    <label>
+                                                        <input style="margin-top: 0px" type="radio" name="payment-method" class="radio" value="redsys" data-label="{{ "checkout.credit.card.singular" | trans }}" /> Tarjeta de crédito (pasarela de pago "Banco X")
                                                     </label>  
                                                 </div>
                                                 <div class="radio">
@@ -120,7 +124,8 @@
                                 <div >
                                     <h3>{{ "checkout.payment.pay" | trans }}</h3>
                                     <div class="col-sm-12 col-xs-12">
-                                        {{ include('EcommerceBundle:Checkout:payment/_paypal_credit_card_form.html.twig', { form: redsys_form }) }}
+                                        {{ include('EcommerceBundle:Checkout:payment/_braintree_form.html.twig', { form: braintree_form }) }}
+                                        {{ include('EcommerceBundle:Checkout:payment/_credit_card_form.html.twig', { form: creditcard_form }) }}
                                         {{ include('EcommerceBundle:Checkout:payment/_redsys_form.html.twig', { form: redsys_form }) }}
                                         {{ include('EcommerceBundle:Checkout:payment/_paypal_form.html.twig', { form: paypal_form }) }}
                                         {{ include('EcommerceBundle:Checkout:payment/_transfer_form.html.twig', { form: transfer_form }) }}
@@ -141,34 +146,49 @@
 {% block javascripts %}
     {{ parent() }}
 
-    {#% javascripts
-        'bundles/core/plugins/select2/select2.min.js'
-        filter='?yui_js' %}
+    {% javascripts
+        'https://js.braintreegateway.com/js/braintree-2.27.0.min.js'
+        %}
         <script type="text/javascript" src="{{ asset_url }}"></script>
-    {% endjavascripts %#}
+    {% endjavascripts %}
 
     <script>
+        
+        braintree.setup("{{get_braintree_token()}}", "dropin", {
+            container: "bt-dropin"
+        });
+
         jQuery(document).ready(function() {
             $('input[name="payment-method"]').on('change', function() {
-                if ('cc' == $(this).val()) {
+                if ('braintree_cc' == $(this).val()) {
                     $('#payment-paypal').addClass('hidden');
                     $('#payment-transfer').addClass('hidden');
                     $('#payment-paypal-cc').addClass('hidden');
-                    $('#payment-cc').removeClass('hidden');
-                } else if ('paypal' == $(this).val()) {
-                    $('#payment-cc').addClass('hidden');
+                    $('#payment-redsys').addClass('hidden');
+                    $('#payment-braintree').removeClass('hidden');
+                } else if ('redsys' == $(this).val()) {
+                    $('#payment-paypal').addClass('hidden');
                     $('#payment-transfer').addClass('hidden');
                     $('#payment-paypal-cc').addClass('hidden');
+                    $('#payment-braintree').addClass('hidden');
+                    $('#payment-redsys').removeClass('hidden');
+                } else if ('paypal' == $(this).val()) {
+                    $('#payment-redsys').addClass('hidden');
+                    $('#payment-transfer').addClass('hidden');
+                    $('#payment-paypal-cc').addClass('hidden');
+                    $('#payment-braintree').addClass('hidden');
                     $('#payment-paypal').removeClass('hidden');
                 } else if ('transfer' == $(this).val()) {
-                    $('#payment-cc').addClass('hidden');
+                    $('#payment-redsys').addClass('hidden');
                     $('#payment-paypal').addClass('hidden');
                     $('#payment-paypal-cc').addClass('hidden');
+                    $('#payment-braintree').addClass('hidden');
                     $('#payment-transfer').removeClass('hidden');
                 } else if ('paypal_cc' == $(this).val()) {
-                    $('#payment-cc').addClass('hidden');
+                    $('#payment-redsys').addClass('hidden');
                     $('#payment-paypal').addClass('hidden');
                     $('#payment-transfer').addClass('hidden');
+                    $('#payment-braintree').addClass('hidden');
                     $('#payment-paypal-cc').removeClass('hidden');
                 }
             });

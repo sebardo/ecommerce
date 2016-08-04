@@ -30,6 +30,7 @@ class Transaction extends Timestampable
     const STATUS_RETURNED = 'Returned'; //¿¿??
     
 
+    const PAYMENT_METHOD_BRAINTREE_CREDIT_CARD = 'braintree_credit_card';
     const PAYMENT_METHOD_CREDIT_CARD = 'credit_card';
     const PAYMENT_METHOD_BANK_TRANSFER = 'bank_transfer';
     const PAYMENT_METHOD_PAYPAL = 'paypal';

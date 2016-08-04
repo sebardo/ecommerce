@@ -17,7 +17,7 @@ use EcommerceBundle\Entity\Plan;
 use EcommerceBundle\Entity\Agreement;
 use EcommerceBundle\Entity\Product;
 use EcommerceBundle\Entity\Advert;
-
+use stdClass;
 use DateTime;
 
 /**
@@ -51,7 +51,10 @@ class CheckoutManager
     public  $token;
     
     public $mailer;
-        
+    
+    public $braintreefactory;
+
+
     /**
      * @param array $parameters
      */
@@ -63,7 +66,8 @@ class CheckoutManager
             $securityContext,
             $router,
             $kernel,
-            $mailer
+            $mailer,
+            $braintreeFactory
             )
     {
         if(isset($parameters['parameters'])) $this->parameters = $parameters['parameters'];
@@ -74,7 +78,8 @@ class CheckoutManager
         $this->router = $router;
         $this->kernel = $kernel;
         $this->environment = $kernel->getEnvironment();
-        $this->mailer = $mailer;     
+        $this->mailer = $mailer;   
+        $this->braintreeFactory = $braintreeFactory;
     }
     
      /**
@@ -735,6 +740,78 @@ class CheckoutManager
             'signature' => $signature
             
         );
+    }
+    
+    /**
+     * Proccess sale transaction
+     *
+     * @param Transaction $transaction
+     * @param Delivery $delivery
+     *
+     * @return stdClass
+     */
+    public function processBraintree(Transaction $transaction, $delivery, $request)
+    {
+        // in your controller
+        $transactionService = $this->braintreeFactory->get('transaction');
+        $nonce = $request->get('payment_method_nonce');
+
+        $result = $transactionService::sale([
+            'amount' => $transaction->getTotalPrice(),
+            'paymentMethodNonce' => $nonce
+        ]);
+
+        if ($result->success || !is_null($result->transaction)) {
+            //UPDATE TRANSACTION
+            $transaction->setStatus(Transaction::STATUS_PAID);
+            $transaction->setPaymentMethod(Transaction::PAYMENT_METHOD_BRAINTREE_CREDIT_CARD);
+            
+            //details
+            $details = new stdClass();
+            $details->id = $result->transaction->id;
+            $details->status = $result->transaction->status;
+            $details->type = $result->transaction->type;
+            $details->currencyIsoCode = $result->transaction->currencyIsoCode;
+            $details->amount = $result->transaction->amount;
+            $details->merchantAccountId = $result->transaction->merchantAccountId;
+            $details->createdAt = $result->transaction->createdAt;
+            $details->updatedAt = $result->transaction->updatedAt;
+            $details->customer = $result->transaction->customer;
+            $details->billing = $result->transaction->billing;
+            $details->shipping = $result->transaction->shipping;
+            
+            $transaction->setPaymentDetails(json_encode($details));
+            $this->manager->persist($transaction);
+            $this->manager->flush();
+
+            //confirmation payment
+            $answer = new \stdClass();
+            $answer->redirectUrl = $this->router->generate('ecommerce_checkout_confirmationpayment');
+
+            return $answer;
+       }else{
+            //UPDATE TRANSACTION
+            $transaction->setStatus(Transaction::STATUS_CANCELLED);
+            $transaction->setPaymentMethod(Transaction::PAYMENT_METHOD_BRAINTREE_CREDIT_CARD);
+            
+            //details
+            $errorString = "";
+            foreach($result->errors->deepAll() as $error) {
+               $errorString .= 'Error: ' . $error->code . ": " . $error->message . "\n";
+            }
+            $this->get('session')->getFlashBag()->add('error', $errorString);
+            
+            $transaction->setPaymentDetails(json_encode($details));
+            $this->manager->persist($transaction);
+            $this->manager->flush();
+
+            //cancel payment
+            $answer = new \stdClass();
+            $answer->redirectUrl = $this->parameters['ecommerce']['paypal']['cancel_url'];
+
+            return $answer;
+        }
+ 
     }
     
     /**

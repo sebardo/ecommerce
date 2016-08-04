@@ -329,8 +329,10 @@ class CheckoutController extends BaseController
         $transferForm = $this->createForm(new BankTransferType());
         $paypalForm = $this->createForm(new PayPalType());
         $redsysForm = $this->createResysForm($transaction, $totals);
-        //paypal cc form
+        $braintreeForm = $this->createForm('EcommerceBundle\Form\BraintreeType');
+        //cc form
         $creditCardform = $this->createCreditCardForm();
+        
 
         //TODO: Refactor calculate todal delivery expenses
         $totalForDelivery = 0;
@@ -350,7 +352,11 @@ class CheckoutController extends BaseController
         // process payment method form
         if ($request->isMethod('POST')) {
 
-            if ($request->request->has('bank_transfer')) {
+            if ($request->request->has('braintree')) {
+                $checkoutManager->processBraintree($transaction, $delivery, $request);
+
+                return $this->redirect($checkoutManager->getRedirectUrlInvoice($delivery));
+            }else if ($request->request->has('bank_transfer')) {
                 $checkoutManager->processBankTransfer($transaction);
 
                 return $this->redirect($checkoutManager->getRedirectUrlInvoice($delivery));
@@ -366,6 +372,8 @@ class CheckoutController extends BaseController
                 
                 $creditCardform->bind($request);
                 if ($creditCardform->isValid()){
+                    
+                    
                     $answer = $checkoutManager->processPaypalSale($transaction, $delivery, array(
                         "number" => $creditCardform->getNormData()->cardNo,
                         "type" => $creditCardform->getNormData()->cardType,
@@ -398,6 +406,7 @@ class CheckoutController extends BaseController
             'paypal_form'    => $paypalForm->createView(),
             'redsys_form'    => $redsysForm->createView(),
             'creditcard_form'=> $creditCardform->createView(),
+            'braintree_form'=> $braintreeForm->createView(),
             ));
     }
     
@@ -471,7 +480,7 @@ class CheckoutController extends BaseController
         $form = $this->createForm($type, $class, array(
             'action' => $this->generateUrl('ecommerce_checkout_summary'),
             'method' => 'POST',
-            'attr' => array('id' => $type->getName(),'class' => 'cc-form')
+            'attr' => array('id' => 'payment-cc', 'class' => 'cc-form')
         ));
         $form->add('submit', 'submit', array('label' => 'Pagar'));
         
@@ -815,7 +824,6 @@ class CheckoutController extends BaseController
         $form = $this->createForm(new RedsysType($formConfig), null, array(
             'action' => $formConfig['host'],
             'method' => 'POST',
-            'attr'   => array('id' => 'payment-cc', 'class' => 'hidden' )    
         ));
 
         $form->add('submit', 'submit', array('label' => $translator->trans('checkout.redsys')));

@@ -46,6 +46,7 @@ class EcommerceExtension extends \Twig_Extension
             new Twig_SimpleFunction('get_advert', array($this, 'getAdvert')),
             new Twig_SimpleFunction('get_product_stats', array($this, 'getProductStats')),
             new Twig_SimpleFunction('get_product_image', array($this, 'getProductImage')),
+            new Twig_SimpleFunction('get_braintree_token', array($this, 'getBraintreeToken')),
         );
     }
     
@@ -311,6 +312,15 @@ class EcommerceExtension extends \Twig_Extension
                 break;
         }
     }
+    
+    public function getBraintreeToken() {
+        // in your controller
+        $factory = $this->container->get('comet_cult_braintree.factory');
+        $clientToken = $factory->get('ClientToken', array(), 'generate');
+        return $clientToken;
+        
+    }
+    
     /**
      * {@inheritDoc}
      */

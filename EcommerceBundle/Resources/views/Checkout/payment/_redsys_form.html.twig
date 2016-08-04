@@ -1,15 +1,16 @@
-{{ form_start(form) }}
+<div id="payment-redsys" class="hidden">
+    {{ form_start(form) }}
 
-
-<div class="col-sm-12 priceAndCheck">
-    <div class="price">
-        <span>{{ "checkout.amount" | trans }}:</span>
-        <strong>{{ totals.amount | price }}</strong>
-        {{ form_widget(form.submit) }}
+    <div class="col-sm-12 priceAndCheck">
+        <div class="price">
+            <span>{{ "checkout.amount" | trans }}:</span>
+            <strong>{{ totals.amount | price }}</strong>
+            {{ form_widget(form.submit) }}
+        </div>
+        <a href="{{ path('ecommerce_checkout_deliveryinfo') }}" class="btn btn-primary" title="{{ "back" | trans }}">{{ "back" | trans }}</a>
     </div>
-    <a href="{{ path('ecommerce_checkout_deliveryinfo') }}" class="btn btn-primary" title="{{ "back" | trans }}">{{ "back" | trans }}</a>
+
+    {{ form_rest(form) }}
+
+    {{ form_end(form) }}
 </div>
-
-{{ form_rest(form) }}
-
-{{ form_end(form) }}

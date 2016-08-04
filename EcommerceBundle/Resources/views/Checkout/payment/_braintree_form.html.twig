@@ -1,0 +1,18 @@
+
+ {{ form_start(form, {'attr': {'action': '/summary', 'id': 'payment-braintree' } } ) }}
+    {{ form_errors(form) }}
+    <section>
+        <div class="bt-drop-in-wrapper">
+            <div id="bt-dropin"></div>
+        </div>
+
+        <label for="amount">
+            <span class="input-label">Amount</span>
+            <div class="input-wrapper amount-wrapper">
+                <input id="amount" name="amount" type="tel" min="1" placeholder="Amount" value="10">
+            </div>
+        </label>
+    </section>
+    <button class="btn btn-primary" type="submit"><span>Test Transaction</span></button>
+ {{ form_end(form) }}
+ 

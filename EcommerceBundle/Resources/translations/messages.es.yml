@@ -629,6 +629,7 @@ invoice:
     credit.card: Pago mediante tarjeta de crédito
     bank.transfer: Pago mediante transferencia bancaria
     paypal: PayPal
+    braintree: Pago mediante tarjeta de crédito (braintree)
   download.pdf: descargar PDF
   view: Ver factura
   print: imprimir
