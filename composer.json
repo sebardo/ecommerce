@@ -15,8 +15,8 @@
     ],
     "require": {
         "php": ">=5.3.0",
-        "sebardo/core": "dev-master",
-        "sebardo/admin": "dev-master",
+        "sebardo/core": "*",
+        "sebardo/admin": "*",
         "braintree/braintree_php": "*"
     },
     "autoload": {
