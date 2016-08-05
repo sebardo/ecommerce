@@ -80,7 +80,7 @@
             },
             {
                 "mData": function (source) {
-                    return source.price + ' ' + '{{ core['ecommerce']['currency_symbol'] }}';
+                    return source.price + ' ' + '{{ get_parameter('ecommerce.currency_symbol') }}';
                 }
             },
             { "mData": "stock" },

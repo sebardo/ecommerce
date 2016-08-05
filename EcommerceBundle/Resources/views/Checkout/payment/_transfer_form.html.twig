@@ -1,7 +1,7 @@
 <form method="post" action="{{ path('ecommerce_checkout_summary') }}" id="payment-transfer"  class="hidden">
     {{ form_rest(form) }}
-    <div class="col-sm-10 detail-transfer">
-        {{ 'checkout.transfer' | trans({'%bank_name%': core['company']['name'], '%bank_account%': core['ecommerce']['bank_account'] }) | nl2br }}
+    <div class="col-sm-10 detail-transfer">ge
+        {{ 'checkout.transfer' | trans({'%bank_name%': core['company']['name'], '%bank_account%': get_parameter('ecommerce.bank_account') }) | nl2br }}
         <br />
     </div>
     <div class="col-sm-12 priceAndCheck">

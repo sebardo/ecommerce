@@ -85,7 +85,7 @@
                         <td><h5>Estimated shipping</h5></td>
                         <td class="text-right">
                             <h5> 
-                                {% set delivery_expenses = (amount_for_delivery_expenses * (core['ecommerce']['delivery_expenses_percentage'] / 100)) | price(false,false,false,2,'.',',') %}
+                                {% set delivery_expenses = (amount_for_delivery_expenses * (get_parameter('ecommerce.delivery_expenses_percentage') / 100)) | price(false,false,false,2,'.',',') %}
                                 <strong id="gastos_envio">{{ delivery_expenses | price(true,true) }}</strong>
                             </h5>
                         </td>
@@ -111,7 +111,7 @@
                         <td class="text-right">
                             <h3>
                                 <strong>
-                                    {% if 'by_percentage' == core['ecommerce']['delivery_expenses_type'] %}
+                                    {% if 'by_percentage' == get_parameter('ecommerce.delivery_expenses_type') %}
                                         {{ (cart_total + delivery_expenses) | price(true, false) }}
                                     {% else %}
                                         {{ cart_total_no_vat | price(true, true) }}

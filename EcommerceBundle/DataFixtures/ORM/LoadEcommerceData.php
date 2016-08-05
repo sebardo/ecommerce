@@ -18,12 +18,15 @@ use EcommerceBundle\Entity\Address;
 use EcommerceBundle\Entity\Delivery;
 use EcommerceBundle\Entity\BrandModel;
 
+/*
+ * php app/console doctrine:fixtures:load --fixtures=vendor/sebardo/ecommerce/EcommerceBundle/DataFixtures/ORM/LoadEcommerceData.php
+ */
 class LoadEcommerceData extends SqlScriptFixture
 {
     public function createFixtures()
     {
-        $core = $this->container->getParameter('core');
-        if($core['ecommerce']['fixture_data'])
+        
+        if($this->container->getParameter('ecommerce.fixture_data'))
         {
             //Create Families
             $family = new Family();
@@ -186,7 +189,7 @@ class LoadEcommerceData extends SqlScriptFixture
             $transaction->setTransactionKey(uniqid());
             $transaction->setStatus(Transaction::STATUS_PENDING);
             $transaction->setTotalPrice(2.12);
-            $transaction->setVat($core['ecommerce']['vat']);
+            $transaction->setVat($this->container->getParameter('ecommerce.vat'));
             $transaction->setPaymentMethod(Transaction::PAYMENT_METHOD_PAYPAL);
             $transaction->setActor($actor);
             $transaction->setCreated(new \DateTime('now'));

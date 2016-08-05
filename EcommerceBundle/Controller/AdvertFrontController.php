@@ -92,7 +92,7 @@ class AdvertFrontController extends Controller
             
             //calculate total
             $params = $this->getParameter('core');
-            $unitPrice = $params['ecommerce']['advert_unit_price'];
+            $unitPrice = $this->container->getParameter('ecommerce.advert_unit_price');
             $quantity = count($postalCodes);
             $discount = 0;
             $subtotal = (($unitPrice * $quantity* $days) * $sectionCount ) - $discount;

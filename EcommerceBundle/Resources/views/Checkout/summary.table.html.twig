@@ -30,7 +30,7 @@
             <span>{{ "checkout.delivery.costs" | trans }}</span>
         </td>
         <td class="price">
-            {% if 'by_carrier' == core['ecommerce']['delivery_expenses_type'] %}
+            {% if 'by_carrier' == get_parameter('ecommerce.delivery_expenses_type') %}
                 ({{ delivery.carrier.name }} - {{ delivery.carrier.transitTime }}h)
             {% endif %}
         </td>

@@ -34,7 +34,7 @@
     <p style="padding:20px 0; margin:0;">{{ 'invoice.email.view.invoice' | trans }}: {{ order_url }}</p>
 
     {% if payment_type == 'invoice.payment.by.bank.transfer' %}
-        <p style="padding:20px 0; margin:0;">{{ 'invoice.email.transfer.data' | trans({ '%order_number%': order_number, '%account_number%': core.company.bank_account }) | raw }}</p>
+        <p style="padding:20px 0; margin:0;">{{ 'invoice.email.transfer.data' | trans({ '%order_number%': order_number, '%account_number%': get_parameter('ecommerce.bank_account') }) | raw }}</p>
     {% endif %}
                 
     <p style="padding:0 0 20px 0; margin:0;">{{ 'invoice.email.contact.us' | trans }}</p>

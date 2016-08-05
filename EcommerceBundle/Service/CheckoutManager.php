@@ -12,7 +12,6 @@ use EcommerceBundle\Entity\Address;
 use EcommerceBundle\Entity\Invoice;
 use EcommerceBundle\Entity\CartItem;
 use Symfony\Component\HttpFoundation\Request;
-use CoreBundle\Entity\State;
 use EcommerceBundle\Entity\Plan;
 use EcommerceBundle\Entity\Agreement;
 use EcommerceBundle\Entity\Product;
@@ -25,12 +24,6 @@ use DateTime;
  */
 class CheckoutManager
 {
-//    TEST
-//    Utilice esta tarjeta de prueba:
-//    Número de tarjeta: 4548812049400004
-//    Caducidad: 12/17 
-//    Código CVV2: 123 
-//    Código CIP: 123456 
     
     private $parameters;
 
@@ -52,7 +45,21 @@ class CheckoutManager
     
     public $mailer;
     
-    public $braintreefactory;
+    public $braintreeFactory;
+    
+    public $paypalFactory;
+    
+    public $redsysFactory;
+    
+    public $advertUnitPrice;
+    
+    public $specialPercentageCharge;
+    
+    public $deliveryExpensesType;
+    
+    public $deliveryExpensesPercentage;
+    
+    public $vat;
 
 
     /**
@@ -67,7 +74,14 @@ class CheckoutManager
             $router,
             $kernel,
             $mailer,
-            $braintreeFactory
+            $braintreeFactory,
+            $paypalFactory,
+            $redsysFactory,
+            $advertUnitPrice,
+            $specialPercentageCharge,
+            $deliveryExpensesType,
+            $deliveryExpensesPercentage,
+            $vat
             )
     {
         if(isset($parameters['parameters'])) $this->parameters = $parameters['parameters'];
@@ -80,6 +94,13 @@ class CheckoutManager
         $this->environment = $kernel->getEnvironment();
         $this->mailer = $mailer;   
         $this->braintreeFactory = $braintreeFactory;
+        $this->paypalFactory = $paypalFactory->getProvider();
+        $this->redsysFactory = $redsysFactory->getProvider();
+        $this->advertUnitPrice = $advertUnitPrice;
+        $this->specialPercentageCharge = $specialPercentageCharge;
+        $this->deliveryExpensesType = $deliveryExpensesType;
+        $this->deliveryExpensesPercentage = $deliveryExpensesPercentage;
+        $this->vat = $vat;
     }
     
      /**
@@ -106,13 +127,13 @@ class CheckoutManager
         $totals['delivery_expenses'] = 0;
         $totals['amount'] = $transaction->getTotalPrice();
         $totals['amount_clean'] = $transaction->getTotalPrice();
-        $totals['vat'] = number_format($totals['amount_clean'] * $this->parameters['ecommerce']['vat'], 2);
+        $totals['vat'] = number_format($totals['amount_clean'] * $this->vat, 2);
         
         if(!is_null($delivery)){
             $totalPerDeliveryExpenses = $this->calculateTotalAmountForDeliveryExpenses($transaction);
 
             // calculate delivery expenses
-            if ('by_percentage' === $this->parameters['ecommerce']['delivery_expenses_type']) {
+            if ('by_percentage' === $this->deliveryExpensesType) {
                 $totals['delivery_expenses'] = round($totalPerDeliveryExpenses * ($delivery->getExpenses() / 100),2);
             } else {
                 $totals['delivery_expenses'] = $delivery->getExpenses();
@@ -162,7 +183,11 @@ class CheckoutManager
         foreach ($transaction->getItems() as $productPurchase) {
             if($productPurchase->getProduct() instanceof Product){
                 if(!$productPurchase->getProduct()->isFreeTransport()){
-                    $total += $productPurchase->getTotalPrice();
+                    $addPercent = 0;
+                    if($this->deliveryExpensesPercentage() > 0) 
+                        $addPercent = $productPurchase->getTotalPrice() * $this->deliveryExpensesPercentage();
+                    
+                    $total += $productPurchase->getTotalPrice() + $addPercent;
                 }
             }else{
                 $total += $productPurchase->getTotalPrice();
@@ -190,9 +215,7 @@ class CheckoutManager
      * Update transaction with cart's contents
      */
     public function updateTransaction()
-    {
-//        print_r($this->parameters);die();
-        
+    {        
         $cart = $this->cartProvider->getCart();
 
         if (0 === $cart->countItems() || $this->isTransactionUpdated($cart)) {
@@ -696,47 +719,50 @@ class CheckoutManager
      */
     public function getRedsysData($totals)
     {
-        if(in_array($this->environment, array('test', 'dev'))) {
-            $redsys = $this->parameters['ecommerce']['redsys']['dev'];
-        }else{
-            $redsys = $this->parameters['ecommerce']['redsys']['prod'];
-        }
-        
-        if( !isset($this->parameters['company']['name']) ||
-            !isset($redsys['host']) ||
-            !isset($redsys['code']) ||
-            !isset($redsys['terminal']) ||
-            !isset($redsys['secret']) ||
-            !isset($redsys['bank_response_url']) ||
-            !isset($redsys['transaction_type']) ||
-            !isset($redsys['return_url']) || 
-            !isset($redsys['cancel_url']) ||
-            !isset($redsys['currency'])
-            )
-            throw new \Exception('All ecommerce paramters must be setted.');
+        if( !isset($this->parameters['company']['name']))
+            throw new \Exception('All redsys paramters must be setted.');
         
         
+        if($this->redsysFactory->getHost() == '')
+            throw new \Exception('Host paramters must be setted.');
+        if($this->redsysFactory->getCode() == '')
+            throw new \Exception('Code paramters must be setted.');
+        if($this->redsysFactory->getCurrency() == '')
+            throw new \Exception('Code paramters must be setted.');
+        if($this->redsysFactory->getTerminal() == '')
+            throw new \Exception('Currency paramters must be setted.');
+        if($this->redsysFactory->getSecret() == '')
+            throw new \Exception('Secret paramters must be setted.');
+        if($this->redsysFactory->getBankResponseUrl() == '')
+            throw new \Exception('Bank response url paramters must be setted.');
+        if($this->redsysFactory->getTransactionType() != 0 && $this->redsysFactory->getTransactionType() == '')
+            throw new \Exception('Transaction type paramters must be setted.');
+        if($this->redsysFactory->getReturnUrl() == '')
+            throw new \Exception('Return url paramters must be setted.');
+        if($this->redsysFactory->getCancelUrl() == '')
+            throw new \Exception('Cancel paramters must be setted.');
          
+        
         $order=date('ymdHis');
         $amount='25';
         $product='Hat';
 
-        $message = $amount.$order.$redsys['code'].$redsys['currency'].$redsys['transaction_type'].$redsys['bank_response_url'].$redsys['secret'];
+        $message = $amount.$order.$this->redsysFactory->getCode().$this->redsysFactory->getCurrency().$this->redsysFactory->getTransactionType().$this->redsysFactory->getBankResponseUrl().$this->redsysFactory->getSecret();
         $signature = strtoupper(sha1($message));
         
         return array(
-            'url_tpvv' => $redsys['host'],
+            'url_tpvv' => $this->redsysFactory->getHost(),
             'name' => $this->parameters['company']['name'],
-            'code' => $redsys['code'],
-            'terminal' => $redsys['terminal'],
+            'code' => $this->redsysFactory->getCode(),
+            'terminal' => $this->redsysFactory->getTerminal(),
             'order' => $order,
             'product' => $product,
             'amount' => $amount,
-            'currency' => $redsys['currency'],
-            'transactionType' => $redsys['transaction_type'],
-            'urlMerchant' => $redsys['bank_response_url'],
-            'urlOK' => $redsys['return_url'],
-            'urlKO' => $redsys['cancel_url'],
+            'currency' => $this->redsysFactory->getCurrency(),
+            'transactionType' => $this->redsysFactory->getTransactionType(),
+            'urlMerchant' => $this->redsysFactory->getBankResponseUrl(),
+            'urlOK' => $this->redsysFactory->getReturnUrl(),
+            'urlKO' => $this->redsysFactory->getCancelUrl(),
             'signature' => $signature
             
         );
@@ -807,7 +833,7 @@ class CheckoutManager
 
             //cancel payment
             $answer = new \stdClass();
-            $answer->redirectUrl = $this->parameters['ecommerce']['paypal']['cancel_url'];
+            $answer->redirectUrl = $this->paypalFactory->getCancelUrl();
 
             return $answer;
         }
@@ -852,7 +878,7 @@ class CheckoutManager
                 $sub['price'] = number_format($productPurchase->getProduct()->getPrice(), 2);
             }elseif($productPurchase->getAdvert() instanceof Advert){
                 $sub['name'] = $productPurchase->getAdvert()->getTitle();
-                $sub['price'] = number_format($this->parameters['ecommerce']['advert_unit_price'], 2);
+                $sub['price'] = number_format($this->advertUnitPrice, 2);
             }
             
             
@@ -861,7 +887,7 @@ class CheckoutManager
             $returnValues[] = $sub;
         }
         
-        $host = $this->parameters['ecommerce']['paypal']['host'];
+        $host = $this->paypalFactory->getHost();
         $url = $host.'/v1/payments/payment';
         $payment = array(
                         'intent' => 'sale',
@@ -882,8 +908,8 @@ class CheckoutManager
                                                 ),
                                         )),
                         'redirect_urls' => array (
-                                'return_url' => $this->parameters['ecommerce']['paypal']['return_url'],
-                                'cancel_url' => $this->parameters['ecommerce']['paypal']['cancel_url']
+                                'return_url' => $this->paypalFactory->getReturnUrl(),
+                                'cancel_url' => $this->paypalFactory->getCancelUrl()
                         )
                     );
 
@@ -907,7 +933,7 @@ class CheckoutManager
             }else{
                 //cancel payment
                 $answer = new \stdClass();
-                $answer->redirectUrl = $this->parameters['ecommerce']['paypal']['cancel_url'];
+                $answer->redirectUrl = $this->paypalFactory->getCancelUrl();
 
                 return $answer;
             }
@@ -986,7 +1012,7 @@ class CheckoutManager
             $returnValues[] = $sub;
         }
         
-        $host = $this->parameters['ecommerce']['paypal']['host'];
+        $host = $this->paypalFactory->getHost();
         $url = $host.'/v1/payments/payment';
         $payment = array(
                         'intent' => 'sale',
@@ -1007,8 +1033,8 @@ class CheckoutManager
                                                 ),
                                         )),
                         'redirect_urls' => array (
-                                'return_url' => $this->parameters['ecommerce']['paypal']['return_url'],
-                                'cancel_url' => $this->parameters['ecommerce']['paypal']['cancel_url']
+                                'return_url' => $this->paypalFactory->getReturnUrl(),
+                                'cancel_url' => $this->paypalFactory->getCancelUrl()
                         )
                     );
 
@@ -1035,7 +1061,7 @@ class CheckoutManager
                 print_r($json_resp);die();
                 //cancel payment
                 $answer = new \stdClass();
-                $answer->redirectUrl = $this->parameters['ecommerce']['paypal']['cancel_url'];
+                $answer->redirectUrl = $this->paypalFactory->getCancelUrl();
 
                 return $answer;
             }
@@ -1072,16 +1098,14 @@ class CheckoutManager
      */
     public function paypalToken($print=false){
         # Sandbox
-        $host = $this->parameters['ecommerce']['paypal']['host'];
+        $host = $this->paypalFactory->getHost();
         $url = $host.'/v1/oauth2/token'; 
         $postdata = 'grant_type=client_credentials';
         
-//        if($print)
-//        print_r($this->parameters['ecommerce']['paypal']['client_id']. ":" . $this->parameters['ecommerce']['paypal']['secret']);echo PHP_EOL;
         $curl = curl_init($url); 
         curl_setopt($curl, CURLOPT_POST, true); 
         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, true);
-        curl_setopt($curl, CURLOPT_USERPWD, $this->parameters['ecommerce']['paypal']['client_id']. ":" . $this->parameters['ecommerce']['paypal']['secret']);
+        curl_setopt($curl, CURLOPT_USERPWD, $this->paypalFactory->getClientId(). ":" . $this->paypalFactory->getSecret());
         curl_setopt($curl, CURLOPT_HEADER, false); 
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true); 
         curl_setopt($curl, CURLOPT_POSTFIELDS, $postdata); 
@@ -1185,8 +1209,8 @@ class CheckoutManager
                         "payment_definitions" => $planConfig,
                         "merchant_preferences" => array(
                                 "setup_fee" => $setupFee,
-                                "return_url" => $this->parameters['ecommerce']['paypal']['return_url'],
-                                "cancel_url" => $this->parameters['ecommerce']['paypal']['cancel_url'],
+                                "return_url" => $this->paypalFactory->getReturnUrl(),
+                                "cancel_url" => $this->paypalFactory->getCancelUrl(),
                                 "max_fail_attempts" => "0",
                                 "auto_bill_amount" => "YES",
                                 "initial_fail_amount_action" => "CONTINUE"
@@ -1194,7 +1218,7 @@ class CheckoutManager
                         );
     
  
-        $host = $this->parameters['ecommerce']['paypal']['host'];
+        $host = $this->paypalFactory->getHost();
         $url = $host.'/v1/payments/billing-plans';
       
         $json = json_encode($planPayPal);
@@ -1226,7 +1250,7 @@ class CheckoutManager
             ]';
 
  
-        $host = $this->parameters['ecommerce']['paypal']['host'];
+        $host = $this->paypalFactory->getHost();
         $url = $host.'/v1/payments/billing-plans/'.$plan->getPaypalId();
         $answer = $this->paypalCall('PATCH', $url, $data);
         
@@ -1247,7 +1271,7 @@ class CheckoutManager
         
         $this->paypalToken();
       
-        $host = $this->parameters['ecommerce']['paypal']['host'];
+        $host = $this->paypalFactory->getHost();
         $url = $host.'/v1/payments/billing-plans/'.$plan->getPaypalId();
         
         $answer = $this->paypalCall('GET', $url);
@@ -1284,7 +1308,7 @@ class CheckoutManager
                 "payer" => $paymentMehod
             );
        
-        $host = $this->parameters['ecommerce']['paypal']['host'];
+        $host = $this->paypalFactory->getHost();
         $url = $host.'/v1/payments/billing-agreements';
         $json = json_encode($agreementPayPal);
         $answer = $this->paypalCall('POST', $url, $json);
@@ -1386,7 +1410,7 @@ class CheckoutManager
         
         $this->paypalToken();
       
-        $host = $this->parameters['ecommerce']['paypal']['host'];
+        $host = $this->paypalFactory->getHost();
         $url = $host.'/v1/payments/billing-agreements/'.$id;
         
         $answer = $this->paypalCall('GET', $url);
@@ -1398,7 +1422,7 @@ class CheckoutManager
          
         $this->paypalToken();
       
-        $host = $this->parameters['ecommerce']['paypal']['host'];
+        $host = $this->paypalFactory->getHost();
         $url = $host.'/v1/payments/billing-agreements/'.$agreement->getPaypalId().'/cancel';
         
         $answer = $this->paypalCall('POST', $url, '{ "note" : "Cancel the agreement."}');
@@ -1410,7 +1434,7 @@ class CheckoutManager
          
         $this->paypalToken();
        
-        $host = $this->parameters['ecommerce']['paypal']['host'];
+        $host = $this->paypalFactory->getHost();
         $url = $host.'/v1/payments/billing-agreements/'.$agreement->getPaypalId().'/suspend';
         
         $answer = $this->paypalCall('POST', $url, '{ "note" : "Suspending the agreement."}');
@@ -1422,7 +1446,7 @@ class CheckoutManager
          
         $this->paypalToken();
       
-        $host = $this->parameters['ecommerce']['paypal']['host'];
+        $host = $this->paypalFactory->getHost();
         $url = $host.'/v1/payments/billing-agreements/'.$agreement->getPaypalId().'/re-activate';
         
         $answer = $this->paypalCall('POST', $url, '{ "note" : "Reactivating the agreement."}');;
@@ -1434,7 +1458,7 @@ class CheckoutManager
          
         $this->paypalToken();
        
-        $host = $this->parameters['ecommerce']['paypal']['host'];
+        $host = $this->paypalFactory->getHost();
         $url = $host.'/v1/payments/billing-agreements/'.$agreement->getPaypalId().'/set-balance';
         
         $answer = $this->paypalCall('POST', $url, '{ "value": "'.$amount.'", "currency": "EUR"}');
@@ -1446,7 +1470,7 @@ class CheckoutManager
          
         $this->paypalToken();
        
-        $host = $this->parameters['ecommerce']['paypal']['host'];
+        $host = $this->paypalFactory->getHost();
         $url = $host.'/v1/payments/billing-agreements/'.$agreement->getPaypalId().'/bill-balance';
         
         $answer = $this->paypalCall('POST', $url, '{"note": "Billing Balance Amount '.$amount.'€", "amount": {"value": "'.$amount.'", "currency": "EUR"} }');
@@ -1462,7 +1486,7 @@ class CheckoutManager
         $startDate->modify('-1 day');
         $endDate =  new DateTime('now');
         $endDate->modify('+1 day');
-        $host = $this->parameters['ecommerce']['paypal']['host'];
+        $host = $this->paypalFactory->getHost();
         $url = $host.'/v1/payments/billing-agreements/'.$agreement->getPaypalId().'/transactions?start_date='.$startDate->format('Y-m-d').'&end_date='.$endDate->format('Y-m-d');
         $answer = $this->paypalCall('GET', $url);
                 
@@ -2246,8 +2270,8 @@ class CheckoutManager
 
         // calculate item price adding the special charge
         $price = $product->getPrice();
-        if ($this->parameters['ecommerce']['special_percentage_charge'] > 0) {
-            $price += $price * ($this->parameters['ecommerce']['special_percentage_charge'] / 100);
+        if ($this->specialPercentageCharge > 0) {
+            $price += $price * ($this->specialPercentageCharge / 100);
         }
         $item->setUnitPrice(intval($price));
 

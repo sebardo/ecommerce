@@ -22,7 +22,7 @@
             <span>{{ "checkout.delivery.costs" | trans }}</span>
         </td>
         <td class="price">
-            {% if 'by_carrier' == core['company']['delivery_expenses_type'] %}
+            {% if 'by_carrier' == get_parameter('ecommerce.delivery_expenses_type') %}
                 ({{ delivery.carrier.name }} - {{ delivery.carrier.transitTime }}h)
             {% endif %}
             <strong>{{ totals.delivery_expenses | price }}</strong>
@@ -33,7 +33,7 @@
         
         <td>
             <span><strong>{{ "checkout.subtotal" | trans }}</strong>:</span><br>
-            <span>{{ "vat" | trans }} ({{ core['company']['vat'] }}%):</span>
+            <span>{{ "vat" | trans }} ({{ get_parameter('ecommerce.vat') }}%):</span>
         </td>
         
         <td class="price3">

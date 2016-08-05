@@ -29,7 +29,7 @@
         </tr>
         <tr>
             <td>
-                {{ "vat" | trans }} ({{ core['company']['vat'] }}%)
+                {{ "vat" | trans }} ({{ get_parameter('ecommerce.vat') }}%)
             </td>
             <td class="alignRight">
                 <strong>+ {{ totals.vat | price }}</strong>

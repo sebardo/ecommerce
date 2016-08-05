@@ -184,7 +184,7 @@
         
         //calculate total
         function calculateTotal(city){
-            var unitPrice = '{{core.ecommerce.advert_unit_price}}';
+            var unitPrice = '{{ get_parameter('ecommerce.advert_unit_price') }}';
             var count = pcode.length;
             
             //days

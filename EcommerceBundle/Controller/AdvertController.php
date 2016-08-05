@@ -81,8 +81,7 @@ class AdvertController extends Controller
             $em->flush();
             
             //calculate total
-            $params = $this->getParameter('core');
-            $unitPrice = $params['ecommerce']['advert_unit_price'];
+            $unitPrice = $this->container->getParameter('ecommerce.advert_unit_price');
             $quantity = 1;
             $discount = 0;
             $subtotal = (($unitPrice * $quantity* $days) * $sectionCount ) - $discount;

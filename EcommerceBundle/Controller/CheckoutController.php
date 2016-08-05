@@ -343,7 +343,7 @@ class CheckoutController extends BaseController
         }
 
         $parameters = $this->container->getParameter('core');
-        $deliveryCosts = round((($totalForDelivery * $parameters['ecommerce']['delivery_expenses_percentage']) / 100),2);
+        $deliveryCosts = round((($totalForDelivery * $this->container->getParameter('ecommerce.delivery_expenses_percentage')) / 100),2);
 
         $vat = round(((($transaction->getTotalPrice() + $deliveryCosts) * $transaction->getVat()) / 100),2);
         $total = $transaction->getTotalPrice() + $vat + $deliveryCosts;
@@ -780,29 +780,33 @@ class CheckoutController extends BaseController
         $em = $this->getDoctrine()->getManager();
         $core = $this->container->getParameter('core');
         $translator = $this->container->get('translator');
-        
-        if(in_array($this->get('kernel')->getEnvironment(), array('test', 'dev'))) {
-            $formConfig = $core['ecommerce']['redsys']['dev'];
-        }else{
-            $formConfig = $core['ecommerce']['redsys']['prod'];
-        }
-        
+        $redsysProvider = $this->container->get('redsys_factory')->getProvider();
+  
         $formConfig['amount'] = (int) str_replace('.', '', number_format($totals['amount'], 2));
         $formConfig['data'] = $transaction->getTransactionKey();
         $formConfig['name'] = $core['company']['name'];
         $formConfig['product'] = $transaction->getItems()->first()->getProduct()->getName();
         $formConfig['titular'] = $transaction->getActor()->getFullName();
+        $formConfig['code'] = $redsysProvider->getCode();
+        $formConfig['currency'] = $redsysProvider->getCurrency();
+        $formConfig['transaction_type'] = $redsysProvider->getTransactionType();
+        $formConfig['bank_response_url'] = $redsysProvider->getBankResponseUrl();
+        $formConfig['secret'] = $redsysProvider->getSecret();
+        $formConfig['terminal'] = $redsysProvider->getTerminal();
+        $formConfig['return_url'] = $redsysProvider->getReturnUrl();
+        $formConfig['cancel_url'] = $redsysProvider->getCancelUrl();
+        $formConfig['consumer_language'] = $redsysProvider->getConsumerLanguage();
         
         $created = $transaction->getCreated();
         $formConfig['order'] = $created->format('ymdHis'); 
 
         $hash = $formConfig['amount'].
                 $formConfig['order'].
-                $formConfig['code'].
-                $formConfig['currency'].
-                $formConfig['transaction_type'].
-                $formConfig['bank_response_url'].
-                $formConfig['secret']
+                $redsysProvider->getCode().
+                $redsysProvider->getCurrency().
+                $redsysProvider->getTransactionType().
+                $redsysProvider->getBankResponseUrl().
+                $redsysProvider->getSecret()
                 ;
         $formConfig['signature'] = strtoupper(sha1($hash));
         
@@ -812,17 +816,17 @@ class CheckoutController extends BaseController
         $transaction->setPaymentDetails(json_encode(array(
                     'amount' => $formConfig['amount'],
                     'order' => $formConfig['order'],
-                    'code' => $formConfig['code'],
-                    'currency' => $formConfig['currency'],
-                    'transaction_type' => $formConfig['transaction_type'],
-                    'bank_response_url' => $formConfig['bank_response_url'],
-                    'secret' => $formConfig['secret'],
+                    'code' => $redsysProvider->getCode(),
+                    'currency' => $redsysProvider->getCurrency(),
+                    'transaction_type' => $redsysProvider->getTransactionType(),
+                    'bank_response_url' => $redsysProvider->getBankResponseUrl(),
+                    'secret' => $redsysProvider->getSecret(),
                     'signature' => $formConfig['signature']
                 )));
         $em->flush();
         
         $form = $this->createForm(new RedsysType($formConfig), null, array(
-            'action' => $formConfig['host'],
+            'action' => $redsysProvider->getHost(),
             'method' => 'POST',
         ));
 

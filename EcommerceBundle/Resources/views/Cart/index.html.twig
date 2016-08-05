@@ -75,7 +75,7 @@
             { "mData": "totalItems" },
             {
                 "mData": function (source) {
-                    return source.total + ' ' + '{{ core.ecommerce.currency_symbol }}';
+                    return source.total + ' ' + '{{ get_parameter('ecommerce.currency_symbol') }}';
                 }
             },
             {

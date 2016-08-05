@@ -169,7 +169,7 @@ class EcommerceExtension extends \Twig_Extension
         if($type){
             $price = $price.' %';
         }else{
-            $price = $price.' '.$this->parameters['ecommerce']['currency_symbol'];
+            $price = $price.' '.$this->container->getParameter('ecommerce.currency_symbol');
         }
         
         
@@ -196,7 +196,7 @@ class EcommerceExtension extends \Twig_Extension
         if($applyVat){
             // apply new vat inline
             if($applyNewVat==0){
-                $price = $applyVat ? $number * (1 + $this->parameters['ecommerce']['vat'] / 100) : $number;
+                $price = $applyVat ? $number * (1 + $this->container->getParameter('ecommerce.vat') / 100) : $number;
             }else{
                 $price = $number * (1 + $applyNewVat / 100);
             }   
@@ -204,15 +204,11 @@ class EcommerceExtension extends \Twig_Extension
             $price = $number;
         }
         
-        
-
         // apply other percentage charge
         if ($applyOtherPercentageCharge) {
-            $price = $price * (1 + $this->parameters['ecommerce']['special_percentage_charge'] / 100);
+            $price = $price * (1 +$this->container->getParameter('ecommerce.special_percentage_charge') / 100);
         }
 
-        
-        
         // round
         if ($round) {
             $price = round($price);
@@ -226,7 +222,7 @@ class EcommerceExtension extends \Twig_Extension
             $price = substr($price, 0, -3);
         }
 
-        $price = $price.' '.$this->parameters['ecommerce']['currency_symbol'];
+        $price = $price.' '.$this->container->getParameter('ecommerce.currency_symbol');
 
         return $price;
     }

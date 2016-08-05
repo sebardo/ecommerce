@@ -1,11 +1,9 @@
 parameters:
   braintree.factory.class: EcommerceBundle\Factory\BraintreeFactory
+  paypal.factory.class: EcommerceBundle\Factory\PayPalFactory
+  redsys.factory.class: EcommerceBundle\Factory\RedsysFactory
 
 services:
-    braintree_factory:
-        class:  "%braintree.factory.class%"
-        arguments: ["%braintree.environment%", "%braintree.merchant_id%", "%braintree.public_key%", "%braintree.private_key%"]
-
     ecommerce_extension:
         class: EcommerceBundle\Twig\EcommerceExtension
         arguments:
@@ -15,6 +13,28 @@ services:
         tags:
             - { name: twig.extension }
             
+    braintree_factory:
+        class:  "%braintree.factory.class%"
+        arguments: ["%braintree.environment%", "%braintree.merchant_id%", "%braintree.public_key%", "%braintree.private_key%"]
+    
+    paypal_factory:
+        class:  "%paypal.factory.class%"
+        arguments: ["%paypal.host%", "%paypal.client_id%", "%paypal.secret%", "%paypal.return_url%", "%paypal.cancel_url%"]
+            
+    redsys_factory:
+        class:  "%redsys.factory.class%"
+        arguments:
+            - "%redsys.host%"
+            - "%redsys.secret%"
+            - "%redsys.currency%"
+            - "%redsys.code%"
+            - "%redsys.terminal%"
+            - "%redsys.transaction_type%"
+            - "%redsys.bank_response_url%"
+            - "%redsys.consumer_language%"
+            - "%redsys.return_url%"
+            - "%redsys.cancel_url%"
+    
     checkout_manager:
         class: EcommerceBundle\Service\CheckoutManager
         arguments:
@@ -27,7 +47,14 @@ services:
             - @kernel
             - @core.mailer
             - @braintree_factory
-
+            - @paypal_factory
+            - @redsys_factory
+            - "%ecommerce.advert_unit_price%"
+            - "%ecommerce.special_percentage_charge%"
+            - "%ecommerce.delivery_expenses_type%"
+            - "%ecommerce.delivery_expenses_percentage%"
+            - "%ecommerce.vat%"
+            
     cart_provider:
         class: EcommerceBundle\Service\CartProvider
         arguments:
