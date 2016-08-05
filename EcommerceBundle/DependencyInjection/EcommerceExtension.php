@@ -22,26 +22,31 @@ class EcommerceExtension extends Extension
     {
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
-        
+                
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');
         
-        if (isset($config['environment'])) {
-            $container->setParameter('braintree.environment', $config['environment']);
-            Braintree_Configuration::environment($config['environment']);
+        //braintree
+        if (isset($config['providers']['braintree']['options']['environment'])) {
+            $container->setParameter('braintree.environment', $config['providers']['braintree']['options']['environment']);
+            Braintree_Configuration::environment($config['providers']['braintree']['options']['environment']);
         }
-        if (isset($config['merchant_id'])) {
-            $container->setParameter('braintree.merchant_id', $config['merchant_id']);
-            Braintree_Configuration::merchantId($config['merchant_id']);
+        if (isset($config['providers']['braintree']['options']['merchant_id'])) {
+            $container->setParameter('braintree.merchant_id', $config['providers']['braintree']['options']['merchant_id']);
+            Braintree_Configuration::merchantId($config['providers']['braintree']['options']['merchant_id']);
         }
-        if (isset($config['public_key'])) {
-            $container->setParameter('braintree.public_key', $config['public_key']);
-            Braintree_Configuration::publicKey($config['public_key']);
+        if (isset($config['providers']['braintree']['options']['public_key'])) {
+            $container->setParameter('braintree.public_key', $config['providers']['braintree']['options']['public_key']);
+            Braintree_Configuration::publicKey($config['providers']['braintree']['options']['public_key']);
         }
-        if (isset($config['private_key'])) {
-            $container->setParameter('braintree.private_key', $config['private_key']);
-            Braintree_Configuration::privateKey($config['private_key']);
+        if (isset($config['providers']['braintree']['options']['private_key'])) {
+            $container->setParameter('braintree.private_key', $config['providers']['braintree']['options']['private_key']);
+            Braintree_Configuration::privateKey($config['providers']['braintree']['options']['private_key']);
         }
+        
+        //paypal
+        
+        
     }
     
   
