@@ -54,13 +54,7 @@ Add paramters to parameter.yml
             email: company@email.com
             website_url: www.sitename.com
             instagram: 'sitename'
-        admin:
-            - google_application_name: Analitycs
-            - google_oauth2_client_id: 459960642348-nqhsk0rr1e41gv3kbb519g1nlk6rq78a.apps.googleusercontent.com
-            - google_oauth2_client_secret: KScqc1jDkZHUBaanmMGV8QpB
-            - google_oauth2_redirect_uri: 'http://optisoop2.dev/admin/analitycs'
-            - google_developer_key: AIzaSyCda_bsJ-kEa1M1DJenwKfUfyLVlVKuC6I
-            - google_site_name: Site Name
+        
 
 Add class to AppKernel.php
 
@@ -178,8 +172,65 @@ And add this lines or edit this lines in config.yml and config_test.yml
         #    options:
         #        menuitems: core_menuitem_index
         #        sliders: core_slider_index
-        core:
+        admin:
             admin_menus:  ~
+            apis:
+                google_analytics:
+                    options:
+                        application_name: Analitycs integración
+                        oauth2_client_id: 43533348693-s4rafifpr1o07gja2kgnfbhf4tjq2g0f.apps.googleusercontent.com
+                        oauth2_client_secret: lo04F5hvUi_gPaAxyucY70jy
+                        oauth2_redirect_uri: 'http://sasturain.dev/admin/analytics'
+                        developer_key: AIzaSyCda_bsJ-kEa1M1DJenwKfUfyLVlVKuC6I
+
+
+        ecommerce:
+        #    fixture_data: true
+        #    currency_symbol: €
+        #    advert_unit_price: 1
+        #    vat: 0.21
+        #    special_percentage_charge: 0
+        #    delivery_expenses_type: by_percentage
+        #    delivery_expenses_percentage: 0
+        #    bank_account: 'ESXX XXX XXXX XXXX XXXX XXXX'
+            providers:
+                braintree_dev:
+                    options:
+                        environment: sandbox
+                        merchant_id: 3j49t8qb3h4nv9hk
+                        public_key: tygwjhymnm5bm55s
+                        private_key: a791f33b9d41ab9c57c857da1c526fa1
+                paypal_dev:
+                    options:
+                        host: 'https://api.sandbox.paypal.com'
+                        client_id: AafbeOnqAQTpS4bgP85kvrewollR8XsxAYmHlHI7ZzqEXqfjHMrMCaCjZjweT5y4DemLMSlfPro-P3Nz
+                        secret: EJIuyFXnqYwW5HtPmPl7TsWsoCgT0-RtPnAa8TodOUGjOg9yp6E0nZOHIM5bOVP_Q1jSnTencHlxGUQ7
+                        return_url: 'http://sasturain.dev/response-ok?paypal=true'
+                        cancel_url: 'http://sasturain.dev/cancel-payment'
+                redsys_prod:
+                    options:
+                        host: 'https://sis.redsys.es/sis/realizarPago'
+                        secret: asdfheryar4tya4yaety
+                        currency: 978
+                        code: 327362570
+                        terminal: 1
+                        transaction_type: 0
+                        bank_response_url: 'http://sasturain.dev/redsys-response'
+                        return_url: 'http://sasturain.dev/response-ok?redsys=true'
+                        cancel_url: 'http://sasturain.dev/cancel-payment'
+                        consumer_language: 1
+                redsys_dev: 
+                    options:
+                        host: 'https://sis-t.sermepa.es:25443/sis/realizarPago'
+                        secret: qwertyasdf0123456789
+                        currency: 978
+                        code: 999008881
+                        terminal: 4
+                        transaction_type: 0
+                        bank_response_url: 'http://sasturain.dev/redsys-response'
+                        return_url: 'http://sasturain.dev/response-ok?redsys=true'
+                        cancel_url: 'http://sasturain.dev/cancel-payment'
+                        consumer_language: 1
             
 in config_test.yml
 
