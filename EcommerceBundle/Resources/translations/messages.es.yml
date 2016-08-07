@@ -821,3 +821,18 @@ located:
   
 new.advert: Nueva publicidad  
 new.located: Nueva ubicación
+
+
+paymentserviceproviders: Proveedores de pagos
+recurring: Para pago recurrente
+isTestingAccount: Cuenta de test
+psp:
+  singular: Proveedor de pago
+  plural: Proveedores de pagos
+  recurring: Para pago recurrente
+  test: Cuenta de test
+  payment.method: Método de pago
+  add.credential: Agregar credencial
+  add.credential.key: Agregar nombre de la credencial
+  delete.credential: Eliminar esta credencial
+  

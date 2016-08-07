@@ -36,6 +36,55 @@ class Transaction extends Timestampable
     const PAYMENT_METHOD_PAYPAL = 'paypal';
     const PAYMENT_METHOD_STORE_PICKUP = 'store_pickup';
 
+//     * Transaction::saleNoValidate(array(
+//    *    'amount'      => '100.00',
+//    *    'orderId'    => '123',
+//    *    'channel'    => 'MyShoppingCardProvider',
+//    *    'creditCard' => array(
+//    *         // if token is omitted, the gateway will generate a token
+//    *         'token' => 'credit_card_123',
+//    *         'number' => '5105105105105100',
+//    *         'expirationDate' => '05/2011',
+//    *         'cvv' => '123',
+//    *    ),
+//    *    'customer' => array(
+//    *     // if id is omitted, the gateway will generate an id
+//    *     'id'    => 'customer_123',
+//    *     'firstName' => 'Dan',
+//    *     'lastName' => 'Smith',
+//    *     'company' => 'Braintree',
+//    *     'email' => 'dan@example.com',
+//    *     'phone' => '419-555-1234',
+//    *     'fax' => '419-555-1235',
+//    *     'website' => 'http://braintreepayments.com'
+//    *    ),
+//    *    'billing'    => array(
+//    *      'firstName' => 'Carl',
+//    *      'lastName'  => 'Jones',
+//    *      'company'    => 'Braintree',
+//    *      'streetAddress' => '123 E Main St',
+//    *      'extendedAddress' => 'Suite 403',
+//    *      'locality' => 'Chicago',
+//    *      'region' => 'IL',
+//    *      'postalCode' => '60622',
+//    *      'countryName' => 'United States of America'
+//    *    ),
+//    *    'shipping' => array(
+//    *      'firstName'    => 'Andrew',
+//    *      'lastName'    => 'Mason',
+//    *      'company'    => 'Braintree',
+//    *      'streetAddress'    => '456 W Main St',
+//    *      'extendedAddress'    => 'Apt 2F',
+//    *      'locality'    => 'Bartlett',
+//    *      'region'    => 'IL',
+//    *      'postalCode'    => '60103',
+//    *      'countryName'    => 'United States of America'
+//    *    ),
+//    *    'customFields'    => array(
+//    *      'birthdate'    => '11/13/1954'
+//    *    )
+//    *  )
+
     /**
      * @var integer
      *
@@ -62,11 +111,9 @@ class Transaction extends Timestampable
     private $status;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="payment_method", type="string", length=100, nullable=true)
+     * @ORM\ManyToOne(targetEntity="PaymentMethod")
      */
-    private $paymentMethod;
+    protected $paymentMethod;
     
     /**
      * @var string
@@ -219,11 +266,11 @@ class Transaction extends Timestampable
     /**
      * Set payment method
      *
-     * @param string $paymentMethod
+     * @param PaymentMethod $paymentMethod
      *
      * @return Transaction
      */
-    public function setPaymentMethod($paymentMethod)
+    public function setPaymentMethod(PaymentMethod $paymentMethod)
     {
         $this->paymentMethod = $paymentMethod;
 
@@ -233,7 +280,7 @@ class Transaction extends Timestampable
     /**
      * Get payment method
      *
-     * @return string
+     * @return PaymentMethod
      */
     public function getPaymentMethod()
     {

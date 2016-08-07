@@ -107,7 +107,13 @@ class ContractController extends Controller
 
         if ($form->isValid()) {
             
+            //check payment method
+            $data = $form->getNormData();
+            print_r($data);die();
+            
             $em = $this->getDoctrine()->getManager();
+            
+            
             
             $agreement = $entity->getAgreement();
             $agreement->setContract($entity);
@@ -123,7 +129,9 @@ class ContractController extends Controller
                 $this->get('session')->getFlashBag()->add('danger', 'contract.duplicated');
             }
             
+           
             
+            //paypal workflow
             $checkoutManager = $this->get('checkout_manager');
             //create agreement paypal
             $creditCard = $form->getNormData()->getAgreement()->getCreditCard();

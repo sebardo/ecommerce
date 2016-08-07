@@ -11,12 +11,15 @@ use EcommerceBundle\Entity\FeatureValue;
 use EcommerceBundle\Entity\Brand;
 use EcommerceBundle\Entity\Product;
 use EcommerceBundle\Entity\Transaction;
-use CoreBundle\Entity\Actor;
 use EcommerceBundle\Entity\Invoice;
 use EcommerceBundle\Entity\ProductPurchase;
 use EcommerceBundle\Entity\Address;
 use EcommerceBundle\Entity\Delivery;
 use EcommerceBundle\Entity\BrandModel;
+use EcommerceBundle\Entity\PaymentMethod;
+use EcommerceBundle\Entity\PaymentServiceProvider;
+use Gedmo\Mapping\Annotation as Gedmo;
+
 
 /*
  * php app/console doctrine:fixtures:load --fixtures=vendor/sebardo/ecommerce/EcommerceBundle/DataFixtures/ORM/LoadEcommerceData.php
@@ -184,13 +187,102 @@ class LoadEcommerceData extends SqlScriptFixture
             $state = $this->getManager()->getRepository('CoreBundle:State')->findOneByName('Barcelona');
 
             $core = $this->container->getParameter('core');
-
+            
+            //payment methods
+            $pm = new PaymentMethod();
+            $pm->setName('Bank Transfer');
+            $psp = new PaymentServiceProvider();
+            $psp->setActive(true);
+            $psp->setIsTestingAccount(false);
+            $psp->setRecurring(false);
+            $psp->setPaymentMethod($pm);
+            
+            $pm1 = new PaymentMethod();
+            $pm1->setName('Bank Transfer test');
+            $psp1 = new PaymentServiceProvider();
+            $psp1->setActive(true);
+            $psp1->setIsTestingAccount(true);
+            $psp1->setRecurring(false);
+            $psp1->setPaymentMethod($pm1);
+            
+            $pm2 = new PaymentMethod();
+            $pm2->setName('Store Pickup');
+            $psp2 = new PaymentServiceProvider();
+            $psp2->setActive(false);
+            $psp2->setIsTestingAccount(false);
+            $psp2->setRecurring(false);
+            $psp2->setPaymentMethod($pm2);
+            
+            $pm3 = new PaymentMethod();
+            $pm3->setName('Paypal');
+            $psp3 = new PaymentServiceProvider();
+            $psp3->setActive(true);
+            $psp3->setIsTestingAccount(true);
+            $psp3->setRecurring(false);
+            $psp3->setPaymentMethod($pm3);
+            $psp3->setApiCredentialParameters(array(
+                'host' => 'https://api.sandbox.paypal.com',
+                'client_id' => 'AafbeOnqAQTpS4bgP85kvrewollR8XsxAYmHlHI7ZzqEXqfjHMrMCaCjZjweT5y4DemLMSlfPro-P3Nz',
+                'secret' => 'EJIuyFXnqYwW5HtPmPl7TsWsoCgT0-RtPnAa8TodOUGjOg9yp6E0nZOHIM5bOVP_Q1jSnTencHlxGUQ7',
+                'return_url' => 'http://sasturain.dev/response-ok?paypal=true',
+                'cancel_url' => 'http://sasturain.dev/cancel-payment'
+            ));
+            
+            $pm4 = new PaymentMethod();
+            $pm4->setName('Paypal Direct Payment');
+            $psp4 = new PaymentServiceProvider();
+            $psp4->setActive(true);
+            $psp4->setIsTestingAccount(true);
+            $psp4->setRecurring(true);
+            $psp4->setPaymentMethod($pm4);
+            $psp4->setApiCredentialParameters(array(
+                'host' => 'https://api.sandbox.paypal.com',
+                'client_id' => 'AafbeOnqAQTpS4bgP85kvrewollR8XsxAYmHlHI7ZzqEXqfjHMrMCaCjZjweT5y4DemLMSlfPro-P3Nz',
+                'secret' => 'EJIuyFXnqYwW5HtPmPl7TsWsoCgT0-RtPnAa8TodOUGjOg9yp6E0nZOHIM5bOVP_Q1jSnTencHlxGUQ7',
+                'return_url' => 'http://sasturain.dev/response-ok?paypal=true',
+                'cancel_url' => 'http://sasturain.dev/cancel-payment'
+            ));
+            
+            $pm5 = new PaymentMethod();
+            $pm5->setName('Redsys');
+            $psp5 = new PaymentServiceProvider();
+            $psp5->setActive(true);
+            $psp5->setIsTestingAccount(true);
+            $psp5->setRecurring(false);
+            $psp5->setPaymentMethod($pm5);
+            $psp5->setApiCredentialParameters(array(
+                'host' => 'https://sis-t.sermepa.es:25443/sis/realizarPago',
+                'secret' => 'qwertyasdf0123456789',
+                'currency' => '978',
+                'code' => '999008881',
+                'terminal' => '4',
+                'transaction_type' => '0',
+                'bank_response_url' => 'http://sasturain.dev/redsys-response',
+                'return_url' => 'http://sasturain.dev/response-ok?redsys=true',
+                'cancel_url' => 'http://sasturain.dev/cancel-payment',
+                'consumer_language' => '1'
+            ));
+            
+            $pm6 = new PaymentMethod();
+            $pm6->setName('Braintree');
+            $psp6 = new PaymentServiceProvider();
+            $psp6->setActive(true);
+            $psp6->setIsTestingAccount(true);
+            $psp6->setRecurring(true);
+            $psp6->setPaymentMethod($pm6);
+            $psp6->setApiCredentialParameters(array(
+                'environment'=> 'sandbox',
+                'merchant_id'=> '3j49t8qb3h4nv9hk',
+                'public_key'=> 'tygwjhymnm5bm55s',
+                'private_key'=> 'a791f33b9d41ab9c57c857da1c526fa1'
+            ));
+          
             $transaction = new Transaction();
             $transaction->setTransactionKey(uniqid());
             $transaction->setStatus(Transaction::STATUS_PENDING);
             $transaction->setTotalPrice(2.12);
             $transaction->setVat($this->container->getParameter('ecommerce.vat'));
-            $transaction->setPaymentMethod(Transaction::PAYMENT_METHOD_PAYPAL);
+            $transaction->setPaymentMethod($pm);
             $transaction->setActor($actor);
             $transaction->setCreated(new \DateTime('now'));
 
@@ -273,6 +365,21 @@ class LoadEcommerceData extends SqlScriptFixture
             $this->getManager()->persist($product2);
             $this->getManager()->persist($product3);
 
+            $this->getManager()->persist($pm);
+            $this->getManager()->persist($psp);
+            $this->getManager()->persist($pm1);
+            $this->getManager()->persist($psp1);
+            $this->getManager()->persist($pm2);
+            $this->getManager()->persist($psp2);
+            $this->getManager()->persist($pm3);
+            $this->getManager()->persist($psp3);
+            $this->getManager()->persist($pm4);
+            $this->getManager()->persist($psp4);
+            $this->getManager()->persist($pm5);
+            $this->getManager()->persist($psp5);
+            $this->getManager()->persist($pm6);
+            $this->getManager()->persist($psp6);
+            
             $this->getManager()->persist($transaction);
             $this->getManager()->persist($productPurchase);
             $this->getManager()->persist($address);
