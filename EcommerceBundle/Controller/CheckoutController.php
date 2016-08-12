@@ -811,8 +811,9 @@ class CheckoutController extends BaseController
         $formConfig['signature'] = strtoupper(sha1($hash));
         
         //UPDATE TRANSACTION ????
+        $pm = $em->getRepository('EcommerceBundle:PaymentMethod')->findOneBySlug('redsys');
         $transaction->setStatus(Transaction::STATUS_PENDING);
-        $transaction->setPaymentMethod(Transaction::PAYMENT_METHOD_CREDIT_CARD);
+        $transaction->setPaymentMethod($pm);
         $transaction->setPaymentDetails(json_encode(array(
                     'amount' => $formConfig['amount'],
                     'order' => $formConfig['order'],
