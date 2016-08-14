@@ -1,21 +1,22 @@
 <?php
-
 namespace EcommerceBundle\Service;
 
-use EcommerceBundle\Entity\Delivery;
-use EcommerceBundle\Entity\Transaction;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Doctrine\Common\Collections\ArrayCollection;
 use EcommerceBundle\Entity\ProductPurchase;
 use EcommerceBundle\Entity\Cart;
+use EcommerceBundle\Entity\Delivery;
+use EcommerceBundle\Entity\Transaction;
 use CoreBundle\Entity\Actor;
 use EcommerceBundle\Entity\Address;
 use EcommerceBundle\Entity\Invoice;
 use EcommerceBundle\Entity\CartItem;
-use Symfony\Component\HttpFoundation\Request;
 use EcommerceBundle\Entity\Plan;
 use EcommerceBundle\Entity\Agreement;
 use EcommerceBundle\Entity\Product;
 use EcommerceBundle\Entity\Advert;
+use EcommerceBundle\Factory\PaymentProvider;
 use stdClass;
 use DateTime;
 
@@ -48,9 +49,7 @@ class CheckoutManager
     public $braintreeFactory;
     
     public $paypalFactory;
-    
-    public $redsysFactory;
-    
+        
     public $advertUnitPrice;
     
     public $specialPercentageCharge;
@@ -60,6 +59,10 @@ class CheckoutManager
     public $deliveryExpensesPercentage;
     
     public $vat;
+    
+    public $formFactory;
+    
+    public $validator;
 
 
     /**
@@ -76,12 +79,13 @@ class CheckoutManager
             $mailer,
             $braintreeFactory,
             $paypalFactory,
-            $redsysFactory,
             $advertUnitPrice,
             $specialPercentageCharge,
             $deliveryExpensesType,
             $deliveryExpensesPercentage,
-            $vat
+            $vat,
+            $formFactory,
+            $validator
             )
     {
         if(isset($parameters['parameters'])) $this->parameters = $parameters['parameters'];
@@ -95,12 +99,13 @@ class CheckoutManager
         $this->mailer = $mailer;   
         $this->braintreeFactory = $braintreeFactory;
         $this->paypalFactory = $paypalFactory->getProvider();
-        $this->redsysFactory = $redsysFactory->getProvider();
         $this->advertUnitPrice = $advertUnitPrice;
         $this->specialPercentageCharge = $specialPercentageCharge;
         $this->deliveryExpensesType = $deliveryExpensesType;
         $this->deliveryExpensesPercentage = $deliveryExpensesPercentage;
         $this->vat = $vat;
+        $this->formFactory = $formFactory;
+        $this->validator = $validator;
     }
     
      /**
@@ -184,8 +189,8 @@ class CheckoutManager
             if($productPurchase->getProduct() instanceof Product){
                 if(!$productPurchase->getProduct()->isFreeTransport()){
                     $addPercent = 0;
-                    if($this->deliveryExpensesPercentage() > 0) 
-                        $addPercent = $productPurchase->getTotalPrice() * $this->deliveryExpensesPercentage();
+                    if($this->deliveryExpensesPercentage > 0) 
+                        $addPercent = $productPurchase->getTotalPrice() * $this->deliveryExpensesPercentage;
                     
                     $total += $productPurchase->getTotalPrice() + $addPercent;
                 }
@@ -709,65 +714,7 @@ class CheckoutManager
         
         return false;
     }
-    
-    /**
-     * Return array of redsys data
-     *
-     * @param array $totals
-     *
-     * @return array
-     */
-    public function getRedsysData($totals)
-    {
-        if( !isset($this->parameters['company']['name']))
-            throw new \Exception('All redsys paramters must be setted.');
-        
-        
-        if($this->redsysFactory->getHost() == '')
-            throw new \Exception('Host paramters must be setted.');
-        if($this->redsysFactory->getCode() == '')
-            throw new \Exception('Code paramters must be setted.');
-        if($this->redsysFactory->getCurrency() == '')
-            throw new \Exception('Code paramters must be setted.');
-        if($this->redsysFactory->getTerminal() == '')
-            throw new \Exception('Currency paramters must be setted.');
-        if($this->redsysFactory->getSecret() == '')
-            throw new \Exception('Secret paramters must be setted.');
-        if($this->redsysFactory->getBankResponseUrl() == '')
-            throw new \Exception('Bank response url paramters must be setted.');
-        if($this->redsysFactory->getTransactionType() != 0 && $this->redsysFactory->getTransactionType() == '')
-            throw new \Exception('Transaction type paramters must be setted.');
-        if($this->redsysFactory->getReturnUrl() == '')
-            throw new \Exception('Return url paramters must be setted.');
-        if($this->redsysFactory->getCancelUrl() == '')
-            throw new \Exception('Cancel paramters must be setted.');
-         
-        
-        $order=date('ymdHis');
-        $amount='25';
-        $product='Hat';
 
-        $message = $amount.$order.$this->redsysFactory->getCode().$this->redsysFactory->getCurrency().$this->redsysFactory->getTransactionType().$this->redsysFactory->getBankResponseUrl().$this->redsysFactory->getSecret();
-        $signature = strtoupper(sha1($message));
-        
-        return array(
-            'url_tpvv' => $this->redsysFactory->getHost(),
-            'name' => $this->parameters['company']['name'],
-            'code' => $this->redsysFactory->getCode(),
-            'terminal' => $this->redsysFactory->getTerminal(),
-            'order' => $order,
-            'product' => $product,
-            'amount' => $amount,
-            'currency' => $this->redsysFactory->getCurrency(),
-            'transactionType' => $this->redsysFactory->getTransactionType(),
-            'urlMerchant' => $this->redsysFactory->getBankResponseUrl(),
-            'urlOK' => $this->redsysFactory->getReturnUrl(),
-            'urlKO' => $this->redsysFactory->getCancelUrl(),
-            'signature' => $signature
-            
-        );
-    }
-    
     /**
      * Proccess sale transaction
      *
@@ -787,10 +734,11 @@ class CheckoutManager
             'paymentMethodNonce' => $nonce
         ]);
 
+        $pm = $this->manager->getRepository('EcommerceBundle:PaymentMethod')->findOneBySlug('braintree');
         if ($result->success || !is_null($result->transaction)) {
             //UPDATE TRANSACTION
             $transaction->setStatus(Transaction::STATUS_PAID);
-            $transaction->setPaymentMethod(Transaction::PAYMENT_METHOD_BRAINTREE_CREDIT_CARD);
+            $transaction->setPaymentMethod($pm);
             
             //details
             $details = new stdClass();
@@ -818,16 +766,16 @@ class CheckoutManager
        }else{
             //UPDATE TRANSACTION
             $transaction->setStatus(Transaction::STATUS_CANCELLED);
-            $transaction->setPaymentMethod(Transaction::PAYMENT_METHOD_BRAINTREE_CREDIT_CARD);
+            $transaction->setPaymentMethod($pm);
             
             //details
             $errorString = "";
             foreach($result->errors->deepAll() as $error) {
                $errorString .= 'Error: ' . $error->code . ": " . $error->message . "\n";
             }
-            $this->get('session')->getFlashBag()->add('error', $errorString);
+            $this->session->getFlashBag()->add('error', $errorString);
             
-            $transaction->setPaymentDetails(json_encode($details));
+            $transaction->setPaymentDetails(json_encode($errorString));
             $this->manager->persist($transaction);
             $this->manager->flush();
 
@@ -867,7 +815,6 @@ class CheckoutManager
               )
             );
         }
-        
         
         $returnValues = array();
         foreach ($transaction->getItems() as $productPurchase) {
@@ -919,8 +866,9 @@ class CheckoutManager
         if(!is_null($credtCard)){
             if($json_resp['state'] == 'approved'){
                  //UPDATE TRANSACTION
+                $pm = $this->manager->getRepository('EcommerceBundle:PaymentMethod')->findOneBySlug('paypal-direct-payment');
                 $transaction->setStatus(Transaction::STATUS_PAID);
-                $transaction->setPaymentMethod(Transaction::PAYMENT_METHOD_CREDIT_CARD);
+                $transaction->setPaymentMethod($pm);
                 $transaction->setPaymentDetails(json_encode($json_resp));
                 $this->manager->persist($transaction);
                 $this->manager->flush();
@@ -939,8 +887,9 @@ class CheckoutManager
             }
         }else{
             //UPDATE TRANSACTION
+            $pm = $this->manager->getRepository('EcommerceBundle:PaymentMethod')->findOneBySlug('paypal');
             $transaction->setStatus(Transaction::STATUS_PENDING);
-            $transaction->setPaymentMethod(Transaction::PAYMENT_METHOD_PAYPAL);
+            $transaction->setPaymentMethod($pm);
             $transaction->setPaymentDetails(json_encode($json_resp));
             $this->manager->persist($transaction);
             $this->manager->flush();
@@ -1609,603 +1558,6 @@ class CheckoutManager
         }
     }
     
-    public function createBillingPlanPayPal(){
-        
-        //Use this call to create a billing plan. The request sample shows the plan being created with a regular billing period.
-        $call  = "curl -v POST https://api.sandbox.paypal.com/v1/payments/billing-plans \
-        -H 'Content-Type:application/json' \
-        -H 'Authorization: Bearer <Access-Token>' \ ";
-        $call .= '-d \'{
-            "name": "T-Shirt of the Month Club Plan",
-            "description": "Template creation.",
-            "type": "fixed",
-            "payment_definitions": [
-                {
-                    "name": "Regular Payments",
-                    "type": "REGULAR",
-                    "frequency": "MONTH",
-                    "frequency_interval": "2",
-                    "amount": {
-                        "value": "100",
-                        "currency": "USD"
-                    },
-                    "cycles": "12",
-                    "charge_models": [
-                        {
-                            "type": "SHIPPING",
-                            "amount": {
-                                "value": "10",
-                                "currency": "USD"
-                            }
-                        },
-                        {
-                            "type": "TAX",
-                            "amount": {
-                                "value": "12",
-                                "currency": "USD"
-                            }
-                        }
-                    ]
-                }
-            ],
-            "merchant_preferences": {
-                "setup_fee": {
-                    "value": "1",
-                    "currency": "USD"
-                },
-                "return_url": "http://www.return.com",
-                "cancel_url": "http://www.cancel.com",
-                "auto_bill_amount": "YES",
-                "initial_fail_amount_action": "CONTINUE",
-                "max_fail_attempts": "0"
-            }
-        }\' ';
-        
-        
-        
-        $response = '{
-            "id": "P-94458432VR012762KRWBZEUA",
-            "state": "CREATED",
-            "name": "T-Shirt of the Month Club Plan",
-            "description": "Template creation.",
-            "type": "FIXED",
-            "payment_definitions": [   <==== https://developer.paypal.com/docs/api/#paymentdefinition-object
-              {
-                "id": "PD-50606817NF8063316RWBZEUA",
-                "name": "Regular Payments",
-                "type": "REGULAR",     <===== type:string Type of the payment definition. Allowed values: TRIAL, REGULAR. Required.
-                "frequency": "Month",
-                "amount": {
-                  "currency": "USD",
-                  "value": "100"
-                },
-                "charge_models": [
-                  {
-                    "id": "CHM-55M5618301871492MRWBZEUA",
-                    "type": "SHIPPING",
-                    "amount": {
-                      "currency": "USD",
-                      "value": "10"
-                    }
-                  },
-                  {
-                    "id": "CHM-92S85978TN737850VRWBZEUA",
-                    "type": "TAX",
-                    "amount": {
-                      "currency": "USD",
-                      "value": "12"
-                    }
-                  }
-                ],
-                "cycles": "12",
-                "frequency_interval": "2"
-              }
-            ],
-            "merchant_preferences": {
-              "setup_fee": {
-                "currency": "USD",
-                "value": "1"
-              },
-              "max_fail_attempts": "0",
-              "return_url": "http://www.return.com",
-              "cancel_url": "http://www.cancel.com",
-              "auto_bill_amount": "YES",
-              "initial_fail_amount_action": "CONTINUE"
-            },
-            "create_time": "2014-07-31T17:41:55.920Z",
-            "update_time": "2014-07-31T17:41:55.920Z",
-            "links": [
-              {
-                "href": "https://api.sandbox.paypal.com/v1/payments/billing-plans/P-94458432VR012762KRWBZEUA",
-                "rel": "self",
-                "method": "GET"
-              }
-            ]
-          }';
-        
-        //You can update the information for an existing billing plan. The state of a plan must be active before a billing agreement is created.
-        $activePlan = 'curl -v -k -X PATCH \'https://api.sandbox.paypal.com/v1/payments/billing-plans/P-94458432VR012762KRWBZEUA\' \
-                -H "Content-Type: application/json" \
-                -H "Authorization: Bearer <Access-Token>" \
-                -d \'[
-                    {
-                        "path": "/",
-                        "value": {
-                            "state": "ACTIVE"
-                        },
-                        "op": "replace"
-                    }
-                ]\' ';
-        //Returns the HTTP status of 200 if the call is successful.
-        
-        
-        
-        //Use this call to get details about a specific billing plan.
-        $billingPlan = "curl -v -X GET https://api.sandbox.paypal.com/v1/payments/billing-plans/P-94458432VR012762KRWBZEUA \
-                            -H 'Content-Type:application/json' \
-                            -H 'Authorization: Bearer <Access-Token>'";
-        
-        //token   =   curl https://api.sandbox.paypal.com/v1/oauth2/token  -H "Accept: application/json"  -H "Accept-Language: en_US"  -u "AUBVQzQgncps4IjuYku4Uy0u5Ocx67I_ywC96QJjIbiq4F9G9smzdcG7p-7zekMtIxl10I_3COkW1cMw:EOsCDBsxxur44b8InlYuBB68goyevR49bhlrQD93_0gi7p_0urbZrMJSEbpxLVj7j46aaQawVClWg1up"  -d "grant_type=client_credentials"
-
-            
-        $billingPlanList = "curl -v -X GET https://api.sandbox.paypal.com/v1/payments/billing-plans?page_size=3&status=CREATED&page=2&total_required=yes \
-                                -H 'Content-Type:application/json' \
-                                -H 'Authorization: Bearer A101.h3kb0G0goI-S710SUc0A45sYSgGZiPw4JNSaB-VD6ci01xZh_asI248oRUPfo6DM.UDWue_jEs6wBcLd_ivGlwjmsfti' \
-                                -d '{}'";
-    }
-    
-    public function createBillingPlanAgreementPayPal(){
-        //create billing agreement for a plan
-        $agreement = 'curl -v POST https://api.sandbox.paypal.com/v1/payments/billing-agreements \
-                        -H \'Content-Type:application/json\' \
-                        -H \'Authorization: Bearer <Access-Token>\' \
-                        -d \'{
-                            "name": "T-Shirt of the Month Club Agreement",
-                            "description": "Agreement for T-Shirt of the Month Club Plan",
-                            "start_date": "2015-02-19T00:37:04Z",
-                            "plan": {
-                                "id": "P-94458432VR012762KRWBZEUA"
-                            },
-                            "payer": {
-                                "payment_method": "credit_card",
-                                "funding_instruments": [
-                                  {
-                                    "credit_card": {
-                                      "number": "5500005555555559",
-                                      "type": "mastercard",
-                                      "expire_month": 12,
-                                      "expire_year": 2018,
-                                      "cvv2": 111,
-                                      "first_name": "Betsy",
-                                      "last_name": "Buyer"
-                                    }
-                                  }
-                                ]
-                              },
-                            "shipping_address": {
-                                "line1": "111 First Street",
-                                "city": "Saratoga",
-                                "state": "CA",
-                                "postal_code": "95070",
-                                "country_code": "US"
-                            }
-                        }\' ';
-        //After successfully creating the agreement, direct the user to the approval_url on the PayPal site so that the user can approve the agreement.
-        //execute link
-        
-        $responseAgreement  = '{
-                    "name": "T-Shirt of the Month Club Agreement",
-                    "description": "Agreement for T-Shirt of the Month Club Plan",
-                    "plan": {
-                      "id": "P-94458432VR012762KRWBZEUA",
-                      "state": "ACTIVE",
-                      "name": "T-Shirt of the Month Club Plan",
-                      "description": "Template creation.",
-                      "type": "FIXED",
-                      "payment_definitions": [
-                        {
-                          "id": "PD-50606817NF8063316RWBZEUA",
-                          "name": "Regular Payments",
-                          "type": "REGULAR",
-                          "frequency": "Month",
-                          "amount": {
-                            "currency": "USD",
-                            "value": "100"
-                          },
-                          "charge_models": [
-                            {
-                              "id": "CHM-92S85978TN737850VRWBZEUA",
-                              "type": "TAX",
-                              "amount": {
-                                "currency": "USD",
-                                "value": "12"
-                              }
-                            },
-                            {
-                              "id": "CHM-55M5618301871492MRWBZEUA",
-                              "type": "SHIPPING",
-                              "amount": {
-                                "currency": "USD",
-                                "value": "10"
-                              }
-                            }
-                          ],
-                          "cycles": "12",
-                          "frequency_interval": "2"
-                        }
-                      ],
-                      "merchant_preferences": {
-                        "setup_fee": {
-                          "currency": "USD",
-                          "value": "1"
-                        },
-                        "max_fail_attempts": "0",
-                        "return_url": "http://www.return.com",
-                        "cancel_url": "http://www.cancel.com",
-                        "auto_bill_amount": "YES",
-                        "initial_fail_amount_action": "CONTINUE"
-                      }
-                    },
-                    "links": [
-                      {
-                        "href": "https://www.sandbox.paypal.com/cgi-bin/webscr?cmd=_express-checkout&token=EC-0JP008296V451950C",
-                        "rel": "approval_url",
-                        "method": "REDIRECT"
-                      },
-                      {
-                        "href": "https://api.sandbox.paypal.com/v1/payments/billing-agreements/EC-0JP008296V451950C/agreement-execute",
-                        "rel": "execute",
-                        "method": "POST"
-                      }
-                    ],
-                    "start_date": "2015-02-19T00:37:04Z"
-                  }'; 
-        
-        //Use this call to execute an agreement after the buyer approves it.
-        $executeAgreement = "curl -v POST https://api.sandbox.paypal.com/v1/payments/billing-agreements/EC-0JP008296V451950C/agreement-execute \
-                                -H 'Content-Type:application/json' \
-                                -H 'Authorization: Bearer <Access-Token>' \
-                                -d '{}'";
-        $responseExecute = '{
-                                "id": "I-0LN988D3JACS",
-                                "links": [
-                                  {
-                                    "href": "https://api.sandbox.paypal.com/v1/payments/billing-agreements/I-0LN988D3JACS",
-                                    "rel": "self",
-                                    "method": "GET"
-                                  }
-                                ]
-                              }';
-        
-        //Use this call to suspend an agreement.
-        $suspendAgreement = "curl -v POST https://api.sandbox.paypal.com/v1/payments/billing-agreements/I-0LN988D3JACS/suspend \
-                            -H 'Content-Type:application/json' \
-                            -H 'Authorization: Bearer <Access-Token>' \
-                            -d '{
-                                \"note\": \"Suspending the agreement.\"
-                            }' ";
-        //Response : Returns the HTTP status of 204 if the call is successful.
-        
-        //Use this call to reactivate an agreement.
-        $reactiveAgreement = "curl -v POST https://api.sandbox.paypal.com/v1/payments/billing-agreements/I-0LN988D3JACS/re-activate \
-                                    -H 'Content-Type:application/json' \
-                                    -H 'Authorization: Bearer <Access-Token>' \
-                                    -d '{
-                                        \"note\": \"Reactivating the agreement.\"
-                                    }' ";
-        //Response : Returns the HTTP status of 204 if the call is successful.
-        
-        //Use this call to cancel an agreement.
-        $cancelAgreement = "curl -v POST https://api.sandbox.paypal.com/v1/payments/billing-agreements/I-0LN988D3JACS/cancel \
-                                -H 'Content-Type:application/json' \
-                                -H 'Authorization: Bearer <Access-Token>' \
-                                -d '{
-                                    \"note\": \"Canceling the agreement.\"
-                                }' ";
-        
-        //Response : Returns the HTTP status of 204 if the call is successful.
-        
-        //Use this call to search for the transactions within a billing agreement.
-        $transactionByAgreenment = "curl -v GET https://api.sandbox.paypal.com/v1/payments/billing-agreements/I-0LN988D3JACS/transactions?start_date=yyyy-mm-dd&end_date=yyyy-mm-dd \
-                                        -H 'Content-Type:application/json' \
-                                        -H 'Authorization: Bearer <Access-Token>'";
-        
-        $responseTransactionByAgreenment = '{
-                                "agreement_transaction_list": [
-                                  {
-                                    "transaction_id": "I-0LN988D3JACS",
-                                    "status": "Created",
-                                    "transaction_type": "Recurring Payment",
-                                    "payer_email": "bbuyer@example.com",
-                                    "payer_name": "Betsy Buyer",
-                                    "time_stamp": "2014-06-09T09:29:36Z",
-                                    "time_zone": "GMT"
-                                  },
-                                  {
-                                    "transaction_id": "928415314Y5640008",
-                                    "status": "Completed",
-                                    "transaction_type": "Recurring Payment",
-                                    "amount": {
-                                      "currency": "USD",
-                                      "value": "1.00"
-                                    },
-                                    "fee_amount": {
-                                      "currency": "USD",
-                                      "value": "-0.33"
-                                    },
-                                    "net_amount": {
-                                      "currency": "USD",
-                                      "value": "0.67"
-                                    },
-                                    "payer_email": "bbuyer@example.com",
-                                    "payer_name": "Betsy Buyer",
-                                    "time_stamp": "2014-06-09T09:42:47Z",
-                                    "time_zone": "GMT"
-                                  },
-                                  {
-                                    "transaction_id": "I-0LN988D3JACS",
-                                    "status": "Suspended",
-                                    "transaction_type": "Recurring Payment",
-                                    "payer_email": "bbuyer@example.com",
-                                    "payer_name": "Betsy Buyer",
-                                    "time_stamp": "2014-06-09T11:18:34Z",
-                                    "time_zone": "GMT"
-                                  },
-                                  {
-                                    "transaction_id": "I-0LN988D3JACS",
-                                    "status": "Reactivated",
-                                    "transaction_type": "Recurring Payment",
-                                    "payer_email": "bbuyer@example.com",
-                                    "payer_name": "Betsy Buyer",
-                                    "time_stamp": "2014-06-09T11:18:48Z",
-                                    "time_zone": "GMT"
-                                  }
-                                ]
-                              }';
-        
-        //Use this call to set the outstanding amount of an agreement.
-        $outstandingAgreement =  "curl -v POST https://api.sandbox.paypal.com/v1/payments/billing-agreements/I-0LN988D3JACS/set-balance \
-                            -H 'Content-Type:application/json' \
-                            -H 'Authorization: Bearer <Access-Token>' \
-                            -d '{
-                                \"value\": \"100\",
-                                \"currency\": \"USD\"
-                            }'";
-        //Response : Returns the HTTP status of 204 if the call is successful.
-        
-        //Use this call to bill the outstanding amount of an agreement.
-        $billOutstandingAgreement = "curl -v POST https://api.sandbox.paypal.com/v1/payments/billing-agreements/I-0LN988D3JACS/bill-balance \
-                                        -H 'Content-Type:application/json' \
-                                        -H 'Authorization: Bearer <Access-Token>' \
-                                        -d '{
-                                            \"note\": \"Billing Balance Amount\",
-                                            \"amount\": {
-                                                \"value\": \"100\",
-                                                \"currency\": \"USD\"
-                                            }
-                                        }'";
-        //Response : Returns the HTTP status of 204 if the call is successful.
-    }
-    
-    //Billing Plans Errors
-//    The following is a list of errors related to Billing Plans. We provide corrective action where available.
-//
-//    INTERNAL_SERVICE_ERROR
-//    An internal service error has occurred
-//    Resend the request at another time. If this error continues, contact PayPal Merchant Technical Support.
-//
-//    VALIDATION_ERROR
-//    Invalid request - see details
-//    There was a validation issue with your request - see details
-//
-//    REQUIRED_SCOPE_MISSING
-//    Access token does not have required scope.
-//    Obtain user consent using the correct scope required for this type of request.
-//
-//    UNAUTHORIZED_ACCESS
-//    You don’t have permission to access this resource.
-//    Please pass a valid plan id.
-//
-//    =======================================
-//
-//    Billing Agreements Errors
-//    The following is a list of errors related to Billing Agreements. We provide corrective action where available.
-//
-//    INTERNAL_SERVICE_ERROR
-//    An internal service error has occurred
-//    Resend the request at another time. If this error continues, contact PayPal Merchant Technical Support.
-//
-//    SUBSCRIPTION_UNMAPPED_ERROR
-//    Some unmapped business/ internal error has occurred
-//    Some unmapped business/ internal error has occurred. Please look into message details for resolution.
-//
-//    ADDRESS_INVALID
-//    Provided user address is invalid
-//    Provided user address is invalid.
-//
-//    DUPLICATE_REQUEST_ID
-//    The value of PayPal-Request-Id header has already been used
-//    Resend the request using a unique PayPal-Request-Id.
-//
-//    VALIDATION_ERROR
-//    Invalid request - see details
-//    There was a validation issue with your request - see details
-//
-//    REQUIRED_SCOPE_MISSING
-//    Access token does not have required scope.
-//    Obtain user consent using the correct scope required for this type of request.
-//
-//    UNAUTHORIZED_AGREEMENT_REQUEST
-//    You don’t have permission to create such agreement.
-//    Obtain the permission to create agreement in one shot.
-//
-//    MERCHANT_COUNTRY_NOT_SUPPORTED
-//    The merchant’s country is currently not supported
-//    Merchant country not supported.
-//
-//    FEATURE_NOT_AVAILABLE
-//    Recurring payments feature is not currently available; try again later
-//    Recurring payments feature is not currently available; try again later.
-//
-//    INVALID_ARGS
-//    Invalid argument; description field or custom field is empty and the status is active
-//    Pass correct arguments in description field and make sure status is active.
-//
-//    WALLET_TOO_MANY_ATTEMPTS
-//    You have exceeded the maximum number of payment attempts for this token.
-//    Please create a new token and create agreement using that.
-//
-//    USR_BILLING_AGRMNT_NOT_ACTIVE
-//    This transaction cannot be processed due to an invalid merchant configuration.
-//    Occurs when the billing agreement is disabled or inactive.
-//
-//    ACCOUNT_RESTRICTED
-//    This transaction cannot be processed. Please contact PayPal Customer Service.
-//    Transaction cannot be processed. Please contact PayPal Customer Service.
-//
-//    INVALID_CC_NUMBER
-//    This transaction cannot be processed. Please enter a valid credit card number and type.
-//    Please enter a valid credit card number and type.
-//
-//    FEATURE_DISABLED
-//    This transaction cannot be processed.
-//    This feature is disabled for now.
-//
-//    CC_TYPE_NOT_SUPPORTED
-//    The credit card type is not supported
-//    Please use another type of credit card.
-//
-//    SHP_INVALID_COUNTRY_CODE
-//    This transaction cannot be processed. Please enter a valid country code in the shipping address.
-//    Please enter a valid country code in the shipping address.
-//
-//    MISSING_CVV2
-//    This transaction cannot be processed without a Credit Card Verification number
-//    Please enter cvv2 for credit-card.
-//
-//    INVALID_CURRENCY
-//    This transaction cannot be processed due to an unsupported currency.
-//    This currency is not supported right now.
-//
-//    BUSADD_STATE_UNSUPPORTED
-//    This transaction cannot be processed. The country listed for your business address is not currently supported.
-//    The country listed for your business address is not currently supported.
-//
-//    INVALID_TOKEN
-//    The token is missing or is invalid
-//    Please use a valid token.
-//
-//    INVALID_AMOUNT
-//    Bill amount must be greater than 0
-//    Please pass valid amount.
-//
-//    INVALID_PROFILE_STATUS
-//    The profile status must be one of (A)ctive, (C)ancelled, or e(X)pired
-//    Please enter valid profile status.
-//
-//    PAYER_ACCOUNT_DENIED
-//    Payer’s account is denied
-//    Payer’s account is denied.
-//
-//    PAYER_COUNTRY_NOT_SUPPORTED
-//    The payer’s country is currently not supported
-//    The payer’s country is currently not supported.
-//
-//    MERCHANT_ACCOUNT_DENIED
-//    Merchant account is denied
-//    Merchant account is denied.
-//
-//    CANNOT_MIX_CURRENCIES
-//    Invalid currency code, all currency codes much match
-//    Please use same currency for all the amount objects.
-//
-//    START_DATE_INVALID_FORMAT
-//    Subscription start date should be valid
-//    Please pass a valid start date.
-//
-//    INVALID_PROFILE_ID
-//    The profile ID is invalid
-//    Please provide a valid agreement ID.
-//
-//    INVALID_PROFILE_ACTION
-//    Invalid action value provided
-//    Please provide a valid action value.
-//
-//    INVALID_STATUS_TO_CANCEL
-//    Invalid profile status for suspend action; profile should be active
-//    Agreement should be active before suspending it.
-//
-//    INVALID_STATUS_TO_SUSPEND
-//    Invalid profile status for reactivate action; profile should be suspended
-//    Agreement should be suspended to perform this action.
-//
-//    INVALID_STATUS_TO_REACTIVATE
-//    The activation type is invalid.
-//    Please pass a valid activate type.
-//
-//    BILL_AMOUNT_GREATER_THAN_OUTSTANDING_BALANCE
-//    Bill amount is greater than outstanding balance
-//    Bill amount should be less than outstanding balance.
-//
-//    OUTSTANDING_PAYMENT_ALREADY_SCHEDULED
-//    Another outstanding payment is scheduled
-//    Another outstanding payment is scheduled
-//
-//    RECURRING_PAYMENT_SCHEDULED_WITHIN_24HOURS
-//    Recurring payment scheduled within 24 hours, so we are not processing the bill outstanding amoun
-//    Recurring payment scheduled within 24 hours, so we are not processing the bill outstanding amount.
-//
-//    CALL_FAILED_PAYMENT
-//    Payment is failing
-//    Payment is failing.
-//
-//    CANNOT_FIND_PROFILE_DESC
-//    Profile description is invalid.
-//    Please provide a valid description of agreement.
-//
-//    DPRP_DISABLED
-//    DPRP is disabled for this merchant.
-//    Please enable dprp for creating such agreement.
-//
-//    GATEWAY_DECLINE_CVV2
-//    This transaction cannot be processed. Please enter a valid Credit Card Verification Number.
-//    Please use a valid credit card.
-//
-//    PROCESSOR_DECLINE_INVALID_CC_COUNTRY
-//    This credit card was issued from an unsupported country.
-//    This credit card was issued from an unsupported country.
-//
-//    SHIPPING_ADDRESS_NOT_IN_RESIDENCE_COUNTRY
-//    This transaction cannot be processed. The shipping country is not allowed by the buyer’s country of residence.
-//    The shipping country is not allowed by the buyer’s country of residence.
-//
-//    CANT_INCREASE_OUTSTANDING_AMOUNT
-//    Cannot increase delinquent amount
-//    Bill outstanding amount cannot be increased.
-//
-//    TIME_TO_UPDATE_CLOSE_TO_BILLING_DATE
-//    The time of the update is too close to the billing date
-//    The time of the update is too close to the billing date.
-//
-//    SET_BALANCE_INVALID_CURRENCY_CODE
-//    Invalid currency for delinquent amount
-//    Please pass valid currency in bill-balance call.
-//
-//    STATUS_INVALID
-//    Invalid profile status for reactivate action; profile should be suspended
-//    Please pass valid status for agreement state change.
-//
-//    INTERNAL_ERROR
-//    Internal Error
-//    Resend the request at another time. If this error continues, contact PayPal Merchant Technical Support.
-//
-//    CC_STATUS_INVALID
-//    Profile is not active
-//    Profile is not in active state.
-
-
-        
-        
     /**
      * Process a bank transfer request
      *
@@ -2214,7 +1566,8 @@ class CheckoutManager
     public function processBankTransfer(Transaction $transaction)
     {
         $transaction->setStatus(Transaction::STATUS_PENDING_TRANSFER);
-        $transaction->setPaymentMethod(Transaction::PAYMENT_METHOD_BANK_TRANSFER);
+        $pm = $this->manager->getRepository('EcommerceBundle:PaymentMethod')->findOneBySlug('bank-transfer-test');
+        $transaction->setPaymentMethod($pm);
 
         $this->manager->persist($transaction);
         $this->manager->flush();
@@ -2237,7 +1590,8 @@ class CheckoutManager
         }
 
         $transaction->setStatus(Transaction::STATUS_PAID);
-        $transaction->setPaymentMethod(Transaction::PAYMENT_METHOD_CREDIT_CARD);
+        $pm = $this->manager->getRepository('EcommerceBundle:PaymentMethod')->findOneBySlug('redsys');
+        $transaction->setPaymentMethod($pm);
 
         $this->manager->persist($transaction);
         $this->manager->flush();

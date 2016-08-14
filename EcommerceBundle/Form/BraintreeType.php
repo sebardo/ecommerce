@@ -17,7 +17,7 @@ class BraintreeType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('braintree', HiddenType::class);
+            ->add('payment_method_nonce', HiddenType::class);
     }
 
 }

@@ -1,6 +1,9 @@
 <?php
 namespace EcommerceBundle\Factory\Providers;
 
+use EcommerceBundle\Factory\PaymentProviderFactory;
+use EcommerceBundle\Entity\PaymentServiceProvider;
+
 /**
  * Description of PayPal
  *
@@ -13,7 +16,8 @@ namespace EcommerceBundle\Factory\Providers;
  * Código CIP: 123456 
  */
     
-class PayPalProvider {
+class PayPalProvider  extends PaymentProviderFactory 
+{
 
     protected $host;
     
@@ -25,6 +29,23 @@ class PayPalProvider {
     
     protected $cancelUrl;
  
+    /**
+     * Constructor with Paypal configuration
+     *
+     * @param string $container
+     * @param PaymentServiceProvider $psp
+     */
+    public function initialize($container, PaymentServiceProvider $psp)
+    {
+        parent::initialize($container, $psp);
+//        $this->validator = $validator;
+        print_r($this->parameters);die();
+        $this->setHost($host);
+        $this->setClientId($clientId);
+        $this->setSecret($secret);
+        $this->setReturnUrl($returnUrl);
+        $this->setCancelUrl($cancelUrl);
+    }
     
     public function setHost($host) 
     {

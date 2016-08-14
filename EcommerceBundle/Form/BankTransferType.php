@@ -17,7 +17,7 @@ class BankTransferType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('transfer', HiddenType::class);
+            ->add('bank_transfer', HiddenType::class);
     }
 
 }

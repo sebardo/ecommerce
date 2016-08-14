@@ -315,73 +315,56 @@ class CheckoutController extends BaseController
     {
         /** @var CheckoutManager $checkoutManager */
         $checkoutManager = $this->get('checkout_manager');
-
         if (false === $checkoutManager->isDeliverySaved()) {
             return $this->redirect($this->generateUrl('ecommerce_checkout_deliveryinfo'));
         }
 
         $transaction = $checkoutManager->getCurrentTransaction();
         $delivery = $checkoutManager->getDelivery();
-        
         $totals = $checkoutManager->calculateTotals($transaction, $delivery);
 
-        //Forms
-        $transferForm = $this->createForm(new BankTransferType());
-        $paypalForm = $this->createForm(new PayPalType());
-        $redsysForm = $this->createResysForm($transaction, $totals);
-        $braintreeForm = $this->createForm('EcommerceBundle\Form\BraintreeType');
-        //cc form
-        $creditCardform = $this->createCreditCardForm();
-        
-
-        //TODO: Refactor calculate todal delivery expenses
-        $totalForDelivery = 0;
-        foreach ($transaction->getItems() as $productPurchase) {
-            if(!$productPurchase->getProduct()->isFreeTransport()){
-                $totalForDelivery += $productPurchase->getTotalPrice() * $productPurchase->getQuantity();
-            }
-        }
-
-        $parameters = $this->container->getParameter('core');
-        $deliveryCosts = round((($totalForDelivery * $this->container->getParameter('ecommerce.delivery_expenses_percentage')) / 100),2);
-
-        $vat = round(((($transaction->getTotalPrice() + $deliveryCosts) * $transaction->getVat()) / 100),2);
-        $total = $transaction->getTotalPrice() + $vat + $deliveryCosts;
+        /** @var PaymentManager $paymentManager */
+        $paymentManager = $this->get('payment_manager');
+        $psps = $paymentManager->getProviders();
  
-   
         // process payment method form
         if ($request->isMethod('POST')) {
-
+            
+            foreach ($psps as $psp) {
+                if($request->request->has($psp->getName())){
+                    $psp->getForm()->bind($request);
+                    if ($psp->getForm()->isValid()){
+                        $paymentManager->processPayment($request, $psp);
+                    }
+                }
+            }
+//            $psps->process($request);
             if ($request->request->has('braintree')) {
                 $checkoutManager->processBraintree($transaction, $delivery, $request);
 
-                return $this->redirect($checkoutManager->getRedirectUrlInvoice($delivery));
+                return $this->redirect($this->generateUrl('ecommerce_checkout_confirmationpayment'));
             }else if ($request->request->has('bank_transfer')) {
                 $checkoutManager->processBankTransfer($transaction);
 
-                return $this->redirect($checkoutManager->getRedirectUrlInvoice($delivery));
-            }elseif ($request->request->has('paypal')) {
+                return $this->redirect($this->generateUrl('ecommerce_checkout_confirmationpayment'));
+            }elseif ($request->request->has('pay_pal')) {
                 $answer = $checkoutManager->processPaypalSale($transaction, $delivery);
 
                 return $this->redirect($answer->redirectUrl);
-            }elseif ($request->request->has('redsys')) {
-                $answer = $checkoutManager->processRedsysSale($transaction, $delivery);
-
-                return $this->redirect($answer->redirectUrl);
-            }elseif ($request->request->has('credit_card')) {
+            }elseif ($request->request->has('pay_pal_direct_payment')) {
                 
-                $creditCardform->bind($request);
-                if ($creditCardform->isValid()){
+                $paypalDirectPaymentForm->bind($request);
+                if ($paypalDirectPaymentForm->isValid()){
                     
                     
                     $answer = $checkoutManager->processPaypalSale($transaction, $delivery, array(
-                        "number" => $creditCardform->getNormData()->cardNo,
-                        "type" => $creditCardform->getNormData()->cardType,
-                        "expire_month" =>  $creditCardform->getNormData()->expirationDate->format('m'),
-                        "expire_year" =>  $creditCardform->getNormData()->expirationDate->format('Y'),
-                        "cvv2" =>  $creditCardform->getNormData()->CVV,
-                        "first_name" =>  $creditCardform->getNormData()->firstname,
-                        "last_name" =>  $creditCardform->getNormData()->lastname
+                        "number" => $paypalDirectPaymentForm->getNormData()->cardNo,
+                        "type" => $paypalDirectPaymentForm->getNormData()->cardType,
+                        "expire_month" =>  $paypalDirectPaymentForm->getNormData()->expirationDate->format('m'),
+                        "expire_year" =>  $paypalDirectPaymentForm->getNormData()->expirationDate->format('Y'),
+                        "cvv2" =>  $paypalDirectPaymentForm->getNormData()->CVV,
+                        "first_name" =>  $paypalDirectPaymentForm->getNormData()->firstname,
+                        "last_name" =>  $paypalDirectPaymentForm->getNormData()->lastname
                    ));
                     
                     return $this->redirect($answer->redirectUrl);
@@ -395,19 +378,13 @@ class CheckoutController extends BaseController
             
         }
 
-        $returnValues = $checkoutManager->getRedsysData($totals);
-//        $returnValues2 = $checkoutManager->getPaypalData($totals);
-        
-        return array_merge($returnValues, array(
+
+        return array(
             'transaction'    => $transaction,
             'delivery'       => $delivery,
             'totals'         => $totals,
-            'transfer_form'  => $transferForm->createView(),
-            'paypal_form'    => $paypalForm->createView(),
-            'redsys_form'    => $redsysForm->createView(),
-            'creditcard_form'=> $creditCardform->createView(),
-            'braintree_form'=> $braintreeForm->createView(),
-            ));
+            'psps'           => $psps
+            );
     }
     
      /**

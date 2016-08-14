@@ -137,7 +137,7 @@ class LoadEcommerceData extends SqlScriptFixture
             $product2->setDiscount(0);
             $product2->setDiscountType(Product::PRICE_TYPE_FIXED);
             $product2->setBrand($brand2);
-            $product->setModel($brandModel2);
+            $product2->setModel($brandModel2);
             $product2->setCategory($category2);
             $product2->setActive(true);
             $product2->setAvailable(true);
@@ -162,7 +162,7 @@ class LoadEcommerceData extends SqlScriptFixture
             $product3->setDiscount(10);
             $product3->setDiscountType(Product::PRICE_TYPE_PERCENT);
             $product3->setBrand($brand);
-            $product->setModel($brandModel);
+            $product3->setModel($brandModel);
             $product3->setCategory($category);
             $product3->setActive(true);
             $product3->setAvailable(true);
@@ -185,8 +185,6 @@ class LoadEcommerceData extends SqlScriptFixture
             $actor2 = $this->getManager()->getRepository('CoreBundle:Actor')->findOneByUsername('user2');
             $country = $this->getManager()->getRepository('CoreBundle:Country')->find('es');
             $state = $this->getManager()->getRepository('CoreBundle:State')->findOneByName('Barcelona');
-
-            $core = $this->container->getParameter('core');
             
             //payment methods
             $pm = new PaymentMethod();
@@ -196,6 +194,20 @@ class LoadEcommerceData extends SqlScriptFixture
             $psp->setIsTestingAccount(false);
             $psp->setRecurring(false);
             $psp->setPaymentMethod($pm);
+            $psp->setFormClass('EcommerceBundle\Form\BankTransferType');
+            $psp->setModelClass('EcommerceBundle\Entity\Model\BankTransferForm');
+            $psp->setAppendTwigToForm('<div class="col-sm-10 detail-transfer">
+                {{ "checkout.transfer" | trans({"%bank_name%": core["company"]["name"], "%bank_account%": get_parameter("ecommerce.bank_account") }) | nl2br }}
+                <br />
+            </div>
+            <div class="col-sm-12 priceAndCheck">
+                <div class="price">
+                    <span>{{ "checkout.amount" | trans }}:</span>
+                    <strong style="margin-right: 15px;">{{ totals.amount | price }}</strong>
+                    <button >{{ "checkout.confirm" | trans }}</button>
+                </div>
+                <a href="{{ path(\'ecommerce_checkout_deliveryinfo\') }}" class="btn btn-primary" title="{{ "back" | trans }}">{{ "back" | trans }}</a>
+            </div>');
             
             $pm1 = new PaymentMethod();
             $pm1->setName('Bank Transfer test');
@@ -204,6 +216,20 @@ class LoadEcommerceData extends SqlScriptFixture
             $psp1->setIsTestingAccount(true);
             $psp1->setRecurring(false);
             $psp1->setPaymentMethod($pm1);
+            $psp1->setFormClass('EcommerceBundle\Form\BankTransferType');
+            $psp1->setModelClass('EcommerceBundle\Entity\Model\BankTransferForm');
+            $psp1->setAppendTwigToForm('<div class="col-sm-10 detail-transfer">
+                {{ "checkout.transfer" | trans({"%bank_name%": core["company"]["name"], "%bank_account%": get_parameter("ecommerce.bank_account") }) | nl2br }}
+                <br />
+            </div>
+            <div class="col-sm-12 priceAndCheck">
+                <div class="price">
+                    <span>{{ "checkout.amount" | trans }}:</span>
+                    <strong style="margin-right: 15px;">{{ totals.amount | price }}</strong>
+                    <button >{{ "checkout.confirm" | trans }}</button>
+                </div>
+                <a href="{{ path(\'ecommerce_checkout_deliveryinfo\') }}" class="btn btn-primary" title="{{ "back" | trans }}">{{ "back" | trans }}</a>
+            </div>');
             
             $pm2 = new PaymentMethod();
             $pm2->setName('Store Pickup');
@@ -227,6 +253,16 @@ class LoadEcommerceData extends SqlScriptFixture
                 'return_url' => 'http://sasturain.dev/response-ok?paypal=true',
                 'cancel_url' => 'http://sasturain.dev/cancel-payment'
             ));
+            $psp3->setFormClass('EcommerceBundle\Form\PayPalType');
+            $psp3->setModelClass('EcommerceBundle\Entity\Model\PayPalForm');
+            $psp3->setAppendTwigToForm('<div class="col-sm-12 priceAndCheck">
+                <div class="price">
+                    <span>{{ "checkout.amount" | trans }}:</span>
+                    <strong style="margin-right: 15px;">{{ totals.amount | price }}</strong>
+                    <button >{{ "checkout.confirm" | trans }}</button>
+                </div>
+                <a href="{{ path(\'ecommerce_checkout_deliveryinfo\') }}" class="btn btn-primary" title="{{ "back" | trans }}">{{ "back" | trans }}</a>
+            </div>');
             
             $pm4 = new PaymentMethod();
             $pm4->setName('Paypal Direct Payment');
@@ -242,27 +278,17 @@ class LoadEcommerceData extends SqlScriptFixture
                 'return_url' => 'http://sasturain.dev/response-ok?paypal=true',
                 'cancel_url' => 'http://sasturain.dev/cancel-payment'
             ));
-            
-            $pm5 = new PaymentMethod();
-            $pm5->setName('Redsys');
-            $psp5 = new PaymentServiceProvider();
-            $psp5->setActive(true);
-            $psp5->setIsTestingAccount(true);
-            $psp5->setRecurring(false);
-            $psp5->setPaymentMethod($pm5);
-            $psp5->setApiCredentialParameters(array(
-                'host' => 'https://sis-t.sermepa.es:25443/sis/realizarPago',
-                'secret' => 'qwertyasdf0123456789',
-                'currency' => '978',
-                'code' => '999008881',
-                'terminal' => '4',
-                'transaction_type' => '0',
-                'bank_response_url' => 'http://sasturain.dev/redsys-response',
-                'return_url' => 'http://sasturain.dev/response-ok?redsys=true',
-                'cancel_url' => 'http://sasturain.dev/cancel-payment',
-                'consumer_language' => '1'
-            ));
-            
+            $psp4->setFormClass('EcommerceBundle\Form\PayPalDirectPaymentType');
+            $psp4->setModelClass('EcommerceBundle\Entity\Model\PayPalDirectPaymentForm');
+            $psp4->setAppendTwigToForm('<div class="col-sm-12 priceAndCheck">
+                <div class="price">
+                   <span>{{ "checkout.amount" | trans }}:</span>
+                   <strong>{{ totals.amount | price }}</strong>
+                   <button >{{ "checkout.pay" | trans }}</button>
+                </div>
+                <a href="{{ path(\'ecommerce_checkout_deliveryinfo\') }}" class="btn btn-primary" title="{{ "back" | trans }}">{{ "back" | trans }}</a>
+            </div>');
+
             $pm6 = new PaymentMethod();
             $pm6->setName('Braintree');
             $psp6 = new PaymentServiceProvider();
@@ -276,6 +302,21 @@ class LoadEcommerceData extends SqlScriptFixture
                 'public_key'=> 'tygwjhymnm5bm55s',
                 'private_key'=> 'a791f33b9d41ab9c57c857da1c526fa1'
             ));
+            $psp6->setFormClass('EcommerceBundle\Form\BraintreeType');
+            $psp6->setModelClass('EcommerceBundle\Factory\Providers\BraintreeProvider');
+            $psp6->setAppendTwigToForm('<section>
+                <div class="bt-drop-in-wrapper">
+                    <div id="bt-dropin"></div>
+                </div>
+
+                <label for="amount">
+                    <span class="input-label">Amount</span>
+                    <div class="input-wrapper amount-wrapper">
+                        <input id="amount" name="amount" type="tel" min="1" placeholder="Amount" value="10">
+                    </div>
+                </label>
+            </section>
+            <button class="btn btn-primary" type="submit"><span>Test Transaction</span></button>');
           
             $transaction = new Transaction();
             $transaction->setTransactionKey(uniqid());
@@ -375,8 +416,6 @@ class LoadEcommerceData extends SqlScriptFixture
             $this->getManager()->persist($psp3);
             $this->getManager()->persist($pm4);
             $this->getManager()->persist($psp4);
-            $this->getManager()->persist($pm5);
-            $this->getManager()->persist($psp5);
             $this->getManager()->persist($pm6);
             $this->getManager()->persist($psp6);
             

@@ -14,130 +14,99 @@
 {% block  content %}
     <div class="container">
         <div class="row summary summary-mobile">
-  
-                     
-                        <div class="col-md-6">
-                            <h1 class="title">
-                                Detalle y Pago
-                            </h1>
-                            <div class="subtitle-section">Mira los detalles y agrega un metodo de pago</div>
-                        </div>
-                        <div class="col-md-6">
-                            {% include 'EcommerceBundle:Checkout:steps.html.twig' with {'step': 'pay'}  %}
-                        </div>
-                        <div style="clear: both"></div>
-                        
-                    
-                {% block content_body %}
-                    <!--content-->
-                    <div class="col-md-1"></div>
-                     
-                        <div class="col-md-10 col-xs-12 container-content" id="summary" >
-                    
-                                           
-                        <h3>{{ "checkout.details" | trans }}</h3>
-                        <div class="container-table-summary">
-                            
-                                {% include 'EcommerceBundle:Checkout:summary.table.html.twig' %}
-                          
-                        </div>
-                        
-                  
-                        <div class="row">
-                            <div class="col-sm-6 col-xs-12 address">
-                                <div >
-                                    <h3>{{ "account.billing.info" | trans }}</h3>
+            <div class="col-md-6">
+                <h1 class="title">
+                    Detalle y Pago
+                </h1>
+                <div class="subtitle-section">Mira los detalles y agrega un metodo de pago</div>
+            </div>
+            <div class="col-md-6">
+                {% include 'EcommerceBundle:Checkout:steps.html.twig' with {'step': 'pay'}  %}
+            </div>
+            <div style="clear: both"></div>
+            {% block content_body %}
+                <!--content-->
+                <div class="col-md-1"></div>
+                <div class="col-md-10 col-xs-12 container-content" id="summary" >
+                    <h3>{{ "checkout.details" | trans }}</h3>
+                    <div class="container-table-summary">
+                        {% include 'EcommerceBundle:Checkout:summary.table.html.twig' %}
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6 col-xs-12 address">
+                            <div >
+                                <h3>{{ "account.billing.info" | trans }}</h3>
+                                <div class="col-sm-12">
                                     <div class="col-sm-12">
-                                        <div class="col-sm-12">
-                                            <p>{{ include('EcommerceBundle:Checkout:addresses/_billing.html.twig') }}</p>
-                                            <p><a href="mailto:{{ app.user.email }}" title="{{ app.user.email }}">{{ app.user.email }}</a></p>
-                                            <a href="{{ path('ecommerce_checkout_deliveryinfo') }}" class="orange-btn" title="{{ "account.modify.info" | trans }}">{{ "account.modify.info" | trans }}</a>
-                                        </div>
-
+                                        <p>{{ include('EcommerceBundle:Checkout:addresses/_billing.html.twig') }}</p>
+                                        <p><a href="mailto:{{ app.user.email }}" title="{{ app.user.email }}">{{ app.user.email }}</a></p>
+                                        <a href="{{ path('ecommerce_checkout_deliveryinfo') }}" class="orange-btn" title="{{ "account.modify.info" | trans }}">{{ "account.modify.info" | trans }}</a>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-sm-6 col-xs-12 address">
-                                <div >
-                                    <h3>{{ "account.delivery.info" | trans }}</h3>
+                        </div>
+                        <div class="col-sm-6 col-xs-12 address">
+                            <div >
+                                <h3>{{ "account.delivery.info" | trans }}</h3>
+                                <div class="col-sm-12">
                                     <div class="col-sm-12">
-                                        <div class="col-sm-12">
-                                            <p>{{ include('EcommerceBundle:Checkout:addresses/_delivery.html.twig') }}</p>
-                                            <p>
-                                                <b>{{ "account.chosen.schedule" | trans }}</b>: {{ delivery.deliveryPreferredSchedule }}<br />
-                                                <b>{{ "account.phone.singular" | trans }}</b>: {{ delivery.deliveryPhone }}
-                                                {{ delivery.deliveryPhone2 is not null ? '- ' ~ delivery.deliveryPhone2 }}
-                                                {% if delivery.notes is not null %}
-                                                    <br /><br />
-                                                    <b>{{ "carrier.note" | trans }}</b>: {{ delivery.notes }}
-                                                {% endif %}
-                                            </p>
+                                        <p>{{ include('EcommerceBundle:Checkout:addresses/_delivery.html.twig') }}</p>
+                                        <p>
+                                            <b>{{ "account.chosen.schedule" | trans }}</b>: {{ delivery.deliveryPreferredSchedule }}<br />
+                                            <b>{{ "account.phone.singular" | trans }}</b>: {{ delivery.deliveryPhone }}
+                                            {{ delivery.deliveryPhone2 is not null ? '- ' ~ delivery.deliveryPhone2 }}
+                                            {% if delivery.notes is not null %}
+                                                <br /><br />
+                                                <b>{{ "carrier.note" | trans }}</b>: {{ delivery.notes }}
+                                            {% endif %}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br/>
+                        <div class="col-sm-12 col-xs-12 pay">
+                            <div >
+                                <h3>{{ "checkout.payment.method" | trans }}</h3>
+                                <div class="col-sm-12 col-xs-12">
+                                    <div class="form-group ">
+                                        <div>
+                                            {% for psp in psps %}
+                                                <div class="radio">
+                                                    <label>
+                                                        <input type="radio" name="payment-method" value="{{psp.slug}}" /> {{psp.name}} <br/>
+                                                    </label>  
+                                                </div>
+                                            {% endfor %}
                                         </div>
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                        <div class="col-sm-12 col-xs-12 pay">
+                            <div >
+                                <h3>{{ "checkout.payment.pay" | trans }}</h3>
+                                <div class="col-sm-12 col-xs-12">
+                                    {% include 'CoreBundle:Base:alert.messages.html.twig' %}
 
-                            <br/>
-
-                            <div class="col-sm-12 col-xs-12 pay">
-                                <div >
-                                    <h3>{{ "checkout.payment.method" | trans }}</h3>
-                                    
-                                    <div class="col-sm-12 col-xs-12">
-                                        <div class="form-group ">
-                                            <div>
-                                                <div class="radio">
-                                                    <label>
-                                                        <input style="margin-top: 0px" type="radio" name="payment-method" class="radio" value="braintree_cc" data-label="{{ "checkout.credit.card.singular" | trans }}" checked="checked" /> Tarjeta de crédito (Braintree)<br/>
-                                                    </label>  
-                                                </div>
-                                                <div class="radio">
-                                                    <label>
-                                                        <input style="margin-top: 0px" type="radio" name="payment-method" class="radio" value="paypal_cc" data-label="{{ "checkout.credit.card.singular" | trans }}" /> Tarjeta de crédito (paypal) <br/>
-                                                    </label>  
-                                                </div>
-                                                <div class="radio">
-                                                    <label>
-                                                        <input style="margin-top: 0px" type="radio" name="payment-method" class="radio" value="redsys" data-label="{{ "checkout.credit.card.singular" | trans }}" /> Tarjeta de crédito (pasarela de pago "Banco X")
-                                                    </label>  
-                                                </div>
-                                                <div class="radio">
-                                                    <label>
-                                                        <input style="margin-top: 0px" type="radio" name="payment-method" class="radio" value="paypal" data-label="PayPal" /> PayPal
-                                                    </label>  
-                                                </div>
-                                                <div class="radio">
-                                                    <label>
-                                                        <input style="margin-top: 0px" type="radio" name="payment-method" class="radio" value="transfer" data-label="{{ "checkout.bank.transfer" | trans }}" /> Transferencia bancaria
-                                                    </label> 
-                                                </div>
-                                            </div>
+                                    {% for psp in psps %}
+                                        <div class="payment-container-form" id="{{psp.slug}}" >
+                                            {{ form_start(psp.form, {'attr': {'action': path('ecommerce_checkout_summary'), 'id': 'payment-'~psp.slug } } ) }}
+                                                {{ form_errors(psp.form) }}
+                                                {{ form_rest(psp.form) }}
+                                                {# here add custom html from configuration#} 
+                                               {{ include(template_from_string(psp.twig)) }}
+                                            {{ form_end(psp.form) }}
                                         </div>
-                                        
-                                    </div>
-                                    
-                                </div>
-                            </div>
-                                    
-                                    
-                            <div class="col-sm-12 col-xs-12 pay">
-                                <div >
-                                    <h3>{{ "checkout.payment.pay" | trans }}</h3>
-                                    <div class="col-sm-12 col-xs-12">
-                                        {{ include('EcommerceBundle:Checkout:payment/_braintree_form.html.twig', { form: braintree_form }) }}
-                                        {{ include('EcommerceBundle:Checkout:payment/_credit_card_form.html.twig', { form: creditcard_form }) }}
-                                        {{ include('EcommerceBundle:Checkout:payment/_redsys_form.html.twig', { form: redsys_form }) }}
-                                        {{ include('EcommerceBundle:Checkout:payment/_paypal_form.html.twig', { form: paypal_form }) }}
-                                        {{ include('EcommerceBundle:Checkout:payment/_transfer_form.html.twig', { form: transfer_form }) }}
-                                    </div>
+                                    {% endfor %}
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-1"></div>
-                    <!--content End-->
-                 {% endblock %}
-        
+                </div>
+                <div class="col-md-1"></div>
+                <!--content End-->
+            {% endblock %}
         </div>
     </div>
 {% endblock %}
@@ -154,48 +123,26 @@
 
     <script>
         
-        braintree.setup("{{get_braintree_token()}}", "dropin", {
-            container: "bt-dropin"
-        });
+        {% for psp in psps %}
+            if ('{{psp.slug}}' == 'braintree') {
+                braintree.setup("{{get_braintree_token()}}", "dropin", {
+                    container: "bt-dropin"
+                });
+            }
+        {% endfor %}
+
+        
 
         jQuery(document).ready(function() {
             $('input[name="payment-method"]').on('change', function() {
-                if ('braintree_cc' == $(this).val()) {
-                    $('#payment-paypal').addClass('hidden');
-                    $('#payment-transfer').addClass('hidden');
-                    $('#payment-paypal-cc').addClass('hidden');
-                    $('#payment-redsys').addClass('hidden');
-                    $('#payment-braintree').removeClass('hidden');
-                } else if ('redsys' == $(this).val()) {
-                    $('#payment-paypal').addClass('hidden');
-                    $('#payment-transfer').addClass('hidden');
-                    $('#payment-paypal-cc').addClass('hidden');
-                    $('#payment-braintree').addClass('hidden');
-                    $('#payment-redsys').removeClass('hidden');
-                } else if ('paypal' == $(this).val()) {
-                    $('#payment-redsys').addClass('hidden');
-                    $('#payment-transfer').addClass('hidden');
-                    $('#payment-paypal-cc').addClass('hidden');
-                    $('#payment-braintree').addClass('hidden');
-                    $('#payment-paypal').removeClass('hidden');
-                } else if ('transfer' == $(this).val()) {
-                    $('#payment-redsys').addClass('hidden');
-                    $('#payment-paypal').addClass('hidden');
-                    $('#payment-paypal-cc').addClass('hidden');
-                    $('#payment-braintree').addClass('hidden');
-                    $('#payment-transfer').removeClass('hidden');
-                } else if ('paypal_cc' == $(this).val()) {
-                    $('#payment-redsys').addClass('hidden');
-                    $('#payment-paypal').addClass('hidden');
-                    $('#payment-transfer').addClass('hidden');
-                    $('#payment-braintree').addClass('hidden');
-                    $('#payment-paypal-cc').removeClass('hidden');
-                }
+                {% for psp in psps %}
+                    if ('{{psp.slug}}' == $(this).val()) {
+                        $('.payment-container-form').hide();
+                        $('#{{psp.slug}}').fadeIn('slow');
+                    }
+                {% endfor %}
             });
-
-            
-
-           
+            $('input[name="payment-method"]').last().click();
         });
     </script>
 {% endblock %}

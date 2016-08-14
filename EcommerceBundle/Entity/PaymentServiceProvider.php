@@ -50,6 +50,21 @@ class PaymentServiceProvider
     protected $active;
     
     /**
+     * @ORM\Column(type="string", nullable=true)
+     */
+    protected $formClass;
+    
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     */
+    protected $modelClass;
+    
+    /**
+     * @ORM\Column(type="text", nullable=true)
+     */
+    protected $appendTwigToForm;
+    
+    /**
      * Get id
      *
      * @return integer
@@ -161,4 +176,54 @@ class PaymentServiceProvider
         return $this->active;
     }
 
+    /**
+     * @inheritDoc
+     */
+    public function setFormClass($formClass)
+    {
+        $this->formClass = $formClass;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getFormClass()
+    {
+        return $this->formClass;
+    }
+    
+    /**
+     * @inheritDoc
+     */
+    public function setModelClass($modelClass)
+    {
+        $this->modelClass = $modelClass;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getModelClass()
+    {
+        return $this->modelClass;
+    }
+    
+    /**
+     * @inheritDoc
+     */
+    public function setAppendTwigToForm($appendTwigToForm)
+    {
+        $this->appendTwigToForm = $appendTwigToForm;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getAppendTwigToForm()
+    {
+        return $this->appendTwigToForm;
+    }
+    
+      
+    
 }
