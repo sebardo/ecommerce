@@ -45,10 +45,6 @@ class CheckoutManager
     public  $token;
     
     public $mailer;
-    
-    public $braintreeFactory;
-    
-    public $paypalFactory;
         
     public $advertUnitPrice;
     
@@ -60,10 +56,6 @@ class CheckoutManager
     
     public $vat;
     
-    public $formFactory;
-    
-    public $validator;
-
 
     /**
      * @param array $parameters
@@ -77,15 +69,11 @@ class CheckoutManager
             $router,
             $kernel,
             $mailer,
-            $braintreeFactory,
-            $paypalFactory,
             $advertUnitPrice,
             $specialPercentageCharge,
             $deliveryExpensesType,
             $deliveryExpensesPercentage,
-            $vat,
-            $formFactory,
-            $validator
+            $vat
             )
     {
         if(isset($parameters['parameters'])) $this->parameters = $parameters['parameters'];
@@ -97,15 +85,11 @@ class CheckoutManager
         $this->kernel = $kernel;
         $this->environment = $kernel->getEnvironment();
         $this->mailer = $mailer;   
-        $this->braintreeFactory = $braintreeFactory;
-        $this->paypalFactory = $paypalFactory->getProvider();
         $this->advertUnitPrice = $advertUnitPrice;
         $this->specialPercentageCharge = $specialPercentageCharge;
         $this->deliveryExpensesType = $deliveryExpensesType;
         $this->deliveryExpensesPercentage = $deliveryExpensesPercentage;
         $this->vat = $vat;
-        $this->formFactory = $formFactory;
-        $this->validator = $validator;
     }
     
      /**

@@ -18,15 +18,7 @@ services:
         class: Twig_Extension_StringLoader
         tags:
             - { name: 'twig.extension' }
-                    
-    braintree_factory:
-        class:  "%braintree.factory.class%"
-        arguments: ["%braintree.environment%", "%braintree.merchant_id%", "%braintree.public_key%", "%braintree.private_key%"]
-    
-    paypal_factory:
-        class:  "%paypal.factory.class%"
-        arguments: ["%paypal.host%", "%paypal.client_id%", "%paypal.secret%", "%paypal.return_url%", "%paypal.cancel_url%"]
-            
+
     payment_manager:
         class: EcommerceBundle\Service\PaymentManager
         calls:
@@ -43,15 +35,11 @@ services:
             - @router
             - @kernel
             - @core.mailer
-            - @braintree_factory
-            - @paypal_factory
             - "%ecommerce.advert_unit_price%"
             - "%ecommerce.special_percentage_charge%"
             - "%ecommerce.delivery_expenses_type%"
             - "%ecommerce.delivery_expenses_percentage%"
             - "%ecommerce.vat%"
-            - "@form.factory"
-            - "@validator"
             
     cart_provider:
         class: EcommerceBundle\Service\CartProvider

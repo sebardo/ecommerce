@@ -3,6 +3,9 @@ namespace EcommerceBundle\Service;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use EcommerceBundle\Factory\PaymentProviderFactory;
+use Symfony\Component\HttpFoundation\Request;
+use EcommerceBundle\Entity\Transaction;
+use EcommerceBundle\Entity\Delivery;
 
 /**
  * Description of PaymentManager
@@ -26,7 +29,8 @@ class PaymentManager
         ), array('id' => 'DESC'));
          $returnValues = new ArrayCollection();
         foreach ($psps as $psp) {
-            $pp = new PaymentProviderFactory($this->getContainer()->get('validator'));
+            $class = $psp->getModelClass();
+            $pp = new $class($this->getContainer()->get('validator'));
             $returnValues[] = $pp->initialize($this->getContainer(), $psp);
         }
         
@@ -58,8 +62,8 @@ class PaymentManager
         return $this->providers;
     }
     
-    public function processPayment($request, $psp) 
+    public function processPayment(Request $request, Transaction $transaction, Delivery $delivery, PaymentProviderFactory $ppf) 
     {
-        $psp->process($request);
+        return $ppf->process($request, $transaction, $delivery);
     }
 }

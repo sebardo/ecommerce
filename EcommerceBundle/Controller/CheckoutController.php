@@ -12,11 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\SecurityContext;
 use EcommerceBundle\Form\DeliveryType;
 use CoreBundle\Form\Model\Registration;
-use EcommerceBundle\Form\BankTransferType;
-use EcommerceBundle\Form\PayPalType;
 use EcommerceBundle\Entity\Transaction;
-use EcommerceBundle\Form\RedsysType;
-use EcommerceBundle\Lib\RedsysResponse;
 use EcommerceBundle\Entity\CartItem;
 use EcommerceBundle\Form\CartType;
 use EcommerceBundle\Entity\CreditCardForm;
@@ -329,51 +325,50 @@ class CheckoutController extends BaseController
  
         // process payment method form
         if ($request->isMethod('POST')) {
-            
-            foreach ($psps as $psp) {
-                if($request->request->has($psp->getName())){
-                    $psp->getForm()->bind($request);
-                    if ($psp->getForm()->isValid()){
-                        $paymentManager->processPayment($request, $psp);
+            foreach ($psps as $ppf) {
+                if($request->request->has($ppf->getForm()->getName())){
+                    $ppf->getForm()->bind($request);
+                    if ($ppf->getForm()->isValid()){
+                        $answer = $paymentManager->processPayment($request, $transaction, $delivery, $ppf);
+                        return $this->redirect($answer->redirectUrl);
                     }
                 }
             }
-//            $psps->process($request);
-            if ($request->request->has('braintree')) {
-                $checkoutManager->processBraintree($transaction, $delivery, $request);
-
-                return $this->redirect($this->generateUrl('ecommerce_checkout_confirmationpayment'));
-            }else if ($request->request->has('bank_transfer')) {
-                $checkoutManager->processBankTransfer($transaction);
-
-                return $this->redirect($this->generateUrl('ecommerce_checkout_confirmationpayment'));
-            }elseif ($request->request->has('pay_pal')) {
-                $answer = $checkoutManager->processPaypalSale($transaction, $delivery);
-
-                return $this->redirect($answer->redirectUrl);
-            }elseif ($request->request->has('pay_pal_direct_payment')) {
-                
-                $paypalDirectPaymentForm->bind($request);
-                if ($paypalDirectPaymentForm->isValid()){
-                    
-                    
-                    $answer = $checkoutManager->processPaypalSale($transaction, $delivery, array(
-                        "number" => $paypalDirectPaymentForm->getNormData()->cardNo,
-                        "type" => $paypalDirectPaymentForm->getNormData()->cardType,
-                        "expire_month" =>  $paypalDirectPaymentForm->getNormData()->expirationDate->format('m'),
-                        "expire_year" =>  $paypalDirectPaymentForm->getNormData()->expirationDate->format('Y'),
-                        "cvv2" =>  $paypalDirectPaymentForm->getNormData()->CVV,
-                        "first_name" =>  $paypalDirectPaymentForm->getNormData()->firstname,
-                        "last_name" =>  $paypalDirectPaymentForm->getNormData()->lastname
-                   ));
-                    
-                    return $this->redirect($answer->redirectUrl);
-                }else {
-                    die('invalid');
-                }
-                
-                
-            }
+//            if ($request->request->has('braintree')) {
+//                $checkoutManager->processBraintree($transaction, $delivery, $request);
+//
+//                return $this->redirect($this->generateUrl('ecommerce_checkout_confirmationpayment'));
+//            }else if ($request->request->has('bank_transfer')) {
+//                $checkoutManager->processBankTransfer($transaction);
+//
+//                return $this->redirect($this->generateUrl('ecommerce_checkout_confirmationpayment'));
+//            }elseif ($request->request->has('pay_pal')) {
+//                $answer = $checkoutManager->processPaypalSale($transaction, $delivery);
+//
+//                return $this->redirect($answer->redirectUrl);
+//            }elseif ($request->request->has('pay_pal_direct_payment')) {
+//                
+//                $paypalDirectPaymentForm->bind($request);
+//                if ($paypalDirectPaymentForm->isValid()){
+//                    
+//                    
+//                    $answer = $checkoutManager->processPaypalSale($transaction, $delivery, array(
+//                        "number" => $paypalDirectPaymentForm->getNormData()->cardNo,
+//                        "type" => $paypalDirectPaymentForm->getNormData()->cardType,
+//                        "expire_month" =>  $paypalDirectPaymentForm->getNormData()->expirationDate->format('m'),
+//                        "expire_year" =>  $paypalDirectPaymentForm->getNormData()->expirationDate->format('Y'),
+//                        "cvv2" =>  $paypalDirectPaymentForm->getNormData()->CVV,
+//                        "first_name" =>  $paypalDirectPaymentForm->getNormData()->firstname,
+//                        "last_name" =>  $paypalDirectPaymentForm->getNormData()->lastname
+//                   ));
+//                    
+//                    return $this->redirect($answer->redirectUrl);
+//                }else {
+//                    die('invalid');
+//                }
+//                
+//                
+//            }
             
             
         }
@@ -625,9 +620,6 @@ class CheckoutController extends BaseController
             $em->flush();
 
         }
-        elseif( $this->get('request')->get('redsys') != ''){
-            //do nothing
-        }
         //check recurring paypal
         elseif($this->get('request')->get('paypal') != '' &&
                 $this->get('request')->get('token') != ''){
@@ -713,164 +705,9 @@ class CheckoutController extends BaseController
             return $this->redirect($this->generateUrl('core_profile_index', array('transactions' => true)));
             
         }
-        elseif( $this->get('request')->get('Ds_Order') != '' &&
-                $this->get('request')->get('Ds_MerchantCode') != '' &&
-                $this->get('request')->get('Ds_Terminal') != '')
-        {
-            //Search on transaction paymentDetails the $paymentId
-            $orderId = $this->get('request')->get('Ds_Order');
-            $transaction = $em->getRepository('EcommerceBundle:Transaction')->findOnPaymentDetails($orderId);
-            $core = $this->container->getParameter('core');
-            if(in_array($this->get('kernel')->getEnvironment(), array('test', 'dev'))) {
-                $redsysConfig = $core['ecommerce']['redsys']['dev'];
-            }else{
-                $redsysConfig = $core['ecommerce']['redsys']['prod'];
-            }
-   
-            //UPDATE TRANSACTION
-            if($transaction instanceof Transaction &&
-               $this->get('request')->get('Ds_MerchantCode') == $redsysConfig['code'] &&
-               $this->get('request')->get('Ds_Terminal') == $redsysConfig['terminal']     
-            ){
-                
-                $transaction->setStatus(Transaction::STATUS_CANCELLED);
-                $em->flush();
-
-                $this->get('session')->getFlashBag()->add(
-                    'danger',
-                    'transaction.cancel'
-                ); 
-                 
-                return array();
-           }
-          
-        }
         
         return array();
     }
     
-    /**
-    * @return \Symfony\Component\Form\Form The form
-    */
-    private function createResysForm(Transaction $transaction, $totals)
-    {
-        $em = $this->getDoctrine()->getManager();
-        $core = $this->container->getParameter('core');
-        $translator = $this->container->get('translator');
-        $redsysProvider = $this->container->get('redsys_factory')->getProvider();
-  
-        $formConfig['amount'] = (int) str_replace('.', '', number_format($totals['amount'], 2));
-        $formConfig['data'] = $transaction->getTransactionKey();
-        $formConfig['name'] = $core['company']['name'];
-        $formConfig['product'] = $transaction->getItems()->first()->getProduct()->getName();
-        $formConfig['titular'] = $transaction->getActor()->getFullName();
-        $formConfig['code'] = $redsysProvider->getCode();
-        $formConfig['currency'] = $redsysProvider->getCurrency();
-        $formConfig['transaction_type'] = $redsysProvider->getTransactionType();
-        $formConfig['bank_response_url'] = $redsysProvider->getBankResponseUrl();
-        $formConfig['secret'] = $redsysProvider->getSecret();
-        $formConfig['terminal'] = $redsysProvider->getTerminal();
-        $formConfig['return_url'] = $redsysProvider->getReturnUrl();
-        $formConfig['cancel_url'] = $redsysProvider->getCancelUrl();
-        $formConfig['consumer_language'] = $redsysProvider->getConsumerLanguage();
-        
-        $created = $transaction->getCreated();
-        $formConfig['order'] = $created->format('ymdHis'); 
-
-        $hash = $formConfig['amount'].
-                $formConfig['order'].
-                $redsysProvider->getCode().
-                $redsysProvider->getCurrency().
-                $redsysProvider->getTransactionType().
-                $redsysProvider->getBankResponseUrl().
-                $redsysProvider->getSecret()
-                ;
-        $formConfig['signature'] = strtoupper(sha1($hash));
-        
-        //UPDATE TRANSACTION ????
-        $pm = $em->getRepository('EcommerceBundle:PaymentMethod')->findOneBySlug('redsys');
-        $transaction->setStatus(Transaction::STATUS_PENDING);
-        $transaction->setPaymentMethod($pm);
-        $transaction->setPaymentDetails(json_encode(array(
-                    'amount' => $formConfig['amount'],
-                    'order' => $formConfig['order'],
-                    'code' => $redsysProvider->getCode(),
-                    'currency' => $redsysProvider->getCurrency(),
-                    'transaction_type' => $redsysProvider->getTransactionType(),
-                    'bank_response_url' => $redsysProvider->getBankResponseUrl(),
-                    'secret' => $redsysProvider->getSecret(),
-                    'signature' => $formConfig['signature']
-                )));
-        $em->flush();
-        
-        $form = $this->createForm(new RedsysType($formConfig), null, array(
-            'action' => $redsysProvider->getHost(),
-            'method' => 'POST',
-        ));
-
-        $form->add('submit', 'submit', array('label' => $translator->trans('checkout.redsys')));
-
-        return $form;
-    }
-    
-    /**
-     * @Route("/redsys-response")
-     * 
-     */    
-    public function redsysResponseAction(Request $request)
-    { 
-        $order_send =  $request->query->get('Ds_Order');
-        $order_num = (int) substr($order_send,0,6);
-
-        $request->getSession()->set('delivery-id',$order_num);
-        $logger = $this->get('logger');
-        $logger->info('XXXXXXXXXXXXXXXXXXXXDs_Response = '.$request->query->get('Ds_Response'));
-        $logger->info('XXXXXXXXXXXXXXXXXXXXDs_Order = '.$request->query->get('Ds_Order'));
-        $logger->info('XXXXXXXXXXXXXXXXXXXXNº = '.$order_num);
-
-        
-        $em = $this->getDoctrine()->getManager();
-        $checkoutManager = $this->get('checkout_manager');
-        $core = $this->container->getParameter('core');
-        $response = new RedsysResponse($core['ecommerce']['redsys']['secret'], $request);
-
-        $logger->info('XXXXXXXXXXXXXXXXXXXX '.(int) $response->isValidRequest());
-        if (!$response->isValidRequest()) {
-                $newResponse = new Response();
-                $newResponse->setStatusCode(403);
-                return $newResponse;
-        }
-
-        $transactionKey = $response->getMerchantData();
-        $creationDateString = $response->getOrder();
- 
-        $transaction = $em->getRepository('EcommerceBundle:Transaction')
-                ->findByPaymentDetailsAndTransactionKey($creationDateString, $transactionKey);
-
-        $logger->info('XXXXXXXXXXXXXXXXXXXX '.$creationDateString.'-'.$transactionKey);
-        
-        if (! $transaction) {
-             $logger->info('XXXXXXXXXXXXXXXXXXXX NO HAY TRANSACCION');
-                $newResponse = new Response();
-                $newResponse->setStatusCode(403);
-                return $newResponse;
-        }
-
-        if ($transaction->getStatus() == Transaction::STATUS_PENDING) {
-                if ($response->isAuthorized()) {
-                        $checkoutManager->processRedsysTransaction($response->getResponse(), $transaction);
-                } else {
-                        $transaction->setStatus(Transaction::STATUS_REJECTED);
-                }
-
-                $transaction->setPaymentDetails($transaction->getPaymentDetails().$response->getJsonValues());
-                $em->flush();
-        }
-        
-        $newResponse = new Response();
-        $newResponse->setStatusCode(200);
-        return $newResponse;
-    }
-
 
 }

@@ -28,6 +28,8 @@ class PayPalProvider  extends PaymentProviderFactory
     protected $returnUrl;
     
     protected $cancelUrl;
+    
+    protected $paypal;
  
     /**
      * Constructor with Paypal configuration
@@ -38,13 +40,13 @@ class PayPalProvider  extends PaymentProviderFactory
     public function initialize($container, PaymentServiceProvider $psp)
     {
         parent::initialize($container, $psp);
-//        $this->validator = $validator;
-        print_r($this->parameters);die();
-        $this->setHost($host);
-        $this->setClientId($clientId);
-        $this->setSecret($secret);
-        $this->setReturnUrl($returnUrl);
-        $this->setCancelUrl($cancelUrl);
+        if(isset($this->parameters['host'])) $this->setHost($this->parameters['host']);
+        if(isset($this->parameters['client_id'])) $this->setClientId($this->parameters['client_id']);
+        if(isset($this->parameters['secret'])) $this->setSecret($this->parameters['secret']);
+        if(isset($this->parameters['return_url'])) $this->setReturnUrl($this->parameters['return_url']);
+        if(isset($this->parameters['cancel_url'])) $this->setCancelUrl($this->parameters['cancel_url']);
+        
+        return $this;
     }
     
     public function setHost($host) 
@@ -95,6 +97,16 @@ class PayPalProvider  extends PaymentProviderFactory
     public function getCancelUrl() 
     {
         return $this->cancelUrl;
+    }
+    
+    public function setPaypal($paypal) 
+    {
+        $this->paypal = $paypal;
+    }
+    
+    public function getPaypal() 
+    {
+        return $this->paypal;
     }
         
 }

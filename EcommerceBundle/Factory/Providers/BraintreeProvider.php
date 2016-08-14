@@ -7,6 +7,7 @@ use Symfony\Component\HttpFoundation\Request;
 use EcommerceBundle\Entity\Transaction;
 use EcommerceBundle\Entity\Delivery;
 use EcommerceBundle\Entity\PaymentServiceProvider;
+use stdClass;
 
 /**
  * Description of BraintreeProvider
@@ -16,8 +17,8 @@ use EcommerceBundle\Entity\PaymentServiceProvider;
 class BraintreeProvider extends PaymentProviderFactory 
 {
     
-//    protected $validator;
-
+    protected $amount;
+    
     protected $payment_method_nonce;
     
     /**
@@ -29,12 +30,20 @@ class BraintreeProvider extends PaymentProviderFactory
     public function initialize($container, PaymentServiceProvider $psp)
     {
         parent::initialize($container, $psp);
-        print_r($this->parameters);die();
-        Braintree_Configuration::environment($environment);
-        Braintree_Configuration::merchantId($merchantId);
-        Braintree_Configuration::publicKey($publicKey);
-        Braintree_Configuration::privateKey($privateKey);
+        if(isset($this->parameters['environment'])) Braintree_Configuration::environment($this->parameters['environment']);
+        if(isset($this->parameters['merchant_id'])) Braintree_Configuration::merchantId($this->parameters['merchant_id']);
+        if(isset($this->parameters['public_key'])) Braintree_Configuration::publicKey($this->parameters['public_key']);
+        if(isset($this->parameters['private_key'])) Braintree_Configuration::privateKey($this->parameters['private_key']);
         
+        return $this;
+    }
+    
+    public function getAmount() {
+        return $this->amount;
+    }
+    
+    public function setAmount($amount) {
+        $this->amount = $amount;
     }
     
     public function getPaymentMethodNonce() {
@@ -67,6 +76,7 @@ class BraintreeProvider extends PaymentProviderFactory
     /**
      * Proccess sale transaction
      *
+     * @param Request $request
      * @param Transaction $transaction
      * @param Delivery $delivery
      *
@@ -74,17 +84,22 @@ class BraintreeProvider extends PaymentProviderFactory
      */
     public function process(Request $request, Transaction $transaction, Delivery $delivery)
     {
+        
         // in your controller
         $transactionService = $this->get('transaction');
-        $nonce = $request->get('payment_method_nonce');
+        $data = $request->get('braintree');
+        $nonce = $data['payment_method_nonce'];
 
         $result = $transactionService::sale([
             'amount' => $transaction->getTotalPrice(),
             'paymentMethodNonce' => $nonce
         ]);
-
-        $pm = $this->manager->getRepository('EcommerceBundle:PaymentMethod')->findOneBySlug('braintree');
+        
+        
+        $em = $this->container->get('doctrine')->getManager();
+        $pm = $em->getRepository('EcommerceBundle:PaymentMethod')->findOneBySlug('braintree');
         if ($result->success || !is_null($result->transaction)) {
+                        
             //UPDATE TRANSACTION
             $transaction->setStatus(Transaction::STATUS_PAID);
             $transaction->setPaymentMethod($pm);
@@ -104,12 +119,12 @@ class BraintreeProvider extends PaymentProviderFactory
             $details->shipping = $result->transaction->shipping;
             
             $transaction->setPaymentDetails(json_encode($details));
-            $this->manager->persist($transaction);
-            $this->manager->flush();
+            $em->persist($transaction);
+            $em->flush();
 
             //confirmation payment
-            $answer = new \stdClass();
-            $answer->redirectUrl = $this->router->generate('ecommerce_checkout_confirmationpayment');
+            $answer = new stdClass();
+            $answer->redirectUrl = $this->container->get('router')->generate('ecommerce_checkout_confirmationpayment');
 
             return $answer;
        }else{
@@ -122,15 +137,15 @@ class BraintreeProvider extends PaymentProviderFactory
             foreach($result->errors->deepAll() as $error) {
                $errorString .= 'Error: ' . $error->code . ": " . $error->message . "\n";
             }
-            $this->session->getFlashBag()->add('error', $errorString);
+            $this->container->get('session')->getFlashBag()->add('error', $errorString);
             
             $transaction->setPaymentDetails(json_encode($errorString));
-            $this->manager->persist($transaction);
-            $this->manager->flush();
+            $em->persist($transaction);
+            $em->flush();
 
             //cancel payment
-            $answer = new \stdClass();
-            $answer->redirectUrl = $this->paypalFactory->getCancelUrl();
+            $answer = new stdClass();
+            $answer->redirectUrl = $this->container->get('router')->generate('ecommerce_checkout_cancelationpayment');
 
             return $answer;
         }

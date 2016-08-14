@@ -91,12 +91,12 @@
 
                                     {% for psp in psps %}
                                         <div class="payment-container-form" id="{{psp.slug}}" >
-                                            {{ form_start(psp.form, {'attr': {'action': path('ecommerce_checkout_summary'), 'id': 'payment-'~psp.slug } } ) }}
-                                                {{ form_errors(psp.form) }}
-                                                {{ form_rest(psp.form) }}
+                                            {{ form_start(psp.formView, {'attr': {'action': path('ecommerce_checkout_summary'), 'id': 'payment-'~psp.slug } } ) }}
+                                                {{ form_errors(psp.formView) }}
+                                                {{ form_rest(psp.formView) }}
                                                 {# here add custom html from configuration#} 
                                                {{ include(template_from_string(psp.twig)) }}
-                                            {{ form_end(psp.form) }}
+                                            {{ form_end(psp.formView) }}
                                         </div>
                                     {% endfor %}
                                 </div>
@@ -124,11 +124,18 @@
     <script>
         
         {% for psp in psps %}
-            if ('{{psp.slug}}' == 'braintree') {
-                braintree.setup("{{get_braintree_token()}}", "dropin", {
-                    container: "bt-dropin"
+            {% if psp.slug == 'braintree' %}
+                braintree.setup("{{psp.get('ClientToken', {}, 'generate')}}", "dropin", {
+                    container: "bt-dropin",
+                    onPaymentMethodReceived: function (paymentMethod) {
+                        // Do some logic in here.
+                        // When you're ready to submit the form:
+                        console.log(paymentMethod.nonce);
+                        $('#braintree_payment_method_nonce').val(paymentMethod.nonce);
+                        $('form[name="braintree"]').submit();//myForm.submit();
+                    }
                 });
-            }
+            {% endif %}
         {% endfor %}
 
         

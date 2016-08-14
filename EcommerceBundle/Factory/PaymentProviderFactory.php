@@ -54,9 +54,11 @@ class PaymentProviderFactory
         $this->setSlug($psp->getPaymentMethod()->getSlug());
         $this->setModelClass($class);
         $this->setForm($this->container->get('form.factory')
-                ->create($psp->getFormClass(), new $class($container->get('validator')))->createView());
-//                ->create($psp->getFormClass(), new $class($this->container->get('validator')))->createView());
+                ->create($psp->getFormClass(), new $class($container->get('validator'))));
+         $this->setFormView($this->getForm()->createView());
         $this->setTwig($psp->getAppendTwigToForm());
+        
+        return $this;
     }
     /**
      * {@inheritdoc}
@@ -143,9 +145,9 @@ class PaymentProviderFactory
     }
     
     public function process(Request $request, Transaction $transaction, Delivery $delivery) {
-         $class = $this->getModelClass();
-         $instance = new $class();
-         $instance->process($request, $transaction, $delivery);
+        $class = $this->getModelClass();
+        $instance = new $class();
+        return $instance->process($request, $transaction, $delivery);
     }
 
 }
