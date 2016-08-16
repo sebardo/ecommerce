@@ -812,7 +812,6 @@ class CheckoutManager
                 $sub['price'] = number_format($this->advertUnitPrice, 2);
             }
             
-            
             $sub['sku'] = $productPurchase->getId();
             $sub['currency'] = "EUR";
             $returnValues[] = $sub;

@@ -6,6 +6,7 @@ use EcommerceBundle\Factory\PaymentProviderFactory;
 use Symfony\Component\HttpFoundation\Request;
 use EcommerceBundle\Entity\Transaction;
 use EcommerceBundle\Entity\Delivery;
+use EcommerceBundle\Entity\PaymentServiceProvider;
 
 /**
  * Description of PaymentManager
@@ -57,13 +58,41 @@ class PaymentManager
      * 
      * @return PersistCollection $psps
      */
-    public function getProviders() 
+    public function getProviders(PaymentServiceProvider $psp=null) 
     {
+        if(!is_null($psp)){
+            foreach ($this->providers as $ppf) {
+                if($ppf->getSlug() == $psp->getSlug()){
+                    return $ppf;
+                }
+            }
+        }
         return $this->providers;
     }
     
     public function processPayment(Request $request, Transaction $transaction, Delivery $delivery, PaymentProviderFactory $ppf) 
     {
         return $ppf->process($request, $transaction, $delivery);
+    }
+    
+    public function confirmationPayment(Request $request, PaymentServiceProvider $psp) 
+    {
+        foreach ($this->providers as $ppf) {
+            if($ppf->getSlug() == $psp->getPaymentMethod()->getSlug()){
+                return $ppf->confirmation($request);
+            }
+        }
+        throw new \Exception('No confirmation method defined');
+    }
+    
+    public function cancelationPayment(Request $request, PaymentServiceProvider $psp) 
+    {
+        foreach ($this->providers as $ppf) {
+            if($ppf->getSlug() == $psp->getPaymentMethod()->getSlug()){
+                return $ppf->cancelation($request);
+            }
+        }
+        throw new \Exception('No cancelation method defined');
+        
     }
 }

@@ -6,6 +6,7 @@ use EcommerceBundle\Exception\InvalidServiceException;
 use Symfony\Component\HttpFoundation\Request;
 use EcommerceBundle\Entity\Transaction;
 use EcommerceBundle\Entity\Delivery;
+use Symfony\Component\Validator\Validator\RecursiveValidator;
 
 /**
  * Description of PaymentProvider
@@ -32,7 +33,7 @@ class PaymentProviderFactory
     
     private $modelClass;
     
-    public function __construct($validator) {
+    public function __construct(RecursiveValidator $validator) {
         $this->validator = $validator;
     }
     
@@ -91,7 +92,7 @@ class PaymentProviderFactory
     /**
      * {@inheritdoc}
      */
-    function getTwig() {
+    public function getTwig() {
         return $this->twig;
     }
 
@@ -146,8 +147,23 @@ class PaymentProviderFactory
     
     public function process(Request $request, Transaction $transaction, Delivery $delivery) {
         $class = $this->getModelClass();
-        $instance = new $class();
+        if(is_null($class)){
+            throw new \Exception('No model class defined on provider: '.$this->getName());
+        }
+        $instance = new $class($this->validator);
         return $instance->process($request, $transaction, $delivery);
+    }
+    
+    public function confirmation(Request $request) {
+        $class = $this->getModelClass();
+        $instance = new $class($this->validator);
+        return $instance->confirmation($request);
+    }
+    
+    public function cancelation(Request $request) {
+        $class = $this->getModelClass();
+        $instance = new $class($this->validator);
+        return $instance->cancelation($request);
     }
 
 }

@@ -195,7 +195,7 @@ class LoadEcommerceData extends SqlScriptFixture
             $psp->setRecurring(false);
             $psp->setPaymentMethod($pm);
             $psp->setFormClass('EcommerceBundle\Form\BankTransferType');
-            $psp->setModelClass('EcommerceBundle\Entity\Model\BankTransferForm');
+            $psp->setModelClass('EcommerceBundle\Factory\Providers\BankTransferProvider');
             $psp->setAppendTwigToForm('<div class="col-sm-10 detail-transfer">
                 {{ "checkout.transfer" | trans({"%bank_name%": core["company"]["name"], "%bank_account%": get_parameter("ecommerce.bank_account") }) | nl2br }}
                 <br />
@@ -217,7 +217,7 @@ class LoadEcommerceData extends SqlScriptFixture
             $psp1->setRecurring(false);
             $psp1->setPaymentMethod($pm1);
             $psp1->setFormClass('EcommerceBundle\Form\BankTransferType');
-            $psp1->setModelClass('EcommerceBundle\Entity\Model\BankTransferForm');
+            $psp1->setModelClass('EcommerceBundle\Factory\Providers\BankTransferProvider');
             $psp1->setAppendTwigToForm('<div class="col-sm-10 detail-transfer">
                 {{ "checkout.transfer" | trans({"%bank_name%": core["company"]["name"], "%bank_account%": get_parameter("ecommerce.bank_account") }) | nl2br }}
                 <br />
@@ -254,7 +254,7 @@ class LoadEcommerceData extends SqlScriptFixture
                 'cancel_url' => 'http://sasturain.dev/cancel-payment'
             ));
             $psp3->setFormClass('EcommerceBundle\Form\PayPalType');
-            $psp3->setModelClass('EcommerceBundle\Entity\Model\PayPalForm');
+            $psp3->setModelClass('EcommerceBundle\Factory\Providers\PayPalDirectPaymentProvider');
             $psp3->setAppendTwigToForm('<div class="col-sm-12 priceAndCheck">
                 <div class="price">
                     <span>{{ "checkout.amount" | trans }}:</span>
@@ -279,7 +279,7 @@ class LoadEcommerceData extends SqlScriptFixture
                 'cancel_url' => 'http://sasturain.dev/cancel-payment'
             ));
             $psp4->setFormClass('EcommerceBundle\Form\PayPalDirectPaymentType');
-            $psp4->setModelClass('EcommerceBundle\Entity\Model\PayPalDirectPaymentForm');
+            $psp4->setModelClass('EcommerceBundle\Factory\Providers\PayPalDirectPaymentProvider');
             $psp4->setAppendTwigToForm('<div class="col-sm-12 priceAndCheck">
                 <div class="price">
                    <span>{{ "checkout.amount" | trans }}:</span>
@@ -312,7 +312,7 @@ class LoadEcommerceData extends SqlScriptFixture
                 <label for="amount">
                     <span class="input-label">Amount</span>
                     <div class="input-wrapper amount-wrapper">
-                        <input id="amount" name="amount" type="tel" min="1" placeholder="Amount" value="10">
+                        <input id="amount" name="braintree[amount]" type="tel" min="1" placeholder="Amount" value="10">
                     </div>
                 </label>
             </section>

@@ -152,4 +152,29 @@ class BraintreeProvider extends PaymentProviderFactory
  
     }
     
+    /**
+     * Confirmation payment OK
+     *
+     * @param Request $request
+     *
+     * @return stdClass
+     */
+    public function confirmation(Request $request)
+    {
+        
+    }
+    
+    
+    /**
+     * Cancelation payment OK
+     *
+     * @param Request $request
+     *
+     * @return stdClass
+     */
+    public function cancelation(Request $request)
+    {
+        
+    }
+        
 }

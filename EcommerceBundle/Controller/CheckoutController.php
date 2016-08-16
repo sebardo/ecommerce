@@ -334,45 +334,7 @@ class CheckoutController extends BaseController
                     }
                 }
             }
-//            if ($request->request->has('braintree')) {
-//                $checkoutManager->processBraintree($transaction, $delivery, $request);
-//
-//                return $this->redirect($this->generateUrl('ecommerce_checkout_confirmationpayment'));
-//            }else if ($request->request->has('bank_transfer')) {
-//                $checkoutManager->processBankTransfer($transaction);
-//
-//                return $this->redirect($this->generateUrl('ecommerce_checkout_confirmationpayment'));
-//            }elseif ($request->request->has('pay_pal')) {
-//                $answer = $checkoutManager->processPaypalSale($transaction, $delivery);
-//
-//                return $this->redirect($answer->redirectUrl);
-//            }elseif ($request->request->has('pay_pal_direct_payment')) {
-//                
-//                $paypalDirectPaymentForm->bind($request);
-//                if ($paypalDirectPaymentForm->isValid()){
-//                    
-//                    
-//                    $answer = $checkoutManager->processPaypalSale($transaction, $delivery, array(
-//                        "number" => $paypalDirectPaymentForm->getNormData()->cardNo,
-//                        "type" => $paypalDirectPaymentForm->getNormData()->cardType,
-//                        "expire_month" =>  $paypalDirectPaymentForm->getNormData()->expirationDate->format('m'),
-//                        "expire_year" =>  $paypalDirectPaymentForm->getNormData()->expirationDate->format('Y'),
-//                        "cvv2" =>  $paypalDirectPaymentForm->getNormData()->CVV,
-//                        "first_name" =>  $paypalDirectPaymentForm->getNormData()->firstname,
-//                        "last_name" =>  $paypalDirectPaymentForm->getNormData()->lastname
-//                   ));
-//                    
-//                    return $this->redirect($answer->redirectUrl);
-//                }else {
-//                    die('invalid');
-//                }
-//                
-//                
-//            }
-            
-            
         }
-
 
         return array(
             'transaction'    => $transaction,
@@ -565,110 +527,19 @@ class CheckoutController extends BaseController
      * @Route("/response-ok")
      * @Template("EcommerceBundle:Checkout:response.ok.html.twig")
      */    
-    public function confirmationPaymentAction()
+    public function confirmationPaymentAction(Request $request)
     {
-        $em = $this->getDoctrine()->getManager();
         /** @var CheckoutManager $checkoutManager */
         $checkoutManager = $this->get('checkout_manager');
+        $transaction = $checkoutManager->getCurrentTransaction();
+        $psp = $transaction->getPaymentMethod()->getPaymentServiceProvider();
+        
+        /** @var PaymentManager $paymentManager */
+        $paymentManager = $this->get('payment_manager');
+        $paymentManager->confirmationPayment($request, $psp);
+
+        /** Url invoice */
         $delivery = $checkoutManager->getDelivery();
-        
-        if($this->get('session')->has('agreement')){
-            $sessionAgreement = json_decode($this->get('session')->get('agreement'));
-            $agreement = $em->getRepository('EcommerceBundle:Agreement')->findOneByPaypalId($sessionAgreement->id);
-
-            if(!$agreement){
-                throw $this->createNotFoundException('Unable to find Agreement entity.');
-            }
-            
-            $checkoutManager->cleanSession();
-            if($agreement instanceof Agreement){
-                return array('agreement_id' => $agreement->getId());
-            }
-        }
-        
-        
-        //check normal one shot buy
-        if( $this->get('request')->get('paypal') != '' && 
-            $this->get('request')->get('paymentId') != '' &&
-            $this->get('request')->get('PayerID') != '')
-            {
-
-            $checkoutManager->paypalToken();
-            //Search on transaction paymentDetails the $paymentId
-            $paymentId = $this->get('request')->get('paymentId');
-            $transaction = $em->getRepository('EcommerceBundle:Transaction')->findOnPaymentDetails($paymentId);
-
-            $payerId = $this->get('request')->get('PayerID');
-            $payment_execute = array(
-                            'payer_id' => $payerId
-                           );
-            $json = json_encode($payment_execute);
-            
-            //Search 'payment_execute_url' in paymentDetails transaction
-            $paymentDetails = json_decode($transaction->getPaymentDetails());
-            foreach ($paymentDetails->links as $link) {
-                if($link->rel == 'execute'){
-                        $payment_execute_url = $link->href;
-                }
-            }
-            $json_resp = $checkoutManager->paypalCall('POST', $payment_execute_url, $json);
-//            $html  = "Payment Execute processed " . $json_resp['id'] ." with state '". $json_resp['state']."'";
-            
-            //UPDATE TRANSACTION
-            $transaction->setStatus(Transaction::STATUS_PAID);
-            $transaction->setPaymentDetails($transaction->getPaymentDetails().json_encode($json_resp));
-            $em->flush();
-
-        }
-        //check recurring paypal
-        elseif($this->get('request')->get('paypal') != '' &&
-                $this->get('request')->get('token') != ''){
-            
-            $checkoutManager->paypalToken();
-
-            if(!$this->get('session')->has('agreement')){
-                return $this->redirect($this->generateUrl('ecommerce_checkout_detail'));
-            }
-
-            //Search 'payment_execute_url' in paymentDetails transaction
-            $paymentDetails = json_decode($this->get('session')->get('agreement'));
-            foreach ($paymentDetails->links as $link) {
-                if($link->rel == 'execute'){
-                    $payment_execute_url = $link->href;
-                }
-            }
-           
-            $json_resp = $checkoutManager->paypalCall('POST', $payment_execute_url, '{}');
-            //Recurring payment_method = paypal (agreement execute)
-            if(isset($json_resp['state']) && $json_resp['state'] == 'Active'){
-
-                $agreement->setStatus($json_resp['state']);
-                $agreement->setPaypalId($json_resp['id']);
-                $agreement->setOutstandingAmount($json_resp['agreement_details']['outstanding_balance']['value']);
-                $agreement->setCyclesRemaining($json_resp['agreement_details']['cycles_remaining']);
-                $agreement->setNextBillingDate($json_resp['agreement_details']['next_billing_date']);
-                $agreement->setFinalPaymentDate($json_resp['agreement_details']['final_payment_date']);
-                $agreement->setFailedPaymentCount($json_resp['agreement_details']['failed_payment_count']);
-                $em->flush();
-            }elseif(isset($json_resp['status']) && $json_resp['status'] == 'error'){
-                $agreement->setStatus($json_resp['state']);
-                $em->flush();
-                throw $this->createNotFoundException('Error on confirmation payment:'. json_encode($json_resp));
-            }
-            $checkoutManager->cleanSession();
-            if($agreement instanceof Agreement){
-                return array('agreement_id' => $agreement->getId());
-            }
-        }
-        
-        //send email
-         if ($this->get('session')->has('transaction-id')) {
-            /** @var Transaction $transaction */
-            $transaction = $em->getRepository('EcommerceBundle:Transaction')->find($this->get('session')->get('transaction-id'));
-//            $this->get('checkout_manager')->sendToTransport($transaction);
-         }
-        
-
         $urlInvoice = $checkoutManager->getRedirectUrlInvoice($delivery);
         $checkoutManager->cleanSession();
 

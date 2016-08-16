@@ -16,8 +16,8 @@ class PayPalType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder
-            ->add('paypal', HiddenType::class);
+
+        
     }
 
 }
