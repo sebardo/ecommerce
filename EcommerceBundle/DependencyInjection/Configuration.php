@@ -30,18 +30,6 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('delivery_expenses_type')->defaultValue('by_percentage')->end()
                 ->scalarNode('delivery_expenses_percentage')->defaultValue('0')->end()
                 ->scalarNode('bank_account')->defaultValue('ESXX XXX XXXX XXXX XXXX XXXX')->end()
-                ->arrayNode('providers')
-                    ->isRequired()
-                    ->useAttributeAsKey('name')
-                    ->prototype('array')
-                        ->ignoreExtraKeys()
-                        ->children()
-                            ->arrayNode('options')
-                            ->useAttributeAsKey('name')
-                            ->prototype('scalar')->end()
-                        ->end()
-                    ->end()
-                ->end()
                 
             ->end();
         return $treeBuilder;
