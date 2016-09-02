@@ -6,7 +6,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
  * @ORM\Entity
- * @ORM\Table();
+ * @ORM\Table(name="payment_method");
  */
 class PaymentMethod
 {
