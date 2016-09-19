@@ -15,22 +15,8 @@
 {% endblock %}
 
 {% block  content %}
- <div class="col-md-12 core-row delivery">
-     
-      
-      
-        <div class="col-md-6">
-            <h1 class="title">
-                Datos para el envío
-            </h1>
-        <div class="subtitle-section">Introduce tus datos para poder realizar el envío</div>
-        </div>
-        <div class="col-md-6">
-            {% include 'EcommerceBundle:Checkout:steps.html.twig' with {'step': 'delivery'}  %}
-        </div>
-    
-    <div style="clear: both"></div>
-    
+ <div class="container container-padding delivery">
+    {% include 'EcommerceBundle:Checkout:steps.html.twig' with {'step': 'delivery'}  %}
 
     <div class="col-md-12 col-xs-12 container-content">
         <!--content-->
@@ -109,6 +95,15 @@
     </div> 
  </div>         
     
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    {% stylesheets
+            'bundles/ecommerce/less/step-snipet.less'
+    %}
+        <link rel="stylesheet" href="{{ asset_url }}">
+    {% endstylesheets %}
 {% endblock %}
 
 {% block javascripts %}

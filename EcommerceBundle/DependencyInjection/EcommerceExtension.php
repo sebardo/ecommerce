@@ -53,10 +53,6 @@ class EcommerceExtension extends Extension
         if (isset($config['bank_account'])) {
             $container->setParameter('ecommerce.bank_account', $config['bank_account']);
         }
-        
-       
-        
     }
     
-  
 }

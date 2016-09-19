@@ -1,7 +1,7 @@
 {% extends core['extended_layout'] ? core['extended_layout'] : 'CoreBundle:Base:base.layout.html.twig' %}
 
-{% block contianer_content %}
-    <div class="container-fluid">
+{% block content %}
+<div class="container-fluid container-padding">
     <div class="content-wrapper">	
         <div class="item-container">	
             <div class="container">	
@@ -156,6 +156,7 @@
     {{ parent() }}
     {% stylesheets
             'bundles/ecommerce/less/product-show-snipet.less'
+            'bundles/ecommerce/less/step-snipet.less'
     %}
         <link rel="stylesheet" href="{{ asset_url }}">
     {% endstylesheets %}

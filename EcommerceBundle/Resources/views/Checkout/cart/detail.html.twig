@@ -17,44 +17,46 @@
  
 
 {% block content %}
-  
-        <div class="col-md-6 col-sm-4 cartDetailTablet">
-            <h1 class="title">
-                {{ "cart.singular" | trans }}
-            </h1>
-        <div class="subtitle-section">{{ "cart.items" | transchoice(cart.totalItems, { '%items%': '<a href="javascript:void(0)" data-placement="bottom" data-toggle="popover">' ~ cart.totalItems ~ '</a>' }) | raw }}</div> </div>
-        <div class="col-md-6 col-sm-8 cartDetailTablet">
-            {% include 'EcommerceBundle:Checkout:steps.html.twig' with {'step': 'summary'}  %}
-        </div>
     
-    <div style="clear: both"></div>
-    
-    {% set cart = cart_get() %}
-    <div id="cart-detail">
-        <div class="col-md-1"></div>
-            <div class="col-md-10 col-xs-12 container-content">
-                {% if cart.totalItems > 0%}
-                    {{ form_errors(form) }}
+    <div class="container container-padding cart-detail">
+        {% include 'EcommerceBundle:Checkout:steps.html.twig' with {'step': 'cart'}  %}
 
-                    <div class="container-table-cart">
-                        {{ form_start(form, {
-                                    'action': path('ecommerce_checkout_save'), 
-                                    'method': 'post'
-                                    }) }}
-                            {% include 'EcommerceBundle:Checkout/cart:table.detail.html.twig' %}
-                            {{ form_rest(form) }}
-                        {{ form_end(form) }} 
-                    </div>
-                {% else %}
-                    <div style="margin-bottom: 100px;margin-top: 50px">
-                        <div class="alert alert-warning">Su carrito esta vacio, hasta el momento no ha seleccionado ningun producto.</div> 
-                    </div>
-                {% endif %}
-            </div>
-        <div class="col-md-1"></div>
-    </div>    
+        {% set cart = cart_get() %}
+        <div id="cart-detail">
+            <div class="col-md-1"></div>
+                <div class="col-md-10 col-xs-12 container-content">
+                    {% if cart.totalItems > 0%}
+                        {{ form_errors(form) }}
+
+                        <div class="container-table-cart">
+                            {{ form_start(form, {
+                                        'action': path('ecommerce_checkout_save'), 
+                                        'method': 'post'
+                                        }) }}
+                                {% include 'EcommerceBundle:Checkout/cart:table.detail.html.twig' %}
+                                {{ form_rest(form) }}
+                            {{ form_end(form) }} 
+                        </div>
+                    {% else %}
+                        <div style="margin-bottom: 100px;margin-top: 50px">
+                            <div class="alert alert-warning">Su carrito esta vacio, hasta el momento no ha seleccionado ningun producto.</div> 
+                        </div>
+                    {% endif %}
+                </div>
+            <div class="col-md-1"></div>
+        </div> 
+    </div>
+       
 {% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    {% stylesheets
+            'bundles/ecommerce/less/step-snipet.less'
+    %}
+        <link rel="stylesheet" href="{{ asset_url }}">
+    {% endstylesheets %}
+{% endblock %}
 
 {% block javascripts %}
         {{ parent() }}

@@ -238,7 +238,7 @@ class CheckoutController extends BaseController
         }
         
         $registration = new Registration();
-        $form = $this->createForm('CoreBundle\Form\RegistrationType', $registration);
+        $form = $this->createForm('CoreBundle\Form\RegistrationType', $registration, array('translator' => $this->get('translator')));
         
         return array(
                 // last username entered by the user

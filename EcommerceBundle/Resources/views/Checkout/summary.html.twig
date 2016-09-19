@@ -12,105 +12,112 @@
 {% endblock %}
 
 {% block  content %}
-    <div class="container">
-        <div class="row summary summary-mobile">
-            <div class="col-md-6">
-                <h1 class="title">
-                    Detalle y Pago
-                </h1>
-                <div class="subtitle-section">Mira los detalles y agrega un metodo de pago</div>
-            </div>
-            <div class="col-md-6">
-                {% include 'EcommerceBundle:Checkout:steps.html.twig' with {'step': 'pay'}  %}
-            </div>
-            <div style="clear: both"></div>
-            {% block content_body %}
-                <!--content-->
-                <div class="col-md-1"></div>
-                <div class="col-md-10 col-xs-12 container-content" id="summary" >
-                    <h3>{{ "checkout.details" | trans }}</h3>
-                    <div class="container-table-summary">
-                        {% include 'EcommerceBundle:Checkout:summary.table.html.twig' %}
+    <div class="container container-padding summary">
+        {% include 'EcommerceBundle:Checkout:steps.html.twig' with {'step': 'summary'}  %}
+        {% block content_body %}
+            <!--content-->
+            <div class="col-md-1"></div>
+            <div class="col-md-10 col-xs-12 container-content" id="summary" >
+                <div class="row"> 
+                    <div class="col-sm-12 col-xs-12">
+                        <div class="panel panel-primary">
+                            <div class="panel-heading">
+                                <h4>{{ "checkout.details" | trans }}</h4>
+                            </div>
+                            <div class="panel-body">
+                                {% include 'EcommerceBundle:Checkout:summary.table.html.twig' %}
+                            </div>
+                        </div>
+                    </div>  
+                            
+                    <div class="col-sm-6 col-xs-12">
+                        <div class="panel panel-primary">
+                            <div class="panel-heading">
+                                <h4>{{ "account.billing.info" | trans }}</h4>
+                            </div>
+                            <div class="panel-body">
+                                <p>{{ include('EcommerceBundle:Checkout:addresses/_billing.html.twig') }}</p>
+                                <p><a href="mailto:{{ app.user.email }}" title="{{ app.user.email }}">{{ app.user.email }}</a></p>
+                                <a href="{{ path('ecommerce_checkout_deliveryinfo') }}" class="orange-btn" title="{{ "account.modify.info" | trans }}">{{ "account.modify.info" | trans }}</a>            
+                            </div>
+                        </div>
                     </div>
-                    <div class="row">
-                        <div class="col-sm-6 col-xs-12 address">
-                            <div >
-                                <h3>{{ "account.billing.info" | trans }}</h3>
-                                <div class="col-sm-12">
-                                    <div class="col-sm-12">
-                                        <p>{{ include('EcommerceBundle:Checkout:addresses/_billing.html.twig') }}</p>
-                                        <p><a href="mailto:{{ app.user.email }}" title="{{ app.user.email }}">{{ app.user.email }}</a></p>
-                                        <a href="{{ path('ecommerce_checkout_deliveryinfo') }}" class="orange-btn" title="{{ "account.modify.info" | trans }}">{{ "account.modify.info" | trans }}</a>
+                    <div class="col-sm-6 col-xs-12">
+                        
+                        <div class="panel panel-primary">
+                            <div class="panel-heading">
+                                <h4>{{ "account.delivery.info" | trans }}</h4>
+                            </div>
+                            <div class="panel-body">
+                                <p>{{ include('EcommerceBundle:Checkout:addresses/_delivery.html.twig') }}</p>
+                                <p>
+                                    <b>{{ "account.chosen.schedule" | trans }}</b>: {{ delivery.deliveryPreferredSchedule }}<br />
+                                    <b>{{ "account.phone.singular" | trans }}</b>: {{ delivery.deliveryPhone }}
+                                    {{ delivery.deliveryPhone2 is not null ? '- ' ~ delivery.deliveryPhone2 }}
+                                    {% if delivery.notes is not null %}
+                                        <br /><br />
+                                        <b>{{ "carrier.note" | trans }}</b>: {{ delivery.notes }}
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-sm-12 col-xs-12 pay">
+                        <div >
+                            <h3>{{ "checkout.payment.method" | trans }}</h3>
+                            <div class="col-sm-12 col-xs-12">
+                                <div class="form-group ">
+                                    <div>
+                                        {% for psp in psps %}
+                                            <div class="radio">
+                                                <label>
+                                                    <input type="radio" name="payment-method" value="{{psp.slug}}" /> {{psp.name}} <br/>
+                                                </label>  
+                                            </div>
+                                        {% endfor %}
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-sm-6 col-xs-12 address">
-                            <div >
-                                <h3>{{ "account.delivery.info" | trans }}</h3>
-                                <div class="col-sm-12">
-                                    <div class="col-sm-12">
-                                        <p>{{ include('EcommerceBundle:Checkout:addresses/_delivery.html.twig') }}</p>
-                                        <p>
-                                            <b>{{ "account.chosen.schedule" | trans }}</b>: {{ delivery.deliveryPreferredSchedule }}<br />
-                                            <b>{{ "account.phone.singular" | trans }}</b>: {{ delivery.deliveryPhone }}
-                                            {{ delivery.deliveryPhone2 is not null ? '- ' ~ delivery.deliveryPhone2 }}
-                                            {% if delivery.notes is not null %}
-                                                <br /><br />
-                                                <b>{{ "carrier.note" | trans }}</b>: {{ delivery.notes }}
-                                            {% endif %}
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <br/>
-                        <div class="col-sm-12 col-xs-12 pay">
-                            <div >
-                                <h3>{{ "checkout.payment.method" | trans }}</h3>
-                                <div class="col-sm-12 col-xs-12">
-                                    <div class="form-group ">
-                                        <div>
-                                            {% for psp in psps %}
-                                                <div class="radio">
-                                                    <label>
-                                                        <input type="radio" name="payment-method" value="{{psp.slug}}" /> {{psp.name}} <br/>
-                                                    </label>  
-                                                </div>
-                                            {% endfor %}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-sm-12 col-xs-12 pay">
-                            <div >
-                                <h3>{{ "checkout.payment.pay" | trans }}</h3>
-                                <div class="col-sm-12 col-xs-12">
-                                    {% include 'CoreBundle:Base:alert.messages.html.twig' %}
+                    </div>
+                    <div class="col-sm-12 col-xs-12 pay">
+                        <div >
+                            <h3>{{ "checkout.payment.pay" | trans }}</h3>
+                            <div class="col-sm-12 col-xs-12">
+                                {% include 'CoreBundle:Base:alert.messages.html.twig' %}
 
-                                    {% for psp in psps %}
-                                        <div class="payment-container-form" id="{{psp.slug}}" >
-                                            {{ form_start(psp.formView, {'attr': {'action': path('ecommerce_checkout_summary'), 'id': 'payment-'~psp.slug } } ) }}
-                                                {{ form_errors(psp.formView) }}
-                                                {{ form_rest(psp.formView) }}
-                                                {# here add custom html from configuration#} 
-                                               {{ include(template_from_string(psp.twig)) }}
-                                            {{ form_end(psp.formView) }}
-                                        </div>
-                                    {% endfor %}
-                                </div>
+                                {% for psp in psps %}
+                                    <div class="payment-container-form" id="{{psp.slug}}" >
+                                        {{ form_start(psp.formView, {'attr': {'action': path('ecommerce_checkout_summary'), 'id': 'payment-'~psp.slug } } ) }}
+                                            {{ form_errors(psp.formView) }}
+                                            {{ form_rest(psp.formView) }}
+                                            {# here add custom html from configuration#} 
+                                           {{ include(template_from_string(psp.twig)) }}
+                                        {{ form_end(psp.formView) }}
+                                    </div>
+                                {% endfor %}
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-1"></div>
-                <!--content End-->
-            {% endblock %}
-        </div>
+            </div>
+            <div class="col-md-1"></div>
+            <!--content End-->
+        {% endblock %}
     </div>
 {% endblock %}
 
+
+
+{% block stylesheets %}
+    {{ parent() }}
+    {% stylesheets
+            'bundles/ecommerce/less/step-snipet.less'
+    %}
+        <link rel="stylesheet" href="{{ asset_url }}">
+    {% endstylesheets %}
+{% endblock %}
 
 {% block javascripts %}
     {{ parent() }}
