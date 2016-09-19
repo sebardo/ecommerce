@@ -133,8 +133,8 @@
 
 {% block stylesheets %}
     {{ parent() }}
+    {#'bundles/front/css/vendor/bootstrap.vertical-tabs.css'#}
     {% stylesheets
-            'bundles/front/css/vendor/bootstrap.vertical-tabs.css'
             'bundles/admin/plugins/bootstrap-fileupload/bootstrap-fileupload.css'
     %}
         <link rel="stylesheet" href="{{ asset_url }}">
