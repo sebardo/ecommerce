@@ -15,7 +15,7 @@
         </tr>
       </thead>
       <tbody>
-        {% for entity in adverts %}
+        {% for entity in get_actor_adverts() %}
             <tr>
                <td>
                    {% if entity.active  %}

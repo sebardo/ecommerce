@@ -52,7 +52,7 @@
                                             <h3>{{ 'account.billing.info' | trans }}</h3>
 
                                             <form class="form-horizontal delivery-form col-xs-12" method="post" action="{{ path('front_profile_editbilling') }}" {{ form_enctype(billingForm) }}>
-                                                <div class="row space-bottom">
+                                                <div class="space-bottom">
                                                     {{ include('EcommerceBundle:Profile:Delivery/_form.html.twig', { form: billingForm }) }}
                                                 </div>
                                                 
@@ -78,7 +78,7 @@
                                     <div class="delivery-new" style="display: none">
                                         <h3>{{ 'account.address.add' | trans }}</h3>
                                         <form class="form-horizontal delivery-form col-xs-12" method="post" action="{{ path('front_profile_newdelivery') }}?delivery=1" {{ form_enctype(formDelivery) }}>
-                                            <div class="row space-bottom">
+                                            <div class="space-bottom">
                                                 {{ include('EcommerceBundle:Profile:Delivery/_form.html.twig', { form: formDelivery }) }}
                                             </div>
                                             <div class="profile-buttons">

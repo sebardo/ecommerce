@@ -11,7 +11,7 @@
                 <div class="container-table-delivery">
                     <h2>{{ 'account.address.edit' | trans }}</h2>
                     <form method="post" action="{{ path('front_profile_editdelivery', { id: address.id }) }}" {{ form_enctype(form) }}>
-                    <div class="row space-bottom">
+                    <div class="space-bottom">
                         {{ include('EcommerceBundle:Profile:Delivery/_form.html.twig', { form: form }) }}
                     </div>
 

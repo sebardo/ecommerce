@@ -47,34 +47,34 @@ class AddressType extends AbstractType
                 ))
             ->add('postalCode')
             ->add('phone')
-            ->add('phone2')
+            //->add('phone2')
             ->add('preferredSchedule', ChoiceType::class, array(
                 'choices'  => Address::getSchedules(),
                 'required' => false,
                 'choices_as_values' => true,
             ));
 
-        $user = $tokenStorage->getToken()->getUser();
-        if (!$user) {
-            throw new \LogicException(
-                'The AddressFormType cannot be used without an authenticated user!'
-            );
-        }
-
-        $factory = $builder->getFormFactory();
-
-        $builder->addEventListener(FormEvents::PRE_SET_DATA, function(FormEvent $event) use ($user, $factory) {
-            $form = $event->getForm();
-
-            // if user is a business, add the contact person field
-//            if ($user::BUSINESS == $user->getAccountType()) {
-//                $formOptions = array(
-//                    'required' => false
-//                );
+//        $user = $tokenStorage->getToken()->getUser();
+//        if (!$user) {
+//            throw new \LogicException(
+//                'The AddressFormType cannot be used without an authenticated user!'
+//            );
+//        }
 //
-//                $form->add($factory->createNamed('contactPerson', 'text', null, $formOptions));
-//            }
-        });
+//        $factory = $builder->getFormFactory();
+//
+//        $builder->addEventListener(FormEvents::PRE_SET_DATA, function(FormEvent $event) use ($user, $factory) {
+//            $form = $event->getForm();
+//
+//            // if user is a business, add the contact person field
+////            if ($user::BUSINESS == $user->getAccountType()) {
+////                $formOptions = array(
+////                    'required' => false
+////                );
+////
+////                $form->add($factory->createNamed('contactPerson', 'text', null, $formOptions));
+////            }
+//        });
     }
 
     /**

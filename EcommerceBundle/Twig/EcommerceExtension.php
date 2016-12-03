@@ -7,6 +7,8 @@ use EcommerceBundle\Entity\CartItem;
 use EcommerceBundle\Entity\Product;
 use EcommerceBundle\Form\CartItemSimpleType;
 use EcommerceBundle\Entity\Transaction;
+use Symfony\Component\Security\Core\User\UserInterface;
+use EcommerceBundle\Entity\Address;
 use DateTime;
 
 /**
@@ -47,6 +49,11 @@ class EcommerceExtension extends \Twig_Extension
             new Twig_SimpleFunction('get_product_stats', array($this, 'getProductStats')),
             new Twig_SimpleFunction('get_product_image', array($this, 'getProductImage')),
             new Twig_SimpleFunction('get_braintree_token', array($this, 'getBraintreeToken')),
+            new Twig_SimpleFunction('get_address_form', array($this, 'getAddressForm')),
+            new Twig_SimpleFunction('get_billing_form', array($this, 'getBillingForm')),
+            new Twig_SimpleFunction('get_delivery_form', array($this, 'getDeliveryForm')),
+            new Twig_SimpleFunction('get_transactions', array($this, 'getTransactions')),
+            new Twig_SimpleFunction('get_actor_adverts', array($this, 'getActorAdverts')),
         );
     }
     
@@ -317,6 +324,72 @@ class EcommerceExtension extends \Twig_Extension
         
     }
     
+    public function getAddressForm($id)
+    {
+        $em = $this->container->get('doctrine')->getManager();
+        $user = $this->container->get('security.token_storage')->getToken()->getUser();
+        $address = $em->getRepository('EcommerceBundle:Address')
+            ->findOneBy(array(
+                    'id'   => $id,
+                    'actor' => $user,
+                ));
+        if (is_null($address)) {
+            throw new \Exception();
+        }
+        
+        $form =  $this->container->get('form.factory')->create('EcommerceBundle\Form\AddressType', $address, array('token_storage' => $this->container->get('security.token_storage')));
+
+        
+        return $form->createView();
+    }
+    
+    public function getBillingForm()
+    {
+        $user = $this->container->get('security.token_storage')->getToken()->getUser();
+        $address = $this->container->get('checkout_manager')->getBillingAddress($user);
+        if (is_null($address)) {
+            throw new \Exception();
+        }
+        
+        $form =  $this->container->get('form.factory')->create('EcommerceBundle\Form\AddressType', $address, array('token_storage' => $this->container->get('security.token_storage')));
+
+        return $form->createView();
+    }
+    
+    public function getDeliveryForm()
+    {
+        $em = $this->container->get('doctrine')->getManager();
+        $user = $this->container->get('security.token_storage')->getToken()->getUser();
+        $country = $em->getRepository('CoreBundle:Country')->find('es');
+        
+        $address = new Address();
+        $address->setForBilling(false);
+        $address->setCountry($country);
+        $address->setActor($user);
+        /** @var Address $address */
+        $form = $this->container->get('form.factory')->create('EcommerceBundle\Form\AddressType', $address, array('token_storage' => $this->container->get('security.token_storage')));
+
+        return $form->createView();
+    }
+    
+    
+    public function getTransactions() 
+    {
+        $em = $this->container->get('doctrine')->getManager();
+        $user = $this->container->get('security.token_storage')->getToken()->getUser();
+        $transactions = $em->getRepository('EcommerceBundle:Transaction')->findAllFinished($user);
+
+        return $transactions;
+    }
+    
+    public function getActorAdverts() 
+    {
+        $em = $this->container->get('doctrine')->getManager();
+        $user = $this->container->get('security.token_storage')->getToken()->getUser();
+        $adverts = $em->getRepository('EcommerceBundle:Advert')->findByActor($user);
+        
+        return $adverts;
+    }
     /**
      * {@inheritDoc}
      */

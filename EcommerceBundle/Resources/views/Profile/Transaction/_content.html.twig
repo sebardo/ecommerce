@@ -12,7 +12,7 @@
         </tr>
     </thead>
     <tbody>
-        {% for transaction in transactions %}
+        {% for transaction in get_transactions() %}
         <tr>
             <td>{{ transaction.transactionKey }}</td>
             <td>{{ transaction.created | date('d/m/Y') }}</td>
@@ -23,11 +23,7 @@
             {% endif %}
             <td>{{ include('EcommerceBundle:Profile:Transaction/_status.html.twig', { transaction: transaction }) }}</td>
             <td>
-                {% if transaction.paymentMethod == 'store_pickup' %}
-                    {{ 'store_pickup' | trans }}
-               {% else %}
-                    {{transaction.paymentMethod | trans }}
-               {% endif %}
+                
             </td>
             <td>
                 {% if transaction.invoice.invoiceNumber is defined %}

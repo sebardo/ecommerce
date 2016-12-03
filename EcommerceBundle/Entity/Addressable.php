@@ -238,7 +238,7 @@ abstract class Addressable extends Timestampable
      *
      * @return Actor
      */
-    public function setCountry(Country $country)
+    public function setCountry($country)
     {
         $this->country = $country;
 

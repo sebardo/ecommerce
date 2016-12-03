@@ -1,51 +1,16 @@
-{% extends core['extended_layout'] ? core['extended_layout'] : 'CoreBundle:Base:base.layout.html.twig' %}
+{% extends 'CoreBundle:Profile:index.html.twig' %}
 
-{% block content %}
-    <div class="container">
-        <div class="row core-row profile user" >
-            
-            {% include 'EcommerceBundle:Profile/Block:_profile.header.html.twig' %}
-
-            <div class="col-xs-3" style="padding-right: 0px"> <!-- required for floating -->
-                {{ include('EcommerceBundle:Profile/Block:_sidebar.html.twig') }}
-            </div>
-
-            <div class="col-xs-9" style="margin-top: 0px;border-top: 1px solid #01acc6;">
-                <!-- Tab panes -->
-            <div class="tab-content">
-                <div class="tab-pane active" id="delivery_tab">
-                    <div class="portlet box custom">
-                        <div class="portlet-body profile">
-                            <div class="container-table-delivery">
-                                <h3>{{ 'account.address.add' | trans }}</h3>
-                                <form class="form-horizontal delivery-form col-xs-12" method="post" action="{{ path('front_profile_newdelivery') }}" {{ form_enctype(form) }}>
-                                    <div class="row space-bottom">
-                                        {{ include('EcommerceBundle:Profile:Delivery/_form.html.twig', { form: form }) }}
-                                    </div>
-                                    <div class="profile-buttons">
-                                            <a href="javascript:void(0);"  class="profile-back"><i class="ion-reply"></i> <span>{{ 'back' | trans }}</span></a>
-                                            <button type="submit" class="pull-right"> <i class="ion-checkmark"></i> {{ 'save' | trans }}</button> 
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                 </div>
-            </div>
-        </div>  
-    </div>
-
-{% endblock %}
-
-{% block stylesheets %}
-    {{ parent() }}
-    {#% stylesheets
-            'bundles/front/css/vendor/bootstrap.vertical-tabs.css'
-    %}
-        <link rel="stylesheet" href="{{ asset_url }}">
-    {% endstylesheets %#}
-
-            
+{% block devilery_content %}
+    <h3>{{ 'account.address.add' | trans }}</h3>
+    <form class="form-horizontal delivery-form col-xs-12" method="post" action="{{ path('core_actor_newdelivery') }}" {{ form_enctype(form) }}>
+        <div class="space-bottom">
+            {{ include('EcommerceBundle:Profile:Delivery/_form.html.twig', { form: form }) }}
+        </div>
+        <div class="profile-buttons">
+                <a href="javascript:void(0);"  class="profile-back"><i class="ion-reply"></i> <span>{{ 'back' | trans }}</span></a>
+                <button type="submit" class="pull-right"> <i class="ion-checkmark"></i> {{ 'save' | trans }}</button> 
+        </div>
+    </form>
 {% endblock %}
 
 
