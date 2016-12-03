@@ -9,7 +9,7 @@
             {{ address.dni }}<br />
             {{ address.address }}<br />
             {{ address.postalCode }} {{ address.city }}<br />
-            {{ address.state.name }}, {{ address.country.name }}
+            {% if address.state.name is defined %}{{ address.state.name }}{% endif %}, {{ address.country.name }}
         </p>
         <p>
             <b>{{ 'account.chosen.schedule' | trans }}</b>: {{address.preferredSchedule}}<br />
@@ -22,7 +22,7 @@
                 <br /><b>  <i class="isforbilling"><i class="ion-asterisk"></i> {{ 'account.address.for.billing' | trans }}</i></b>
             {% else %}
                 <br />
-                <a href="{{ path('front_profile_setbillingaddress', { id: address.id }) }}" title="{{ 'account.address.assign.for.billing' | trans }}">
+                <a href="{{ path('core_actor_setbillingaddress', { id: address.id }) }}" title="{{ 'account.address.assign.for.billing' | trans }}">
                     {{ 'account.address.assign.for.billing' | trans }}
                 </a>
             {% endif %}
