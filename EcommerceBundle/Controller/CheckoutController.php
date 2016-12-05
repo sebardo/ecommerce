@@ -9,9 +9,11 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Security\Core\SecurityContext;
 use EcommerceBundle\Form\DeliveryType;
 use CoreBundle\Form\Model\Registration;
+use EcommerceBundle\Entity\Address;
 use EcommerceBundle\Entity\Transaction;
 use EcommerceBundle\Entity\CartItem;
 use EcommerceBundle\Form\CartType;
@@ -580,5 +582,298 @@ class CheckoutController extends BaseController
         return array();
     }
     
+    /*
+     * Profile
+     */
+    
+     /**
+     * Edit the billing address
+     *
+     * @param Request $request
+     *
+     * @Route("/profile/billing/")
+     * @Method({"GET","POST"})
+     * 
+     */
+    public function editBillingAction(Request $request)
+    {
+        if($request->isXmlHttpRequest()){
+            $em = $this->container->get('doctrine')->getManager();
+            $checkoutManager = $this->container->get('checkout_manager');
+
+            /** @var Address $address */
+            $address = $checkoutManager->getBillingAddress();
+            $form = $this->createForm('EcommerceBundle\Form\AddressType', $address, array('token_storage' => $this->container->get('security.token_storage')));
+
+            if ('POST' === $request->getMethod()) {
+                $form->bind($request);
+
+                if ($form->isValid()) {
+                    $em->persist($address);
+                    $em->flush();
+                    $url = $this->container->get('router')->generate('core_actor_profile').'?billing=1';
+                    $this->container->get('session')->getFlashBag()->add('success', 'account.address.added');
+                    return new JsonResponse(array('status' => 'success', 'url' => $url));
+                }else{
+                    $template = $this->container->get('twig')->render("EcommerceBundle:Profile:Billing/billing.form.html.twig", array(
+                        'billing_form' => $form->createView(),
+                        'address' => $address
+                    ));
+                    return new JsonResponse(array('status' => 'error', 'answer' => $template));
+                }
+            }
+        }else {
+            throw new \Exception('Only by ajax');
+        }
+        
+    }
+
+    /**
+     * Set the address as the billing address
+     *
+     * @param integer $id
+     *
+     * @throws AccessDeniedException
+     * @return RedirectResponse
+     * 
+     * @Route("/profile/delivery/{id}/set-for-billing")
+     * @Method("GET")
+     * @Template("EcommerceBundle:Profile:Delivery/show.html.twig")
+     */
+    public function setBillingAddressAction($id)
+    {
+        $em = $this->container->get('doctrine')->getManager();
+        $user = $this->container->get('security.token_storage')->getToken()->getUser();
+        $address = $em->getRepository('EcommerceBundle:Address')
+            ->findOneBy(array(
+                    'id'   => $id,
+                    'actor' => $user,
+                ));
+        if (is_null($address)) {
+            throw new AccessDeniedException();
+        }
+
+        $em->getRepository('EcommerceBundle:Address')->removeForBillingToAllAddresses($user->getId());
+
+        $address->setForBilling(1);
+//        $em->persist($address);
+        $em->flush();
+
+        $url = $this->container->get('router')->generate('core_actor_profile').'?delivery=1';
+
+        $this->container->get('session')->getFlashBag()->add('success', 'account.address.assigned.for.billing');
+
+        return new RedirectResponse($url);
+    }
+
+    /**
+     * Show delivery addresses
+     *
+     * @return Response
+     * 
+     * @Route("/profile/delivery/")
+     * @Method({"GET","POST"})
+     * @Template("EcommerceBundle:Profile:Delivery/show.html.twig")
+     */
+    public function showDeliveryAction()
+    {
+        $em = $this->container->get('doctrine')->getManager();
+        $user = $this->container->get('security.token_storage')->getToken()->getUser();
+        $addresses = $em->getRepository('EcommerceBundle:Address')
+            ->findBy(array(
+                    'actor' => $user,
+                ));
+
+        return array(
+                'user'      => $user,
+                'addresses' => $addresses
+            );
+    }
+
+    /**
+     * Add delivery address
+     *
+     * @param Request $request
+     * @return Response
+     * 
+     * @Route("/profile/delivery/new")
+     * @Method({"GET","POST"})
+     */
+    public function newDeliveryAction(Request $request)
+    {
+        if($request->isXmlHttpRequest()){
+            $em = $this->container->get('doctrine')->getManager();
+            $user = $this->container->get('security.token_storage')->getToken()->getUser();
+
+            /** @var Address $address */
+            $country = $em->getRepository('CoreBundle:Country')->find('es');
+            $address = new Address();
+            $address->setForBilling(false);
+            $address->setCountry($country);
+            $address->setActor($user);
+            $form = $this->createForm('EcommerceBundle\Form\AddressType', $address, array('token_storage' => $this->container->get('security.token_storage')));
+
+            if ('POST' === $request->getMethod()) {
+                $form->bind($request);
+
+                if ($form->isValid()) {
+                    $em->persist($address);
+                    $em->flush();
+                    $url = $this->container->get('router')->generate('core_actor_profile').'?delivery=1';
+                    $this->container->get('session')->getFlashBag()->add('success', 'account.address.added');
+                    return new JsonResponse(array('status' => 'success', 'url' => $url));
+                }else{
+                    $template = $this->container->get('twig')->render("EcommerceBundle:Profile:Delivery/new.html.twig", array(
+                        'delivery_form' => $form->createView(),
+                        'address' => $address
+                    ));
+                    return new JsonResponse(array('status' => 'error', 'answer' => $template));
+                }
+            }
+        }else {
+            throw new \Exception('Only by ajax');
+        }
+    }
+
+    /**
+     * Edit delivery addresses
+     *
+     * @param Request $request
+     * @param integer $id
+     *
+     * @throws AccessDeniedException
+     * @return Response
+     * 
+     * @Route("/profile/delivery/{id}/edit")
+     * @Method({"GET","POST"})
+     */
+    public function editDeliveryAction(Request $request, $id)
+    {
+        if($request->isXmlHttpRequest()){
+            $em = $this->container->get('doctrine')->getManager();
+            $user = $this->container->get('security.token_storage')->getToken()->getUser();
+        
+            /** @var Address $address */
+            $address = $em->getRepository('EcommerceBundle:Address')->findOneBy(array(
+                    'id'   => $id,
+                    'actor' => $user,
+                ));
+            $form = $this->createForm('EcommerceBundle\Form\AddressType', $address, array('token_storage' => $this->container->get('security.token_storage')));
+
+            if ('POST' === $request->getMethod()) {
+                $form->bind($request);
+
+                if ($form->isValid()) {
+                    $em->persist($address);
+                    $em->flush();
+                    $url = $this->container->get('router')->generate('core_actor_profile').'?delivery=1';
+                    $this->container->get('session')->getFlashBag()->add('success', 'account.address.saved');
+                    return new JsonResponse(array('status' => 'success', 'url' => $url));
+                }else{
+                    $template = $this->container->get('twig')->render("EcommerceBundle:Profile:Delivery/edit.html.twig", array(
+                        'delivery_form' => $form->createView(),
+                        'address' => $address
+                    ));
+                    return new JsonResponse(array('status' => 'error', 'answer' => $template));
+                }
+            }
+        }else {
+            throw new \Exception('Only by ajax');
+        }
+    }
+
+    /**
+     * Delete delivery addresses
+     *
+     * @param integer $id
+     *
+     * @throws AccessDeniedException
+     * @return RedirectResponse
+     * 
+     * @Route("/profile/delivery/{id}/delete")
+     * @Method({"GET","POST"})
+     * @Template("EcommerceBundle:Profile:Delivery/edit.html.twig")
+     */
+    public function deleteDeliveryAction($id)
+    {
+        $em = $this->container->get('doctrine')->getManager();
+        $user = $this->container->get('security.token_storage')->getToken()->getUser();
+        $address = $em->getRepository('EcommerceBundle:Address')
+            ->findOneBy(array(
+                    'id'   => $id,
+                    'actor' => $user,
+                ));
+        if (is_null($address)) {
+            throw new AccessDeniedException();
+        }
+
+        $em->remove($address);
+        $em->flush();
+
+        $url = $this->container->get('router')->generate('core_actor_profile').'?delivery=1';
+        $this->container->get('session')->getFlashBag()->add('success', 'account.address.deleted');
+        return new RedirectResponse($url);
+    }
+    
+    /**
+     * Show transactions list
+     *
+     * @return Response
+     * 
+     * @Route("/profile/transaction/")
+     * @Method({"GET","POST"})
+     * @Template("FrontBundle:Profile:Transaction/show.html.twig")
+     */
+    public function showTransactionAction()
+    {
+        $em = $this->container->get('doctrine')->getManager();
+        $user = $this->container->get('security.token_storage')->getToken()->getUser();
+        
+        $transactions = $em->getRepository('EcommerceBundle:Transaction')->findAllFinished($user);
+
+        return array(
+                    'transactions' => $transactions        
+                );
+    }
+    
+    /**
+     * Show invoice
+     *
+     * @param Request $request
+     * @param string  $number
+     *
+     * @throws AccessDeniedException
+     * @return Response
+     * 
+     * @Route("/profile/invoice/{number}/view")
+     * @Method("GET")
+     * @Template("EcommerceBundle:Profile:Invoice/show.html.twig")
+     */
+    public function showInvoiceAction(Request $request, $number)
+    {
+        
+        $em = $this->container->get('doctrine')->getManager();
+        /** @var Invoice $invoice */
+        $invoice = $em->getRepository('EcommerceBundle:Invoice')->findOneBy(array(
+            'invoiceNumber' => $number
+        ));
+
+        if (!$invoice ||
+            false === $this->container->get('checkout_manager')->isCurrentUserOwner($invoice->getTransaction())) {
+            throw new AccessDeniedException();
+        }
+
+        /** @var CheckoutManager $checkoutManager */
+        $checkoutManager = $this->container->get('checkout_manager');
+
+        $delivery = $invoice->getTransaction()->getDelivery();
+        $totals = $checkoutManager->calculateTotals($invoice->getTransaction(), $delivery);
+
+        return array(
+                'delivery' => $delivery,
+                'invoice'  => $invoice,
+                'totals'   => $totals,
+            );
+    }
 
 }

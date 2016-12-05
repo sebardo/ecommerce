@@ -3,7 +3,7 @@
 {% else %}
     {% set  form = get_billing_form() %}    
 {% endif %}
-<form class="form-horizontal billing-form" method="post" action="{{ path('core_actor_editbilling') }}" {{ form_enctype(form) }}>
+<form class="form-horizontal billing-form" method="post" action="{{ path('ecommerce_checkout_editbilling') }}" {{ form_enctype(form) }}>
     <div class="space-bottom">
         {{ include('EcommerceBundle:Profile:Delivery/_form.html.twig', { form: form }) }}
     </div>

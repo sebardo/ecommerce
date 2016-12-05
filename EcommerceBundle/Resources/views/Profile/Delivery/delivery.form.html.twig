@@ -3,7 +3,7 @@
 {% else %}
     {% set  form = get_delivery_form() %}    
 {% endif %}
-<form class="form-horizontal delivery-form" method="post" action="{{ path('core_actor_newdelivery') }}" {{ form_enctype(form) }}>
+<form class="form-horizontal delivery-form" method="post" action="{{ path('ecommerce_checkout_newdelivery') }}" {{ form_enctype(form) }}>
     <div class="space-bottom">
         {{ include('EcommerceBundle:Profile:Delivery/_form.html.twig', { form: form }) }}
     </div>
