@@ -14,10 +14,11 @@ use CoreBundle\Entity\Country;
  * Addressable abstract class to define address fields
  *
  * @ORM\MappedSuperclass
- * @Assert\Callback(methods={"validateDni"})
+ * 
  */
 abstract class Addressable extends Timestampable
 {
+    // * @Assert\Callback(methods={"validateDni"})
     protected static $schedules = array(
         'schedule.empty' => 0,
         'schedule.anytime' => 1,

@@ -23,11 +23,11 @@
             {% endif %}
             <td>{{ include('EcommerceBundle:Profile:Transaction/_status.html.twig', { transaction: transaction }) }}</td>
             <td>
-                
+                {{transaction.paymentMethod.name}}
             </td>
             <td>
                 {% if transaction.invoice.invoiceNumber is defined %}
-                    <a href="{{ path('core_actor_showinvoice', { number: transaction.invoice.invoiceNumber }) }}" class="btn btn-primary">{{ 'transaction.details' | trans }}</a>
+                    <a href="{{ path('core_actor_showinvoice', { number: transaction.invoice.invoiceNumber }) }}" class="btn-xs btn-core">{{ 'transaction.details' | trans }}</a>
                 {% endif %}
             </td>
         </tr>
