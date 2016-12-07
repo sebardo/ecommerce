@@ -54,6 +54,8 @@ class EcommerceExtension extends \Twig_Extension
             new Twig_SimpleFunction('get_delivery_form', array($this, 'getDeliveryForm')),
             new Twig_SimpleFunction('get_transactions', array($this, 'getTransactions')),
             new Twig_SimpleFunction('get_actor_adverts', array($this, 'getActorAdverts')),
+            new Twig_SimpleFunction('get_addresses', array($this, 'getAddresses')),
+            
         );
     }
     
@@ -390,6 +392,18 @@ class EcommerceExtension extends \Twig_Extension
         
         return $adverts;
     }
+    
+    public function getAddresses()
+    {
+        $em = $this->container->get('doctrine')->getManager();
+        $user = $this->container->get('security.token_storage')->getToken()->getUser();
+        $addresses = $em->getRepository('EcommerceBundle:Address')
+            ->findBy(array(
+                    'actor' => $user,
+                ));
+        return $addresses;
+    }
+    
     /**
      * {@inheritDoc}
      */

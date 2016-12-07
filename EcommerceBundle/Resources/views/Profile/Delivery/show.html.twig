@@ -1,6 +1,6 @@
 <h3>{{ 'account.delivery.info' | trans }}</h3>
 
-{% for address in addresses %}
+{% for address in get_addresses() %}
     <div class="col-md-6 address active">
         <p>
             {% if address.contactPerson is not empty %}
@@ -42,7 +42,7 @@
 {% endfor %}
 
 
-{% for address in addresses %}
+{% for address in get_addresses() %}
     <div id="address-{{address.id}}" style="display: none">
         <h4>{{ 'account.address.edit' | trans }}</h4>
         {% set formAddress = get_address_form(address.id) %}
