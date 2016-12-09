@@ -229,15 +229,15 @@ class CheckoutController extends BaseController
         }
 
         $session = $request->getSession();
-        // get the login error if there is one
-        if ($request->attributes->has(SecurityContext::AUTHENTICATION_ERROR)) {
-            $error = $request->attributes->get(
-                SecurityContext::AUTHENTICATION_ERROR
-            );
-        } else {
-            $error = $session->get(SecurityContext::AUTHENTICATION_ERROR);
-            $session->remove(SecurityContext::AUTHENTICATION_ERROR);
-        }
+//        // get the login error if there is one
+//        if ($request->attributes->has(SecurityContext::AUTHENTICATION_ERROR)) {
+//            $error = $request->attributes->get(
+//                SecurityContext::AUTHENTICATION_ERROR
+//            );
+//        } else {
+//            $error = $session->get(SecurityContext::AUTHENTICATION_ERROR);
+//            $session->remove(SecurityContext::AUTHENTICATION_ERROR);
+//        }
         
         $registration = new Registration();
         $form = $this->createForm('CoreBundle\Form\RegistrationType', $registration, array('translator' => $this->get('translator')));
