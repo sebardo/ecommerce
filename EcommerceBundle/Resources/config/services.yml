@@ -4,13 +4,12 @@ parameters:
   redsys.factory.class: EcommerceBundle\Factory\RedsysFactory
 
 services:
-    
     ecommerce_extension:
         class: EcommerceBundle\Twig\EcommerceExtension
         arguments:
             - { parameters: %core% }
         calls:
-            - [setContainer, [@service_container] ]
+            - [setContainer, ["@service_container"] ]
         tags:
             - { name: twig.extension }
             
@@ -22,19 +21,19 @@ services:
     payment_manager:
         class: EcommerceBundle\Service\PaymentManager
         calls:
-            - [setContainer, [@service_container] ]
+            - [setContainer, ["@service_container"] ]
             
     checkout_manager:
         class: EcommerceBundle\Service\CheckoutManager
         arguments:
             - { parameters: %core% }
-            - @session
-            - @doctrine.orm.entity_manager
-            - @cart_provider
-            - @security.token_storage
-            - @router
-            - @kernel
-            - @core.mailer
+            - "@session"
+            - "@doctrine.orm.entity_manager"
+            - "@cart_provider"
+            - "@security.token_storage"
+            - "@router"
+            - "@kernel"
+            - "@core.mailer"
             - "%ecommerce.advert_unit_price%"
             - "%ecommerce.special_percentage_charge%"
             - "%ecommerce.delivery_expenses_type%"
@@ -44,12 +43,12 @@ services:
     cart_provider:
         class: EcommerceBundle\Service\CartProvider
         arguments:
-            - @cart_storage
-            - @doctrine.orm.entity_manager
+            - "@cart_storage"
+            - "@doctrine.orm.entity_manager"
   
     cart_storage:
         class: EcommerceBundle\Service\CartStorage
         arguments:
-            - @session
+            - "@session"
  
      
