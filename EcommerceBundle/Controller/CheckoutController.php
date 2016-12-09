@@ -244,8 +244,8 @@ class CheckoutController extends BaseController
         
         return array(
                 // last username entered by the user
-                'last_username' => $session->get(SecurityContext::LAST_USERNAME),
-                'error'         => $error,
+//                'last_username' => $session->get(SecurityContext::LAST_USERNAME),
+//                'error'         => $error,
                 'form'          => $form->createView()
             );
     }
