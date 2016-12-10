@@ -46,15 +46,7 @@
     <div id="address-{{address.id}}" style="display: none">
         <h4>{{ 'account.address.edit' | trans }}</h4>
         {% set formAddress = get_address_form(address.id) %}
-        <form class="form-horizontal delivery-form col-xs-12" method="post" action="{{ path('ecommerce_checkout_editdelivery', { id: address.id }) }}" {{ form_enctype(formAddress) }}>
-            <div class="space-bottom">
-                {{ include('EcommerceBundle:Profile:Delivery/_form.html.twig', { form: formAddress }) }}
-            </div>
-            <div class="profile-buttons">
-                <a href="javascript:void(0);"  data="{{address.id}}" class=" btn btn-core delivery-edit-back"><i class="ion-reply"></i> <span>{{ 'back' | trans }}</span></a>
-                <button type="submit" class="btn btn-core pull-right delivery-submit"> <i class="ion-checkmark"></i> {{ 'save' | trans }}</button> 
-            </div>
-        </form>
+        {{ include('EcommerceBundle:Profile:Delivery/edit.html.twig', { delivery_form: formAddress, address: address }) }}
     </div>  
 {% endfor %}
 

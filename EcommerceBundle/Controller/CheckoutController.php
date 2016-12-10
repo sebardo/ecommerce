@@ -142,7 +142,7 @@ class CheckoutController extends BaseController
         $cart = $this->getCurrentCart();
         $form = $this->createForm(new CartType(), $cart);
 
-        if ($form->bind($request)->isValid()) {
+        if ($form->handleRequest($request)->isValid()) {
             
             $em = $this->getDoctrine()->getManager();
             $em->persist($cart);
@@ -281,7 +281,7 @@ class CheckoutController extends BaseController
         $form = $this->createForm(new DeliveryType($securityContext, $manager, $session), $delivery);
 
         if ($request->isMethod('POST')) {
-            $form->bind($request);
+            $form->handleRequest($request);
 
             if ($form->isValid()) {
                 $cart = $this->getCurrentCart();
@@ -329,7 +329,7 @@ class CheckoutController extends BaseController
         if ($request->isMethod('POST')) {
             foreach ($psps as $ppf) {
                 if($request->request->has($ppf->getForm()->getName())){
-                    $ppf->getForm()->bind($request);
+                    $ppf->getForm()->handleRequest($request);
                     if ($ppf->getForm()->isValid()){
                         $answer = $paymentManager->processPayment($request, $transaction, $delivery, $ppf);
                         return $this->redirect($answer->redirectUrl);
@@ -364,7 +364,7 @@ class CheckoutController extends BaseController
         }
 
         if($request->getMethod() == 'POST'){
-            $form->bind($request);
+            $form->handleRequest($request);
             if ($form->isValid()){
                 
                 //Create contract and paypal agreement 
@@ -606,7 +606,7 @@ class CheckoutController extends BaseController
             $form = $this->createForm('EcommerceBundle\Form\AddressType', $address, array('token_storage' => $this->container->get('security.token_storage')));
 
             if ('POST' === $request->getMethod()) {
-                $form->bind($request);
+                $form->handleRequest($request);
 
                 if ($form->isValid()) {
                     $em->persist($address);
@@ -714,7 +714,7 @@ class CheckoutController extends BaseController
             $form = $this->createForm('EcommerceBundle\Form\AddressType', $address, array('token_storage' => $this->container->get('security.token_storage')));
 
             if ('POST' === $request->getMethod()) {
-                $form->bind($request);
+                $form->handleRequest($request);
 
                 if ($form->isValid()) {
                     $em->persist($address);
@@ -761,7 +761,7 @@ class CheckoutController extends BaseController
             $form = $this->createForm('EcommerceBundle\Form\AddressType', $address, array('token_storage' => $this->container->get('security.token_storage')));
 
             if ('POST' === $request->getMethod()) {
-                $form->bind($request);
+                $form->handleRequest($request);
 
                 if ($form->isValid()) {
                     $em->persist($address);

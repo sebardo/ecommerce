@@ -3,14 +3,12 @@
 {% else %}
     {% set  form = get_delivery_form() %}    
 {% endif %}
-<form class="form-horizontal delivery-form" method="post" action="{{ path('ecommerce_checkout_newdelivery') }}" {{ form_enctype(form) }}>
+{{ form_start(form, {'action': path('ecommerce_checkout_newdelivery'), 'method': 'post', attr: {'class': 'form-horizontal delivery-form '} } ) }}
     <div class="space-bottom">
         {{ include('EcommerceBundle:Profile:Delivery/_form.html.twig', { form: form }) }}
     </div>
     <div class="profile-buttons">
-        <a href="javascript:void(0);"  data="{{address.id}}" class="btn btn-core delivery-back"><span>{{ 'back' | trans }}</span></a>
+        <a href="javascript:void(0);"  class="btn btn-core delivery-back"><span>{{ 'back' | trans }}</span></a>
         <button class="btn btn-core pull-right delivery-submit" type="submit">{{ 'save' | trans }}</button>
     </div>
-</form>
-
-
+{{ form_end(form) }}
