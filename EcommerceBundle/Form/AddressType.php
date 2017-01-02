@@ -47,7 +47,7 @@ class AddressType extends AbstractType
                 ))
             ->add('postalCode')
             ->add('phone')
-            //->add('phone2')
+            ->add('phone2')
             ->add('preferredSchedule', ChoiceType::class, array(
                 'choices'  => Address::getSchedules(),
                 'required' => false,
