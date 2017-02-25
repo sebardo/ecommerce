@@ -14,16 +14,7 @@
     </div>                
                                    
     <div class="col-md-12 oauth-button-container">
-         {% block hwi_oauth_content %}
-             {% for owner in hwi_oauth_resource_owners() %}
-                 <div class="social-login-button col-md-4">
-                     <a class="btn btn-default oauth-button oauth-button-{{owner}} {{app.request.locale}}" href="{{ hwi_oauth_login_url(owner) }}" >
-                         <span class="ion-social-{{owner}}"></span>
-                         <span class="oauth-label">Ingresar con mi cuenta de {{ owner | trans({}, 'HWIOAuthBundle') |capitalize }}</span>
-                     </a>
-                 </div>
-             {% endfor %}
-         {% endblock hwi_oauth_content %}
+         {#{ oauth_buttons() }#}
      </div>
 
     <div class="col-md-12 col-xs-12 container-login-register">

@@ -5,7 +5,6 @@ namespace EcommerceBundle\Twig;
 use Twig_SimpleFunction;
 use EcommerceBundle\Entity\CartItem;
 use EcommerceBundle\Entity\Product;
-use EcommerceBundle\Form\CartItemSimpleType;
 use EcommerceBundle\Entity\Transaction;
 use Symfony\Component\Security\Core\User\UserInterface;
 use EcommerceBundle\Entity\Address;
@@ -145,7 +144,7 @@ class EcommerceExtension extends \Twig_Extension
     public function getItemFormView(array $options = array())
     {
         $item = new CartItem();
-        $form = $this->container->get('form.factory')->create(new CartItemSimpleType(), $item, $options);
+        $form = $this->container->get('form.factory')->create('EcommerceBundle\Form\CartItemSimpleType', $item, $options);
 
         return $form->createView();
     }

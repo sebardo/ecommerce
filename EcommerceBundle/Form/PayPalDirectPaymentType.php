@@ -61,7 +61,7 @@ class PayPalDirectPaymentType extends AbstractType
                             'choices_as_values' => true
                            )
                      );
-        $builder->add('cardNo', TextType::class, array('label' => 'Número', 'max_length' => 16, 'data' => '4548812049400004'));
+        $builder->add('cardNo', TextType::class, array('label' => 'Número',  'data' => '4548812049400004'));
         $builder->add('expirationDate',
                        DateType::class,
                        array(
@@ -74,7 +74,7 @@ class PayPalDirectPaymentType extends AbstractType
                             'format' => 'dd MM yyyy')
                       );
 
-        $builder->add('CVV', TextType::class, array('max_length' => 4, 'label' => 'CVV'));
+        $builder->add('CVV', TextType::class, array('label' => 'CVV', 'data' => '123'));
         $builder->add('ts', HiddenType::class);
 
     }

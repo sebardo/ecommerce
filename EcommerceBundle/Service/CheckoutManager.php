@@ -549,7 +549,7 @@ class CheckoutManager
             'transaction.success'
         );
 
-        return $this->router->generate('core_actor_showinvoice', array('number' => $invoice->getInvoiceNumber()));
+        return $this->router->generate('ecommerce_checkout_showinvoice', array('number' => $invoice->getInvoiceNumber()));
     }
     
      /**

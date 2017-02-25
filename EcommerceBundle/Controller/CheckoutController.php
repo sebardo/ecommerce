@@ -140,7 +140,7 @@ class CheckoutController extends BaseController
     public function saveAction(Request $request)
     {
         $cart = $this->getCurrentCart();
-        $form = $this->createForm(new CartType(), $cart);
+        $form = $this->createForm(CartType::class, $cart);
 
         if ($form->handleRequest($request)->isValid()) {
             
@@ -274,11 +274,14 @@ class CheckoutController extends BaseController
         
         $transaction = $checkoutManager->getCurrentTransaction();
         $delivery = $checkoutManager->getDelivery($transaction);
-        $securityContext = $this->get('security.token_storage');
-        $manager = $this->get('doctrine')->getManager();
-        $session = $this->get('session');
 
-        $form = $this->createForm(new DeliveryType($securityContext, $manager, $session), $delivery);
+        $options = array(
+            'securityContext' =>  $this->get('security.token_storage'),
+            'manager' => $this->get('doctrine')->getManager(), 
+            'session' => $this->get('session')
+        );
+                
+        $form = $this->createForm(DeliveryType::class, $delivery, $options);
 
         if ($request->isMethod('POST')) {
             $form->handleRequest($request);

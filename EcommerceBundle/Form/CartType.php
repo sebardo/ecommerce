@@ -19,7 +19,7 @@ class CartType extends AbstractType
     {
         $builder
             ->add('items', CollectionType::class, array(
-                'type' => new CartItemType(),
+                'entry_type' => CartItemType::class,
             ))
         ;
     }

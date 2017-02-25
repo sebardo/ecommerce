@@ -11,7 +11,7 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
  * CheckoutAddressable abstract class to define billing and delivery address fields
  *
  * @ORM\MappedSuperclass
- * @Assert\Callback(methods={"validateDeliveryDni"})
+ * @Assert\Callback("validateDeliveryDni")
  */
 abstract class CheckoutAddressable extends Addressable
 {

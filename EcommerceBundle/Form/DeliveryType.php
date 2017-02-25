@@ -26,22 +26,14 @@ class DeliveryType extends AbstractType
     private $session;
 
     /**
-     * @param SecurityContext $securityContext
-     * @param EntityManager   $em
-     * @param Session         $session
-     */
-    public function __construct($securityContext, EntityManager $em, Session $session)
-    {
-        $this->securityContext = $securityContext;
-        $this->em = $em;
-        $this->session = $session;
-    }
-
-    /**
      * {@inheritDoc}
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $this->securityContext = $options['securityContext'];
+        $this->em = $options['manager'];
+        $this->session = $options['session'];
+        
         /** @var User $user */
         $user = $this->securityContext->getToken()->getUser();
         if (!$user) {
@@ -51,11 +43,11 @@ class DeliveryType extends AbstractType
         $numDeliveryAddresses = $this->em->getRepository('EcommerceBundle:Address')->countTotal($user->getId(), false);
 
         // initialize delivery addresses options
-        $selectDelivery['same'] = 'account.address.select.same';
+        $selectDelivery['account.address.select.same'] = 'same';
         if ($numDeliveryAddresses > 0) {
-            $selectDelivery['existing'] = 'account.address.select.existing';
+            $selectDelivery['account.address.select.existing'] = 'existing';
         }
-        $selectDelivery['new'] = 'account.address.select.new';
+        $selectDelivery['account.address.select.new'] = 'new';
 
         $builder
             ->add('fullName', null, array(
@@ -186,6 +178,9 @@ class DeliveryType extends AbstractType
     {
         $resolver->setDefaults(array(
             'data_class' => 'EcommerceBundle\Entity\Delivery',
+            'securityContext' => null,
+            'manager' => null,
+            'session' => null,
         ));
     }
 }
