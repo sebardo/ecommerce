@@ -159,7 +159,7 @@ class TransactionRepository extends EntityRepository
     {
         // select
         $qb = $this->getQueryBuilder()
-            ->select('t.id, t.transactionKey, t.totalPrice, t.tax, t.status, t.created, IDENTITY(t.actor) actorId, a.name actorName, a.surnames actorSurname, COUNT(i) nItems');
+            ->select('t.id, t.transactionKey, t.totalPrice, t.tax, t.status, t.created, IDENTITY(t.actor) actorId, a.name actorName, a.lastname actorSurname, COUNT(i) nItems');
 
    
         // join
@@ -228,7 +228,7 @@ class TransactionRepository extends EntityRepository
     {
         // select
         $qb = $this->getQueryBuilder()
-            ->select('t.id, t.transactionKey, t.paymentMethod, t.totalPrice, t.tax, t.status, t.created, IDENTITY(t.actor) actorId, a.name actorName, a.surnames actorSurname, COUNT(i) nItems');
+            ->select('t.id, t.transactionKey, t.paymentMethod, t.totalPrice, t.tax, t.status, t.created, IDENTITY(t.actor) actorId, a.name actorName, a.lastname actorSurname, COUNT(i) nItems');
    
         // join
         $qb->leftJoin('t.items', 'i')

@@ -22,7 +22,7 @@ class ProfileType extends AbstractType
         $builder
             ->add('email', EmailType::class, array('label' => 'form.email'))
             ->add('name')
-            ->add('surnames')
+            ->add('lastname')
             ;
     }
 

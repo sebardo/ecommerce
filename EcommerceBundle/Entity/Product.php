@@ -215,7 +215,7 @@ class Product extends Timestampable
     /**
      * @var ArrayCollection
      *
-     * @ORM\ManyToMany(targetEntity="CoreBundle\Entity\Video", cascade={"persist", "remove"})
+     * @ORM\ManyToMany(targetEntity="CoreExtraBundle\Entity\Video", cascade={"persist", "remove"})
      * @ORM\JoinTable(name="product_videos",
      *                      joinColumns={@ORM\JoinColumn(name="product_id", referencedColumnName="id")},
      *                      inverseJoinColumns={@ORM\JoinColumn(name="video_id", referencedColumnName="id")})

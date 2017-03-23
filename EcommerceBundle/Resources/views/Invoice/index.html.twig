@@ -63,8 +63,8 @@
             },
             {
                 "mData": function (source) {
-                    if(source.actorSurnames != null)
-                    var name = source.actorName + ' ' + source.actorSurnames + ' (' + source.actorEmail+') ';
+                    if(source.actorLastname != null)
+                    var name = source.actorName + ' ' + source.actorLastname + ' (' + source.actorEmail+') ';
                     else 
                     var name = source.actorName + ' (' + source.actorEmail+') ';
                     return '<a href="/admin/actor/' + source.actorId + '">' + name + '</a>';

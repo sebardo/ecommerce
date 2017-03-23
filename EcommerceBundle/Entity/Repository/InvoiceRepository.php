@@ -44,7 +44,7 @@ class InvoiceRepository extends EntityRepository
     {
         // select
         $qb = $this->getQueryBuilder()
-            ->select('i.id, i.invoiceNumber, i.created, IDENTITY(t.actor) actorId, a.name actorName, a.surnames actorSurnames, a.email actorEmail, COUNT(oi) nItems');
+            ->select('i.id, i.invoiceNumber, i.created, IDENTITY(t.actor) actorId, a.name actorName, a.lastname actorLastname, a.email actorEmail, COUNT(oi) nItems');
 
         // join
         $qb->leftJoin('i.transaction', 't')
