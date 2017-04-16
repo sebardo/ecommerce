@@ -8,7 +8,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Validator\Constraints as Assert;
 use CoreBundle\Entity\Image;
 use CoreBundle\Entity\Timestampable;
-use CoreBundle\Entity\Video;
+use CoreExtraBundle\Entity\Video;
 use CoreBundle\Entity\Actor;
 use EcommerceBundle\Entity\ProductStats;
 
