@@ -29,8 +29,8 @@ class EcommerceExtension extends Extension
         $loader->load('services.yml');
         
         //ecommerce paramters
-        if (isset($config['fixture_data'])) {
-            $container->setParameter('ecommerce.fixture_data', $config['fixture_data']);
+        if (isset($config['fixtures_dev'])) {
+            $container->setParameter('ecommerce.fixtures_dev', $config['fixtures_dev']);
         }
         if (isset($config['currency_symbol'])) {
             $container->setParameter('ecommerce.currency_symbol', $config['currency_symbol']);
@@ -53,6 +53,48 @@ class EcommerceExtension extends Extension
         if (isset($config['bank_account'])) {
             $container->setParameter('ecommerce.bank_account', $config['bank_account']);
         }
+        //company
+        if (isset($config['company']) && isset($config['company']['id'])) {
+            $container->setParameter('ecommerce.company.id', $config['company']['id']);
+        }
+        if (isset($config['company']) && isset($config['company']['name'])) {
+            $container->setParameter('ecommerce.company.name', $config['company']['name']);
+        }
+        if (isset($config['company']) && isset($config['company']['address'])) {
+            $container->setParameter('ecommerce.company.address', $config['company']['address']);
+        }
+        if (isset($config['company']) && isset($config['company']['postal_code'])) {
+            $container->setParameter('ecommerce.company.postal_code', $config['company']['postal_code']);
+        }
+        if (isset($config['company']) && isset($config['company']['city'])) {
+            $container->setParameter('ecommerce.company.city', $config['company']['city']);
+        }
+        if (isset($config['company']) && isset($config['company']['country'])) {
+            $container->setParameter('ecommerce.company.country', $config['company']['country']);
+        }
+        if (isset($config['company']) && isset($config['company']['telephone'])) {
+            $container->setParameter('ecommerce.company.telephone', $config['company']['telephone']);
+        }
+        if (isset($config['company']) && isset($config['company']['email'])) {
+            $container->setParameter('ecommerce.company.email', $config['company']['email']);
+        }
+        if (isset($config['company']) && isset($config['company']['sales_email'])) {
+            $container->setParameter('ecommerce.company.sales_email', $config['company']['sales_email']);
+        }
+        if (isset($config['company']) && isset($config['company']['website_url'])) {
+            $container->setParameter('ecommerce.company.website_url', $config['company']['website_url']);
+        }
+        if (isset($config['company']) && isset($config['company']['support_phone'])) {
+            $container->setParameter('ecommerce.company.support_phone', $config['company']['support_phone']);
+        }
+        if (isset($config['company']) && isset($config['company']['sales_phone'])) {
+            $container->setParameter('ecommerce.company.sales_phone', $config['company']['sales_phone']);
+        }
+        if (isset($config['company']) && isset($config['company']['sales_fax'])) {
+            $container->setParameter('ecommerce.company.sales_fax', $config['company']['sales_fax']);
+        }
+
+                
     }
     
 }

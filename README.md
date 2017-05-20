@@ -185,7 +185,7 @@ And add this lines or edit this lines in config.yml and config_test.yml
 
 
         ecommerce:
-        #    fixture_data: true
+        #    fixtures_dev: true
         #    currency_symbol: €
         #    advert_unit_price: 1
         #    vat: 0.21

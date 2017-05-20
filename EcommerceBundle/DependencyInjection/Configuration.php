@@ -22,7 +22,7 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
-                ->booleanNode('fixture_data')->defaultTrue()->end()
+                ->booleanNode('fixtures_dev')->defaultTrue()->end()
                 ->scalarNode('currency_symbol')->defaultValue('€')->end()
                 ->scalarNode('advert_unit_price')->defaultValue('1')->end()
                 ->scalarNode('vat')->defaultValue('0.21')->end()
@@ -30,7 +30,11 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('delivery_expenses_type')->defaultValue('by_percentage')->end()
                 ->scalarNode('delivery_expenses_percentage')->defaultValue('0')->end()
                 ->scalarNode('bank_account')->defaultValue('ESXX XXX XXXX XXXX XXXX XXXX')->end()
-                
+                ->arrayNode('company')
+                    ->useAttributeAsKey('name')
+                    ->prototype('scalar')
+                ->end()
+             
             ->end();
         return $treeBuilder;
     }

@@ -29,7 +29,7 @@ class LoadEcommerceData extends SqlScriptFixture
     public function createFixtures()
     {
         
-        if($this->container->getParameter('ecommerce.fixture_data'))
+        if($this->container->getParameter('ecommerce.fixtures_dev'))
         {
             //Create Families
             $family = new Family();

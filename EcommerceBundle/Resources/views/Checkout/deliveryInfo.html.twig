@@ -1,7 +1,5 @@
-{% extends core['extended_layout'] ? core['extended_layout'] : 'CoreBundle:Base:base.layout.html.twig' %}
+{% extends twig_global.getParameter('extended_layout') ? twig_global.getParameter('extended_layout') : 'CoreBundle:Base:base.layout.html.twig' %}
 {% form_theme form 'CoreBundle:Form:base.fields.html.twig' %}
-
-
 
 {% block breadcrumb %}
     
