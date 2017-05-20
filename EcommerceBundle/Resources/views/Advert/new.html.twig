@@ -169,13 +169,13 @@
                 height: 150,
 
                 // Upload images to a CKFinder connector (note that the response type is set to JSON).
-                uploadUrl: '{{ core.server_base_url}}/bundles/admin/plugins/ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Files&responseType=json',
+                uploadUrl: '{{ twig_global.getParameter('server_base_url')}}/bundles/admin/plugins/ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Files&responseType=json',
 
                 // Configure your file manager integration. This example uses CKFinder 3 for PHP.
-                filebrowserBrowseUrl: '{{ core.server_base_url}}/bundles/admin/plugins/ckfinder/ckfinder.html',
-                filebrowserImageBrowseUrl: '{{ core.server_base_url}}/bundles/admin/plugins/ckfinder/ckfinder.html?type=Images',
-                filebrowserUploadUrl: '{{ core.server_base_url}}/bundles/admin/plugins/ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Files',
-                filebrowserImageUploadUrl: '{{ core.server_base_url}}/bundles/admin/plugins/ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Images',
+                filebrowserBrowseUrl: '{{ twig_global.getParameter('server_base_url')}}/bundles/admin/plugins/ckfinder/ckfinder.html',
+                filebrowserImageBrowseUrl: '{{ twig_global.getParameter('server_base_url')}}/bundles/admin/plugins/ckfinder/ckfinder.html?type=Images',
+                filebrowserUploadUrl: '{{ twig_global.getParameter('server_base_url')}}/bundles/admin/plugins/ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Files',
+                filebrowserImageUploadUrl: '{{ twig_global.getParameter('server_base_url')}}/bundles/admin/plugins/ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Images',
 
                 // The following options are not necessary and are used here for presentation purposes only.
                 // They configure the Styles drop-down list and widgets to use classes.

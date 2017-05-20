@@ -32,7 +32,7 @@
                             </tr>
                             <tr>
                                 <td>{{ 'plan.promotionUrl' | trans }}</td>
-                                <td><a href="{{ core.server_base_url}}/packs?promotionCode={{ entity.paypalId }}">{{ core.server_base_url}}/packs?promotionCode={{ entity.paypalId }}</a></td>
+                                <td><a href="{{ twig_global.getParameter('server_base_url')}}/packs?promotionCode={{ entity.paypalId }}">{{ twig_global.getParameter('server_base_url')}}/packs?promotionCode={{ entity.paypalId }}</a></td>
                             </tr>
                             <tr>
                                 <td>{{ 'name' | trans }}</td>

@@ -1,4 +1,4 @@
-{% block subject %}{{ 'cupon.code.email.subject' | trans({ '%app_name%': core.name }) }}{% endblock %}
+{% block subject %}{{ 'cupon.code.email.subject' | trans({ '%app_name%': twig_global.getParameter('company.name', 'ecommerce') }) }}{% endblock %}
 
 {% block body_text %}
 {% autoescape false %}

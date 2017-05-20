@@ -1,4 +1,4 @@
-{% block subject %}{{ 'sale.email.subject' | trans({ '%app_name%': core.name, '%order_number%': order_number }) }}{% endblock %}
+{% block subject %}{{ 'sale.email.subject' | trans({ '%app_name%': twig_global.getParameter('company.name', 'ecommerce' }), '%order_number%': order_number }) }}{% endblock %}
 
 {% block body_text %}
 {% autoescape false %}
@@ -8,16 +8,16 @@
 
 {% for item in products%}
     {% set product = item.product %}
-    {{ product.name }} => {{core.server_base_url}}{{ path('optisoop_front_product_show', { 'slug': product.slug }) }}
+    {{ product.name }} => {{twig_global.getParameter('server_base_url')}}{{ path('optisoop_front_product_show', { 'slug': product.slug }) }}
     {{ 'sale.email.message.product'| trans({ '%product_quantity%': item.quantity, '%product_name%': product.name, '%product_price%': product.price | prices(product.priceType) }) | raw }}
     =========================================================
 {% endfor %}
 
 {%if token != ''%}
-{{ 'sale.email.bank.account'| trans({ '%optic_name%': optic.name, '%server_base_url%' : core.server_base_url, '%token_url%': core.server_base_url~'/rellena-tu-cuenta-bancaria?token='~token }) | raw}}
+{{ 'sale.email.bank.account'| trans({ '%company_name%': twig_global.getParameter('company.name', 'ecommerce'), '%server_base_url%' : twig_global.getParameter('server_base_url'), '%token_url%': twig_global.getParameter('server_base_url')~'/rellena-tu-cuenta-bancaria?token='~token }) | raw}}
 {%endif%}
 
-{{ 'sale.email.thanks' | trans({ '%app_name%': core.name }) }}
+{{ 'sale.email.thanks' | trans({ '%app_name%': twig_global.getParameter('company.name', 'ecommerce' }) }) }}
 {% endautoescape %}
 {% endblock %}
 
@@ -40,18 +40,18 @@
                     {% if image != ''%} {% set path = '/uploads/images/product/'~product.id~'/thumbnail/'~image %} {% endif %}
                 {% endif %}
             {% endif%}
-            <a style="float: left;margin-right: 10px" title="{{product.name}}" href="{{core.server_base_url}}{{ path('optisoop_front_product_show', { 'slug': product.slug })}}"><img width="142" src="{{ path }}"/></a>
+            <a style="float: left;margin-right: 10px" title="{{product.name}}" href="{{twig_global.getParameter('server_base_url' })}}{{ path('optisoop_front_product_show', { 'slug': product.slug })}}"><img width="142" src="{{ path }}"/></a>
             {{ 'sale.email.message.product'| trans({ '%product_quantity%': item.quantity, '%product_name%': product.name, '%product_price%': product.price | prices(product.priceType)  }) | raw }}
         {% endfor %}
     </p>             
     
     {%if token != ''%}
         <div style="margin:20px 0;">
-            {{ 'sale.email.bank.account'| trans({ '%optic_name%': optic.name, '%server_base_url%' : core.server_base_url, '%token_url%': core.server_base_url~'/rellena-tu-cuenta-bancaria?token='~token }) | raw}}
+            {{ 'sale.email.bank.account'| trans({ '%company_name%': twig_global.getParameter('company.name', 'ecommerce'), '%server_base_url%' : twig_global.getParameter('server_base_url' }), '%token_url%': twig_global.getParameter('server_base_url' })~'/rellena-tu-cuenta-bancaria?token='~token }) | raw}}
         </div>
     {%endif%}
 
-    <p style="padding:0; margin:0;">{{ 'sale.email.thanks' | trans({ '%app_name%': core.name }) }}</p>
+    <p style="padding:0; margin:0;">{{ 'sale.email.thanks' | trans({ '%app_name%': twig_global.getParameter('company.name', 'ecommerce') }) }}</p>
 
     {{ include('CoreBundle:Email:_footer.html.twig') }}
 {% endspaceless %}

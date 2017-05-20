@@ -1,4 +1,4 @@
-{% block subject %}{{ 'advert.email.subject' | trans({ '%app_name%': core.name, '%order_number%': order_number }) }}{% endblock %}
+{% block subject %}{{ 'advert.email.subject' | trans({ '%app_name%': twig_global.getParameter('company.name', 'ecommerce'), '%order_number%': order_number }) }}{% endblock %}
 
 {% block body_text %}
 {% autoescape false %}
@@ -8,7 +8,7 @@
 
 Publicidad adquirida: {{ advert.title }}
 
-{{ 'advert.email.thanks' | trans({ '%app_name%': core.name }) }}
+{{ 'advert.email.thanks' | trans({ '%app_name%': twig_global.getParameter('name') }) }}
 {% endautoescape %}
 {% endblock %}
 
@@ -27,7 +27,7 @@ Publicidad adquirida: {{ advert.title }}
     
   
 
-    <p style="padding:0; margin:0;">{{ 'advert.email.thanks' | trans({ '%app_name%': core.name }) }}</p>
+    <p style="padding:0; margin:0;">{{ 'advert.email.thanks' | trans({ '%app_name%': twig_global.getParameter('name') }) }}</p>
 
     {{ include('CoreBundle:Email:_footer.html.twig') }}
 {% endspaceless %}

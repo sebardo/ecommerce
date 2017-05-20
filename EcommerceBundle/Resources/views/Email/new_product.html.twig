@@ -1,13 +1,13 @@
 
-{% block subject %}{{ 'product.email.subject' | trans({ '%app_name%': core.name }) }}{% endblock %}
+{% block subject %}{{ 'product.email.subject' | trans({ '%app_name%': twig_global.getParameter('company.name', 'ecommerce' }) }}{% endblock %}
 
 {% block body_text %}
 {% autoescape false %}
-{{ 'product.email.welcome' | trans({ '%app_name%': core.name }) }}
+{{ 'product.email.welcome' | trans({ '%app_name%': twig_global.getParameter('company.name', 'ecommerce' }) }) }}
 
 {{ 'product.email.message' | trans }}
     
-{{ 'product.email.thanks' | trans({ '%app_name%': core.name }) }}
+{{ 'product.email.thanks' | trans({ '%app_name%': twig_global.getParameter('company.name', 'ecommerce' }) }) }}
 {% endautoescape %}
 {% endblock %}
 
@@ -15,11 +15,11 @@
 {% spaceless %}
     {{ include('CoreBundle:Email:_header.html.twig') }}
 
-    <p style="padding:0 0 20px 0; margin:0;">{{ 'product.email.welcome' | trans({ '%app_name%': core.name }) }}</p>
+    <p style="padding:0 0 20px 0; margin:0;">{{ 'product.email.welcome' | trans({ '%app_name%': twig_global.getParameter('company.name', 'ecommerce' }) }) }}</p>
 
     <p style="padding:0 0 20px 0; margin:0;">{{ 'product.email.message' | trans }}</p>
 
-    <p style="padding:0; margin:0;">{{ 'product.email.thanks' | trans({ '%app_name%': core.name }) }}</p>
+    <p style="padding:0; margin:0;">{{ 'product.email.thanks' | trans({ '%app_name%': twig_global.getParameter('company.name', 'ecommerce' }) }) }}</p>
 
     {{ include('CoreBundle:Email:_footer.html.twig') }}
 {% endspaceless %}

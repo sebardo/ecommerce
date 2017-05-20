@@ -1,4 +1,4 @@
-{% block subject %}{{ 'invoice.email.subject' | trans({ '%app_name%': core.name, '%order_number%': order_number }) }}{% endblock %}
+{% block subject %}{{ 'invoice.email.subject' | trans({ '%app_name%': twig_global.getParameter('company.name', 'ecommerce'), '%order_number%': order_number }) }}{% endblock %}
 
 {% block body_text %}
 {% autoescape false %}
@@ -14,7 +14,7 @@
 
 {{ 'invoice.email.contact.us' | trans }}
 
-{{ 'invoice.email.thanks' | trans({ '%app_name%': core.name }) }}
+{{ 'invoice.email.thanks' | trans({ '%app_name%': twig_global.getParameter('company.name', 'ecommerce')}) }}
 {% endautoescape %}
 {% endblock %}
 
@@ -34,12 +34,12 @@
     <p style="padding:20px 0; margin:0;">{{ 'invoice.email.view.invoice' | trans }}: {{ order_url }}</p>
 
     {% if payment_type == 'invoice.payment.by.bank.transfer' %}
-        <p style="padding:20px 0; margin:0;">{{ 'invoice.email.transfer.data' | trans({ '%order_number%': order_number, '%account_number%': get_parameter('ecommerce.bank_account') }) | raw }}</p>
+        <p style="padding:20px 0; margin:0;">{{ 'invoice.email.transfer.data' | trans({ '%order_number%': order_number, '%account_number%': twig_global.getParameter('bank_account', 'ecommerce') }) | raw }}</p>
     {% endif %}
                 
     <p style="padding:0 0 20px 0; margin:0;">{{ 'invoice.email.contact.us' | trans }}</p>
 
-    <p style="padding:0; margin:0;">{{ 'invoice.email.thanks' | trans({ '%app_name%': core.name }) }}</p>
+    <p style="padding:0; margin:0;">{{ 'invoice.email.thanks' | trans({ '%app_name%': twig_global.getParameter('company.name', 'ecommerce') }) }}</p>
 
     {{ include('CoreBundle:Email:_footer.html.twig') }}
 {% endspaceless %}

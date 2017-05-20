@@ -3,7 +3,7 @@
     <form id="fileupload" action="{{ path('ecommerce_product_manageimage', { id: entity.id, slug: entity.slug , type: 'product', route: 'ecommerce_product_manageimage', entity: 'EcommerceBundle:Product', 'image_entity': 'CoreBundle:Image'}) }}" method="POST" enctype="multipart/form-data">
         <!-- Redirect browsers with JavaScript disabled to the origin page -->
         <noscript>
-        <input type="hidden" name="redirect" value="https://core.dev/admin/products">
+        <input type="hidden" name="redirect" value="{{twig_global.getParameter('server_base_url')}}/admin/products">
         </noscript>
         <!-- The fileupload-buttonbar contains buttons to add/delete files and start/cancel the upload -->
         <div class="row fileupload-buttonbar">
