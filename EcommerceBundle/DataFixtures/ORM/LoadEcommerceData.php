@@ -197,7 +197,7 @@ class LoadEcommerceData extends SqlScriptFixture
             $psp->setFormClass('EcommerceBundle\Form\BankTransferType');
             $psp->setModelClass('EcommerceBundle\Factory\Providers\BankTransferProvider');
             $psp->setAppendTwigToForm('<div class="col-sm-10 detail-transfer">
-                {{ "checkout.transfer" | trans({"%bank_name%": core["company"]["name"], "%bank_account%": get_parameter("ecommerce.bank_account") }) | nl2br }}
+                {{ "checkout.transfer" | trans({"%bank_name%": twig_global.getParameter("company.name", "ecommerce"), "%bank_account%": twig_global.getParameter("bank_account", "ecommerce") }) | nl2br }}
                 <br />
             </div>
             <div class="col-sm-12 priceAndCheck">
@@ -219,7 +219,7 @@ class LoadEcommerceData extends SqlScriptFixture
             $psp1->setFormClass('EcommerceBundle\Form\BankTransferType');
             $psp1->setModelClass('EcommerceBundle\Factory\Providers\BankTransferProvider');
             $psp1->setAppendTwigToForm('<div class="col-sm-10 detail-transfer">
-                {{ "checkout.transfer" | trans({"%bank_name%": core["company"]["name"], "%bank_account%": get_parameter("ecommerce.bank_account") }) | nl2br }}
+                {{ "checkout.transfer" | trans({"%bank_name%": twig_global.getParameter("company.name", "ecommerce"), "%bank_account%": twig_global.getParameter("bank_account", "ecommerce") }) | nl2br }}
                 <br />
             </div>
             <div class="col-sm-12 priceAndCheck">

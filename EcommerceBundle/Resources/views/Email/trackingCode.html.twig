@@ -1,4 +1,4 @@
-{% block subject %}{{ 'carrier.tracking.email.subject' | trans({ '%app_name%': core.company.name }) }}{% endblock %}
+{% block subject %}{{ 'carrier.tracking.email.subject' | trans({ '%app_name%': twig_global.getParameter('company.name','ecommerce') }) }}{% endblock %}
 
 {% block body_text %}
 {% autoescape false %}

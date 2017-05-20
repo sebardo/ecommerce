@@ -1,4 +1,4 @@
-{% block subject %}{{ 'checkout.bank.transfer.email.subject' | trans({ '%app_name%': core.ecommerce.company.name }) }}{% endblock %}
+{% block subject %}{{ 'checkout.bank.transfer.email.subject' | trans({ '%app_name%': twig_global.getParameter('company.name','ecommerce') }) }}{% endblock %}
 
 {% block body_text %}
 {% autoescape false %}

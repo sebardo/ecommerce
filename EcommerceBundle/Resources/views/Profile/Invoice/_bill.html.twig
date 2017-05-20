@@ -24,12 +24,12 @@
             <div class="col-md-6 address">
                 <h3>{{ "checkout.business.info" | trans }}</h3>
                 <p>
-                    {{ core['company']['name'] }}<br />
-                    {{ core['company']['id'] }}<br />
-                    {{ core['company']['address'] }}<br />
-                    {{ core['company']['postal_code'] }} {{ core['company']['city'] }}<br />
-                    {{ 'phone.abbr' | trans }} {{ core['company']['sales_phone'] }} | {{ 'fax.abbr' | trans }} {{ core['company']['sales_fax'] }}<br />
-                    {{ core['company']['website_url'] }}
+                    {{ twig_global.getParameter("company.name", "ecommerce") }}<br />
+                    {{ twig_global.getParameter("company.id", "ecommerce") }}<br />
+                    {{ twig_global.getParameter("company.address", "ecommerce") }}<br />
+                    {{ twig_global.getParameter("company.postal_code", "ecommerce") }} {{ twig_global.getParameter("company.city", "ecommerce") }}<br />
+                    {{ 'phone.abbr' | trans }} {{ twig_global.getParameter("company.sales_phone", "ecommerce") }} | {{ 'fax.abbr' | trans }} {{ twig_global.getParameter("company.sales_fax", "ecommerce") }}<br />
+                    {{ twig_global.getParameter("company.website_url", "ecommerce") }}
                 </p>
             </div>
         </div>
@@ -61,12 +61,12 @@
 
         <p class="bil-footer">
              
-                {{ core['company']['sales_email'] }}
+                {{ twig_global.getParameter("company.sales_email", "ecommerce")  }}
                 <span>|</span>
-                {{ 'phone.abbr' | trans }} {{ core['company']['sales_phone'] }}
+                {{ 'phone.abbr' | trans }} {{ twig_global.getParameter("company.sales_phone", "ecommerce") }}
                 <span>|</span>
-                {{ 'fax.abbr' | trans }} {{ core['company']['sales_fax'] }}
-                <span>|</span>{{ core['company']['website_url'] }}
+                {{ 'fax.abbr' | trans }} {{ twig_global.getParameter("company.sales_fax", "ecommerce") }}
+                <span>|</span>{{ twig_global.getParameter("company.website_url", "ecommerce") }}
             
         </p>
     </div>
